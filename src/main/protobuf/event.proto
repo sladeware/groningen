@@ -1,0 +1,166 @@
+/* Copyright 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This is just a preliminary log protocol definition for Groningen.  We will
+// want to use this for experiments.
+
+syntax = "proto2";
+
+package org.arbeitspferde.groningen.proto;
+option java_package = "org.arbeitspferde.groningen.proto";
+
+import "groningen_config.proto";
+
+// Representation of Groningen-managed JVM flags.
+message JvmFlag {
+  // The name of the flag.
+  optional string name = 1;
+  // The flag's value.
+  optional string value = 2;
+  // Whether this flag was explicitly set by Groningen or was inherited from
+  // subject.
+  optional bool managed_by_groningen = 3;
+}
+
+// Representation of fitness score.
+message FitnessScore {
+  // The name of the fitness score.
+  optional string name = 1;
+  // The assigned value of the fitness score.
+  optional float score = 2;
+  // The coefficient for the score.
+  optional float coefficient = 3;
+}
+
+message EventEntry {
+  // What type of event was observed.
+  enum Type {
+    // A subject has been started under a new set of experimental parameters.
+    START = 0;
+    // A subject was found by Groningen mid-way during experimentation
+    // unexpectedly.
+    UNEXPECTED_DEATH = 1;
+    // A subject's experiment was terminated by Groningen.
+    EXPERIMENT_END = 2;
+  }
+
+  // BEGIN DEPRECATED SECTION
+  // It was a mistake to make these messages internal types of EventEntry.
+  // They will eventually be deleted, and the interface points will be
+  // updated accordingly.
+
+  // Representation of Groningen-managed JVM flags.
+  message JvmFlag {
+    // The name of the flag.
+    required string name = 1;
+    // The flag's value.
+    required string value = 2;
+    // Whether this flag was explicitly set by Groningen or was inherited from
+    // subject.
+    required bool managed_by_groningen = 3;
+  }
+
+  // Representation of fitness score.
+  message FitnessScore {
+    // The name of the fitness score.
+    required string name = 1;
+    // The assigned value of the fitness score.
+    required float score = 2;
+    // The coefficient for the score.
+    required float coefficient = 3;
+  }
+
+  // END DEPRECATED SECTION
+
+  // Representation of pause-time metrics.
+  message PauseEvent {
+    // The duration of the event.
+    required double duration_in_seconds = 1;
+  }
+
+  // The ID for this subject.
+  optional uint64 experiment_id = 1;
+  // The time the event took place.
+  optional uint64 time = 2;
+  //The MDB user of the running Groningen.
+  optional string groningen_user = 3;
+  // The serving address of the host running Groningen: ${hostname}:${port}.
+  optional string groningen_serving_address = 4;
+  // The user of the running subject.
+  optional string subject_user = 5;
+  // The serving address of the experimental subject.
+  optional string subject_serving_address = 6;
+  // The event type.
+  optional Type type = 7;
+  // The running JVM flags.
+  repeated JvmFlag jvm_flag = 8;
+  // The fitness score associated with the event.
+  repeated FitnessScore score = 9;
+  // The configuration parameters that Groningen was operating under when the
+  // event was recorded.
+  optional org.arbeitspferde.groningen.proto.ProgramConfiguration groningen_configuration = 10;
+  // An inventory, if any, of the pause time events.
+  repeated PauseEvent pause_event = 11;
+  // The time at which the Groningen instance started.  This is used for
+  // fingerprinting.
+  optional uint64 groningen_start_time = 12;
+}
+
+// The UniqueSubjectIdentifier and UniqueExperimentIdentifier messages below
+// are not used internally in Groningen but rather by our Sawzall event logging
+// processing pipeline.  The had originally been defined as ad hoc tuples
+// in the Sawzall script; but because they will be useful for ex post facto
+// data collation and analysis, they have been defined here for anyone to use.
+//
+// Within the context of the Sawzall script, they are used for fingerprinting
+// to generate globally unique identifiers across our data sets.
+message UniqueSubjectIdentifierRow {
+  optional uint64 experiment_id = 1;
+  optional uint64 event_time = 2;
+  optional string groningen_serving_address = 3;
+  optional string subject_serving_address = 4;
+}
+
+message UniqueExperimentIdentifierRow {
+  optional uint64 experiment_id = 1;
+  optional uint64 groningen_start_time = 2;
+  optional string groningen_serving_address = 3;
+}
+
+message PauseTimeEventSummaryStatisticsRow {
+  optional float minimum_duration = 1;
+  optional float maximum_duration = 2;
+  optional float mean_duration = 3;
+  optional float median_duration = 4;
+  optional float standard_deviation_of_durations = 5;
+  optional float total_duration = 6;
+  optional uint64 event_count = 7;
+}
+
+message FitnessRow {
+  repeated FitnessScore score = 1;
+  optional float total_score = 2;
+}
+
+message JvmSettingsRow {
+  repeated JvmFlag flag = 1;
+  optional string complete_commandline = 2;
+}
+
+message ExperimentJoinRow {
+  optional string fingerprint_of_unique_subject_identifier = 1;
+  optional string fingerprint_of_unique_experiment_identifier = 2;
+  optional uint64 experiment_id = 3;
+}

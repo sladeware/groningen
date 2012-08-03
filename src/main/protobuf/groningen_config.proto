@@ -1,0 +1,224 @@
+/* Copyright 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Description:
+//  Definition of protocol buffer for configuring Groningen though it is not
+//  expected to be used as the internal representation of the configuration
+//  within the Groningen system. Designed as a cascading set of messages in
+//  which inner message values override values defined in outer messages.
+//
+// Tag ranges have been defined such that:
+//  repeated fields start with 1 and grow upward
+//  Optional fields start with 16 and grow up
+// If the repeated number space exceeds 15, new fields should be added at
+// the current end of the optional stack.
+// This scheme does not lend itself to extension nor does it lend itself to
+// massive amounts of repeated members.
+
+syntax = "proto2";
+option java_package = "org.arbeitspferde.groningen.proto";
+option java_outer_classname = "GroningenConfigProto";
+import "params.proto";
+
+package org.arbeitspferde.groningen.proto;
+
+// Overall configuration message definition
+// While many fields are defined as optional in order to allow default values
+// to be specified at the appropriate level (and no base default defined if
+// such a value is not necessary), many must be defined at some level in
+// the message hierachary as is noted below.
+message ProgramConfiguration {
+
+  // The search space can be manipulated in two ways:
+  //  - it can be restricted by pinning argument values to a value or a range
+  //    on a per argument basis
+  //  - a set of mutations can be fully specified to use as seed points for
+  //    exploring the space.
+  // What follows is a uniform structure for describing both.
+  message JvmSearchSpace {
+
+    // The GC modes are mutally exclusive, so capture that fact in an enum
+    enum GcMode {
+      USE_CONC_MARK_SWEEP = 0;
+      USE_PARALLEL = 1;
+      USE_PARALLEL_OLD = 2;
+      USE_SERIAL = 3;
+    }
+
+    // Hold a specific value or a range of int64s.
+    //  not following the interaction specified below will result in
+    //  exceptions... This model was chosen to reduce overall space per
+    //  subject should one need to specify 100+ subjects (though it would have
+    //  helped to reduce the size of the arg names as well) with regard to
+    //  underlying storage limitations.
+    message Int64Range {
+      optional int64 value = 1;         // Specific value to use - mutually
+                                        //  exclusive to those below
+      optional int64 floor = 2;         // lower bound (inclusive) for
+                                        //  range - msg must include ceiling
+                                        //  and not value field
+      optional int64 ceiling = 3;       // upper bound (inclusive) for
+                                        //  range - msg must include floor
+                                        //  and not value field
+      optional int64 step_size = 4;     // Step size by which the Hypothesizer
+                                        //  should explore the range. Optional
+                                        //  to include with floor and ceiling,
+                                        //  ignored if included with value
+    }
+
+    // At some point in the future, these should be migrated to generic
+    // MessageSet based arguments which would be completely extensible.
+    // This was not done in mach 1 as most of the commandline abstraction
+    // is already built around the CommandLineArg abstraction - redesigning
+    // this would likely not allow us to finish the prototype within the
+    // task force. The generic MessageSet can be phased in later - either as
+    // an additional to existing arguments, or as a complete replacement.
+    // NOTE: these fields do not follow the same numbering scheme as the
+    // rest of the file as we expect to burn the range.
+    repeated GcMode gc_mode = 1;    // this is a series so that multiple modes
+                                    // can be searched over, though they are
+                                    // mutually exclusive on a given cmd line
+    optional Int64Range adaptive_size_decrement_scale_factor = 2;
+    optional Int64Range cms_exp_avg_factor = 3;
+    optional Int64Range cms_incremental_duty_cycle = 4;
+    optional Int64Range cms_incremental_duty_cycle_min = 5;
+    optional Int64Range cms_incremental_offset = 6;
+    optional Int64Range cms_incremental_safety_factor = 7;
+    optional Int64Range cms_initiating_occupancy_fraction = 8;
+    optional Int64Range gc_time_ratio = 9;
+    optional Int64Range max_gc_pause_millis = 10;
+    optional Int64Range max_heap_free_ratio = 11;
+    optional Int64Range max_new_size = 12;
+    optional Int64Range max_perm_size = 13;
+    optional Int64Range min_heap_free_ratio = 14;
+    optional Int64Range new_ratio = 15;
+    optional Int64Range new_size = 16;
+    optional Int64Range parallel_gc_threads = 17;
+    optional Int64Range survivor_ratio = 18;
+    optional Int64Range tenured_generation_size_increment = 19;
+    optional Int64Range heap_size = 20;
+    optional Int64Range young_generation_size_increment = 21;
+    optional bool cms_incremental_mode = 22;
+    optional bool cms_incremental_pacing = 23;
+    optional bool use_cms_initiating_occupancy_only = 24;
+    optional Int64Range soft_ref_lru_policy_ms_per_mb = 25;
+  }
+
+  message DeprecatedMessageA {
+    optional string deprecated_a = 16;
+    repeated string deprecated_b = 15;
+  }
+
+  // Definition for Cluster Configuration. This sets values for anything
+  // within a cluster which will act as defaults for any inner scoped message.
+  // Values that appears within inner messages will override values
+  // scoped in outer messages.
+  message ClusterConfig {
+
+    // Subject Group scoped values
+    message SubjectGroupConfig {
+
+      // Subject-specific values
+      message ExtendedSubjectConfig {
+        optional int32 subject_index = 16;   // optional subject index for the group
+        optional JvmSearchSpace jvm_parameters = 17;
+                                      // At the subject level, you must define
+                                      // the all arguments if field is included
+      }
+
+      repeated ExtendedSubjectConfig subject_config = 1;
+                                      // Groningen will use all subjects in a
+                                      // group regardless of the number of
+                                      // subjects specified (requiring groups
+                                      // to split app under test to a different
+                                      // subject group) Any under specified
+                                      // subject will have values chosen from
+                                      // random.
+      optional string subject_group_name = 16;  // subject group name must be
+                                                // specified in order to attach
+                                                // to a set of subjects within
+                                                // it.
+      optional string user = 17;    // somewhat optional - must be
+                                        // specified somewhere in the hierarchy
+      optional string exp_settings_files_dir = 18;
+                                    // Experiments settings used by
+                                    // jvm_arg_injector for this group will be
+                                    // stored in this directory. There will
+                                    // be one file for every subject with the
+                                    // full path looking like this:
+                                    // <exp_settings_files_dir>/<subject index>
+      optional int32 number_of_subjects = 19;
+                                    // Restrict the experiment to the
+                                    // first N subject (0 to N-1)
+                                    // Default value of 0 implies all
+                                    // subjects in a subject group are under
+                                    // Groningen's control.
+      optional int32 subject_warmup_timeout = 20;
+                                    // The maximum number of seconds that an
+                                    // experimental subject is allowed to _not_
+                                    // return OK.
+      repeated string restart_command = 21;
+                                    // The command that should be used to
+                                    // restart this subject group.  Overrides the default
+                                    // cluster implementation command.
+    }
+
+    repeated SubjectGroupConfig subject_group = 1;
+    optional string cluster = 16;   // cluster name - must be specified
+    optional string user = 17;  // somewhat optional - must be
+                                    // specified somewhere in the hierarchy
+    optional int32 number_of_subjects = 19;
+                                    // Restrict the experiment to the
+                                    // first N subjects (0 to N-1)
+                                    // Default value of 0 implies all
+                                    // subjects in a group are under Groningens's
+                                    // control
+    optional int32 subject_warmup_timeout = 20;
+                                    // The maximum number of seconds that an
+                                    // experimental subject is allowed to _not_
+                                    // return OK on health probes when running
+                                    // an experiment. Health checking is
+                                    // performed on subjects that are erroring
+                                    // during routine inspections as well as at
+                                    // the beginning of an experiment following
+                                    // the point when all of the subjects are
+                                    // restarted in the Executor stage.
+  }
+
+  repeated ClusterConfig cluster = 1;  // list of cluster config - must not be
+                                    // empty
+  optional string user = 16;    // highest level default user defintion
+  optional JvmSearchSpace jvm_search_restriction = 18;
+                                    // allow restricting the argument search
+                                    // space at the top level
+  optional DeprecatedMessageA deprecated_message_a = 19;
+  optional GroningenParams param_block = 20;
+                                    // the parameter structure that will be
+                                    // passed around. Abstracted out to allow
+                                    // easy addition of new variables without
+                                    // changing java interfaces
+  optional int32 number_of_subjects = 21 [ default = 0 ];
+                                    // Restrict the experiment to the
+                                    // first N subjects (0 to N-1)
+                                    // Default value of 0 implies all
+                                    // subjects in a group are under Groningens's
+                                    // control
+  optional int32 subject_warmup_timeout = 22 [ default = 300 ];
+                                    // The maximum number of seconds that an
+                                    // experimental subject is allowed to _not_
+                                    // return OK. This time is added to the
+                                    // experiment duration so that subjects are
+                                    // allowed to warmup.
+}

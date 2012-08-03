@@ -1,0 +1,167 @@
+/* Copyright 2012 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Description:
+//  A container for holding globally applicable configuration settings
+//  This protobuf is meant to be the container within Groningen for these
+//  settings, allowing for a minimal amount of work to make such settings
+//  available.  To prevent the need to add additional verification code to each
+//  implementation of the configuration object, default values MUST be
+//  supplied here. Where this does not make sense, verification code should
+//  be added to the implementing classes.
+
+syntax = "proto2";
+option java_package = "org.arbeitspferde.groningen.proto";
+
+package org.arbeitspferde.groningen.proto;
+
+message GroningenParams {
+  // The basename of the subjects log file that Groningen will parse as input
+  optional string input_log_name = 1;
+
+  // time in minutes that the experiments run in production
+  optional int32 duration = 2 [ default = 1440 ];
+
+  // experimental subject restart threshold used by the Executor and Validator
+  optional int32 restart = 3 [ default = 4];
+
+  // Weight of the latency score within the hypothesizer
+  optional double latency_weight = 5 [ default = 1.0 ];
+
+  // Weight of the throughput score within the hypothesizer
+  optional double throughput_weight = 6 [ default = 1.0 ];
+
+  // Weight of the memory score within the hypothesizer
+  optional double memory_weight = 8 [ default = 1.0 ];
+
+  // Number cross-over points for mating within hypothesizer
+  optional int32 num_crossovers = 9 [ default = 1 ];
+
+  // Mutation probability for the offsprings
+  optional double mutation_prob = 10 [ default = 0.02 ];
+
+  // Number of stagnant generations before GA terminates. The value 0 disables
+  // this termination condition check.
+  optional int32 stagnant_gens = 11 [ default = 0 ];
+
+  // Number of elite individuals in the populations for the
+  //  IncrementalEvolutionEngine
+  // NOTE: is not updated after the initial pass through the loop.
+  optional int32 elite_count = 12 [ default = 1 ];
+
+  // The percentile used to compute the latency score (A value from 0 to 100)
+  optional double pause_time_latency_score_percentile = 13 [ default = 99 ];
+
+  // The number of threads that the Executor uses to monitor experimental
+  // subjects.  Quite likely, you'll want to increase this as you increase the
+  // total number of subjects in your experiment. Less threads probably implies
+  // alonger period of time between sucessive probes of a given experimental
+  // subject.
+  optional int32 number_of_executor_threads = 14 [ default = 3 ];
+
+  // Groningen can run with various amounts of interaction between pipeline steps
+  enum PipelineSynchMode {
+    // No synchronization is performed. Groningen will run the subjects for the
+    // duration specified in param_block, and on completion of an iteration of
+    // the pipeline, will immediately go into another iteration
+    NONE = 0;
+
+    // Provides two points of synchronization:
+    // - A point at the beginning of an iteration through the pipeline,
+    //   Groningen waits before the Hypothesizer is run and blocks the rpc
+    //   until the experimental settings have been generated and the subjects
+    //   have been restarted in order to incorporate the experimental settings
+    // - Another point that signals the experiment's duration is complete and
+    //   blocks until all gc logs have been retrieved from remote systems,
+    //   which would allow the experimental subjects to be downed. The duration
+    //   setting above becomes a hard limit to prevent Groningen from waiting
+    //   forever should the external agent crash or otherwise fail to signal
+    //   the end of the experiment.
+    BASIC_SEMAPHORE = 1;
+  }
+  optional PipelineSynchMode pipeline_sync_type = 15 [ default = NONE ];
+
+  // Please note that settings below are work-in-progress. They're not
+  // respected by Groningen at the moment. Please use corresponding flags
+  // instead.
+  //
+  // TODO(team): as soon as support for the flags below is implemented, remove
+  //             the comment above and write some guidelines around adding and
+  //             removing variables to this proto.
+
+  // How long we wait for a health check check
+  optional int32 health_check_timeout = 16 [default = 30000];
+
+  // How long we sleep between health checks.
+  optional int32 health_check_poll_interval = 17 [default = 5000];
+
+  // The type of server that is supposed to be registered at the recipient end.
+  optional string health_check_server_type = 18 [default = "" ];
+
+  // The default deadline in seconds for metric queries.
+  optional int32 metric_query_deadline_secs = 19 [default = 3];
+
+  // The default channel TTL in seconds for metric query channel.
+  optional int32 metric_query_channel_shutdown_delay_secs = 20 [default = 3];
+
+  // The maximum number of times the metric query pipeline will attempt to query.
+  optional int32 metric_query_retry_maximum_count = 21 [default = 3];
+
+  // The initial delay in seconds between retries for metric query failures.
+  optional int32 metric_query_retry_delay_secs = 22 [default = 2];
+
+  // Deadline (ms) of how long to wait for a subject to restart.
+  optional int32 executor_wait_for_one_subject_restart_ms = 23 [default = 30000];
+
+  // Interval (ms) we wait between an iteration of polling subjects
+  optional int32 executor_sleep_btwn_polling_metrics_ms = 24 [default = 60000];
+
+  // The number of extractor threads.
+  optional int32 extractor_number_of_extractor_threads = 25 [default = 10];
+
+  // Maximum number of subjects to restart at once.
+  optional int32 maximum_inflight_subject_restart_count = 26 [default = 1];
+
+  // The deadline (ms) for subject manipulation to occur.
+  optional int32 subject_manipulation_deadline_ms = 27 [default = 30000];
+
+  // File that contains the last experiment.
+  optional string checkpoint_file = 28 [default = "" ];
+
+  // The maximum TTL in seconds for objects in the memory-sensitive caches.
+  optional int32 default_in_memory_cache_ttl = 29 [default = 600000];
+
+  // Divisor for max subjects in-flight for rolling subject group restart.
+  // (maxInFlight = # subjects / this divisor)
+  optional int32 max_subjects_in_flight_fraction = 30 [default = 3];
+
+  // The number of times to shuffle the subjects.
+  optional int32 subject_group_number_of_shuffles = 31 [default = 8];
+
+  // The number of subjects to display in Groningen's HUD.
+  optional int32 subjects_to_display = 32 [default = 5];
+
+  // The path along with base string prefix for the Groningen event log.
+  optional string event_log_prefix = 33
+      [default = "alloc/logs/tmp-groningen_events"];
+
+  // The quantity in bytes that the Groningen event log may grow before being
+  // rotated.
+  optional int32 event_log_rotate_size_bytes = 34 [default = 524288000];
+
+  // The number of seconds that may transpire between Groningen event log
+  // flushing.
+  optional int32 event_log_flush_interval_secs = 35 [default = 60];
+}

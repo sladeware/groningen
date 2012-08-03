@@ -1,0 +1,52 @@
+package org.arbeitspferde.groningen;
+
+import com.google.inject.Singleton;
+
+/**
+ * {@link Build} is a class which is generated during build time and includes pertinent
+ * information such as build timestamp, branch, commit, and user.
+ */
+@Singleton
+public class Build {
+  private static final String BUILD_TIMESTAMP = "@@BUILD_TIMESTAMP@@";
+  private static final String BUILD_BRANCH = "@@BUILD_BRANCH@@";
+  private static final String BUILD_COMMIT = "@@BUILD_COMMIT@@";
+  private static final String BUILD_USER = "@@BUILD_USER@@";
+  private static final String BUILD_UNAME = "@@BUILD_UNAME@@";
+
+  public String getTimestamp() {
+    return BUILD_TIMESTAMP;
+  }
+
+  public String getBranch() {
+    return BUILD_BRANCH;
+  }
+
+  public String getCommit() {
+    return BUILD_COMMIT;
+  }
+
+  public String getUser() {
+    return BUILD_USER;
+  }
+
+  public String getUname() {
+    return BUILD_UNAME;
+  }
+
+  public String getStamp() {
+    return new StringBuilder()
+        .append("Friesian built on ")
+        .append(BUILD_TIMESTAMP)
+        .append(" by ")
+        .append(BUILD_USER)
+        .append(" from branch ")
+        .append(BUILD_BRANCH)
+        .append(" at commit ")
+        .append(BUILD_COMMIT)
+        .append(" on a machine with identity ")
+        .append(BUILD_UNAME)
+        .append(".")
+        .toString();
+  }
+}

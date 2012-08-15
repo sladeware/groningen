@@ -12,7 +12,22 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <protoc.executable>/usr/bin/protoc</protoc.executable>
   </properties>
+
+  <profiles> 
+    <profile> 
+      <id>protoc-config</id> 
+      <activation> 
+        <property> 
+          <name>env.PROTOC_EXECUTABLE</name> 
+        </property> 
+    </activation> 
+      <properties> 
+        <protoc.executable>${env.PROTOC_EXECUTABLE}</protoc.executable> 
+      </properties> 
+    </profile> 
+  </profiles> 
 
   <pluginRepositories>
     <pluginRepository>
@@ -167,7 +182,7 @@
             </execution>
           </executions>
           <configuration>
-            <protocExecutable>/usr/bin/protoc</protocExecutable>
+            <protocExecutable>${protoc.executable}</protocExecutable>
           </configuration>
         </plugin>
         <plugin>

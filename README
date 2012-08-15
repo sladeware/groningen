@@ -1,8 +1,11 @@
 = BUILDING
 
 Groningen requires protobuf version >= 2.4.1. In case you have own locally built
-protobuf, make sure to specify the right path in the field protocExecutable in
-pom.xml file. By default /usr/bin/protoc will be used.
+protobuf, make sure to specify the right path to it as follows:
+
+$ export PROTOC_EXECUTABLE=/somewhere/protobuf-2.4.1/build/bin/protoc
+
+By default /usr/bin/protoc will be used.
 
 Next, get the sources and build it:
 

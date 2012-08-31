@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 @Singleton
 public class SettingsProvider implements Provider<Settings> {
   private static final Logger log = Logger.getLogger(SettingsProvider.class.getCanonicalName());
-  private static final String PROXIED_FLAGS_PACKAGE_WHITELIST_PREFIX = "com.google";
+  private static final String PROXIED_FLAGS_PACKAGE_WHITELIST_PREFIX = "org.arbeitspferde";
 
   private final String[] args;
   private final SupplementalSettingsProcessor supplementalSettingsProcessor;

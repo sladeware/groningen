@@ -21,7 +21,7 @@ import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 
-public class EvaluatedSubjectTest extends ClockedExperimentDbTestCase {
+public class EvaluatedSubjectTest extends ClockedExperimentDbTestCaseBase {
   private SubjectStateBridge subject;
   private double fitness;
   private EvaluatedSubject evaluatedSubject;

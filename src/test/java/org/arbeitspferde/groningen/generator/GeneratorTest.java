@@ -16,7 +16,7 @@
 package org.arbeitspferde.groningen.generator;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
@@ -30,7 +30,7 @@ import org.easymock.EasyMock;
 /**
  * The test for {@link Generator}.
  */
-public class GeneratorTest extends ClockedExperimentDbTestCase {
+public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
   /** The object instance we are testing. */
   private Generator mockGenerator;
   private GroningenConfig mockConfig;

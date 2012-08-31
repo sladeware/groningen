@@ -17,7 +17,7 @@ package org.arbeitspferde.groningen.executor;
 
 
 import org.arbeitspferde.groningen.PipelineSynchronizer;
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -36,7 +36,7 @@ import org.easymock.EasyMock;
 /**
  * The test for {@link Executor}.
  */
-public class ExecutorTest extends ClockedExperimentDbTestCase {
+public class ExecutorTest extends ClockedExperimentDbTestCaseBase {
   /** The object instance we are testing. */
   private Executor executor;
   private ProcessInvoker mockInvoker;

@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class TestingProcessInvoker implements ProcessInvoker {
+public class MockProcessInvoker implements ProcessInvoker {
 
   public List<String> receivedCommands = new LinkedList<String>();
   public Map<String, String> mockResponses = new HashMap<String, String>(10);

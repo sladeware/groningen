@@ -17,7 +17,7 @@ package org.arbeitspferde.groningen.validator;
 
 import com.google.common.collect.Lists;
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * The test for {@link Validator}.
  */
-public class ValidatorTest extends ClockedExperimentDbTestCase {
+public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
   private static final long START_TIME = 1000L;
 
   /** The object instance we are testing. */

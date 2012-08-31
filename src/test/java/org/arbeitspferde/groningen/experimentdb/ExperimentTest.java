@@ -17,7 +17,7 @@ package org.arbeitspferde.groningen.experimentdb;
 
 import com.google.common.collect.ImmutableList;
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Test class for {@link Experiment}.
  */
-public class ExperimentTest extends ClockedExperimentDbTestCase {
+public class ExperimentTest extends ClockedExperimentDbTestCaseBase {
 
   @Override
   protected void setUp() throws Exception {

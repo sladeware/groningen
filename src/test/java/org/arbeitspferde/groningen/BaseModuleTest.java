@@ -285,7 +285,7 @@ public class BaseModuleTest extends TestCase {
     assertNotNull(startTime);
   }
 
-  final void testInjector_ProvisionArgs() {
+  public void testInjector_ProvisionArgs() {
     final String[] args = injector.getInstance(String[].class);
 
     assertNotNull(args);

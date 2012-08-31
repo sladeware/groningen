@@ -16,7 +16,7 @@
 package org.arbeitspferde.groningen.hypothesizer;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
@@ -29,7 +29,7 @@ import org.easymock.IMocksControl;
 /**
  * The test for {@link Hypothesizer}.
  */
-public class HypothesizerTest extends ClockedExperimentDbTestCase {
+public class HypothesizerTest extends ClockedExperimentDbTestCaseBase {
 
   private static final int POPULATION_SIZE = 10;
 

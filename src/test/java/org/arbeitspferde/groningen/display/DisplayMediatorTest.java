@@ -16,7 +16,7 @@
 package org.arbeitspferde.groningen.display;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * The test for {@link DisplayMediator}
  */
-public class DisplayMediatorTest extends ClockedExperimentDbTestCase {
+public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   DisplayMediator mediator;
   Object obj1, obj2;
   String displayString1, displayString2;

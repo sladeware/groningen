@@ -16,7 +16,7 @@
 package org.arbeitspferde.groningen.profiling;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
@@ -28,7 +28,7 @@ import org.arbeitspferde.groningen.utility.Clock;
 /**
  * The test for {@link ProfilingRunnable}.
  */
-public class ProfilingRunnableTest extends ClockedExperimentDbTestCase {
+public class ProfilingRunnableTest extends ClockedExperimentDbTestCaseBase {
   /** The test pipeline stage we are profiling */
   private TestPipelineStage testPipelineState = new TestPipelineStage(clock, monitor);
 

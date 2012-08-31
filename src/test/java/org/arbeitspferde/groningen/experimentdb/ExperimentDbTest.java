@@ -16,7 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 /**
  * The test for {@link ExperimentDb}.
  */
-public class ExperimentDbTest extends ClockedExperimentDbTestCase {
+public class ExperimentDbTest extends ClockedExperimentDbTestCaseBase {
   private static final int TEST_EXPERIMENT_DURATION = 3;
   private static final int TEST_RESTART_THRESHOLD = 7;
 

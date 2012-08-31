@@ -16,13 +16,13 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 
 /**
  * Test class for {@link SubjectStateBridge}.
  */
-public class SubjectStateBridgeTest extends ClockedExperimentDbTestCase {
+public class SubjectStateBridgeTest extends ClockedExperimentDbTestCaseBase {
   /*
    * TODO(team): Once megastore dependency was removed we need to put more tests
    * to cover Subject class.
@@ -31,5 +31,9 @@ public class SubjectStateBridgeTest extends ClockedExperimentDbTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+  }
+  
+  public void testDummy() {
+    //TODO(team): remove as soon as we have some real tests here
   }
 }

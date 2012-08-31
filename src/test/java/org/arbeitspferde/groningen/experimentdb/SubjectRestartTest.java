@@ -16,13 +16,13 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 
-import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCase;
+import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
 
 /**
  * The test for {@link SubjectRestart}.
  */
-public class SubjectRestartTest extends ClockedExperimentDbTestCase {
+public class SubjectRestartTest extends ClockedExperimentDbTestCaseBase {
   private static final int TEST_EXPERIMENT_DURATION = 3;
 
   /** The object we are testing */

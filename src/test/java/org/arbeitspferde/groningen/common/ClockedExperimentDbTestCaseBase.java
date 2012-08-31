@@ -31,7 +31,7 @@ import org.arbeitspferde.groningen.utility.open.NullOutputLogStreamFactory;
 /**
  * Test case base class for tests using {@link ExperimentDb} and {@link Clock}.
  */
-public class ClockedExperimentDbTestCase extends TestCase {
+public class ClockedExperimentDbTestCaseBase extends TestCase {
   /** Contants used for mocked clock source */
   protected static final long DEFAULT_TIME_MS = 1000000000L;
   protected static final long INCREMENT_MS = 1234L;
@@ -61,5 +61,5 @@ public class ClockedExperimentDbTestCase extends TestCase {
       @Override
       public void init() {}
     };
-  }
+  }  
 }

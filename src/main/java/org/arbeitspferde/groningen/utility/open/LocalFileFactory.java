@@ -33,60 +33,60 @@ import com.google.inject.Singleton;
  */
 @Singleton
 public class LocalFileFactory implements FileFactory {
-	private static final Logger log = Logger.getLogger(LocalFileFactory.class.getCanonicalName());
+  private static final Logger log = Logger.getLogger(LocalFileFactory.class.getCanonicalName());
 
-	@Override
-	public AbstractFile forFile(String path, String mode) throws IOException {
-		log.info(String.format("Creating LocalFile proxy for '%s' '%s'.", path, mode));
-		return new LocalFileProxy(path, mode);
-	}
+  @Override
+  public AbstractFile forFile(String path, String mode) throws IOException {
+    log.info(String.format("Creating LocalFile proxy for '%s' '%s'.", path, mode));
+    return new LocalFileProxy(path, mode);
+  }
 
-	@Override
-	public AbstractFile forFile(String path) throws IOException {
-		log.info(String.format("Creating LocalFile proxy for '%s' 'r'", path));
-		return new LocalFileProxy(path, "r");
-	}
+  @Override
+  public AbstractFile forFile(String path) throws IOException {
+    log.info(String.format("Creating LocalFile proxy for '%s' 'r'", path));
+    return new LocalFileProxy(path, "r");
+  }
 
-	@NotThreadSafe
-	private class LocalFileProxy implements AbstractFile {
-	  private final String path;
-		private final String accessMode;
+  @NotThreadSafe
+  private class LocalFileProxy implements AbstractFile {
+    private final String path;
+    private final String accessMode;
 
-		public LocalFileProxy(final String path, final String accessMode) {
-			this.path = path;
-			this.accessMode = accessMode;
-		}
+    public LocalFileProxy(final String path, final String accessMode) {
+      this.path = path;
+      this.accessMode = accessMode;
+    }
 
-		@Override
-		public boolean delete() throws IOException, SecurityException {
-			// TODO Auto-generated method stub
-			return false;
-		}
+    @Override
+    public boolean delete() throws IOException, SecurityException {
+      // TODO Auto-generated method stub
+      return false;
+    }
 
-		@Override
-		public boolean exists() throws IOException {
-			// TODO Auto-generated method stub
-			return false;
-		}
+    @Override
+    public boolean exists() throws IOException {
+      // TODO Auto-generated method stub
+      return false;
+    }
 
-		@Override
-		public OutputStream outputStreamFor() throws IOException {
-			// TODO Auto-generated method stub
-			return null;
-		}
+    @Override
+    public OutputStream outputStreamFor() throws IOException {
+      // TODO Auto-generated method stub
+      return null;
+    }
 
-		@Override
-		public InputStream inputStreamFor() throws IOException {
-			// TODO Auto-generated method stub
-			return null;
-		}
+    @Override
+    public InputStream inputStreamFor() throws IOException {
+      // TODO Auto-generated method stub
+      return null;
+    }
 
-		@Override
-		public void renameTo(String newName) throws IOException {
-			// TODO Auto-generated method stub
+    @Override
+    public void renameTo(String newName) throws IOException {
+      // TODO Auto-generated method stub
 
-		}
+    }
 
-	}
+  }
 
 }

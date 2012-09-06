@@ -15,17 +15,20 @@
 
 package org.arbeitspferde.groningen.utility.open;
 
+import com.google.inject.Singleton;
+
+import org.arbeitspferde.groningen.utility.AbstractFile;
+import org.arbeitspferde.groningen.utility.FileFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import javax.annotation.concurrent.NotThreadSafe;
-
-import org.arbeitspferde.groningen.utility.AbstractFile;
-import org.arbeitspferde.groningen.utility.FileFactory;
-
-import com.google.inject.Singleton;
 
 /**
  * Produce {@link AbstractFile}s that proxy {@link LocalFile} and
@@ -37,54 +40,47 @@ public class LocalFileFactory implements FileFactory {
 
   @Override
   public AbstractFile forFile(String path, String mode) throws IOException {
-    log.info(String.format("Creating LocalFile proxy for '%s' '%s'.", path, mode));
-    return new LocalFileProxy(path, mode);
+    log.info(String.format("Creating LocalFile proxy for '%s'.", path));
+    return new LocalFileProxy(path);
   }
 
   @Override
   public AbstractFile forFile(String path) throws IOException {
-    log.info(String.format("Creating LocalFile proxy for '%s' 'r'", path));
-    return new LocalFileProxy(path, "r");
+    log.info(String.format("Creating LocalFile proxy for '%s'."));
+    return new LocalFileProxy(path);
   }
 
   @NotThreadSafe
   private class LocalFileProxy implements AbstractFile {
-    private final String path;
-    private final String accessMode;
+    private final File file;
 
-    public LocalFileProxy(final String path, final String accessMode) {
-      this.path = path;
-      this.accessMode = accessMode;
+    public LocalFileProxy(final String path) {
+      this.file = new File(path);
     }
 
     @Override
     public boolean delete() throws IOException, SecurityException {
-      // TODO Auto-generated method stub
-      return false;
+      return file.delete();
     }
 
     @Override
     public boolean exists() throws IOException {
-      // TODO Auto-generated method stub
-      return false;
+      return file.exists();
     }
 
     @Override
     public OutputStream outputStreamFor() throws IOException {
-      // TODO Auto-generated method stub
-      return null;
+      return new FileOutputStream(file);
     }
 
     @Override
     public InputStream inputStreamFor() throws IOException {
-      // TODO Auto-generated method stub
-      return null;
+      return new FileInputStream(file);
     }
 
     @Override
     public void renameTo(String newName) throws IOException {
-      // TODO Auto-generated method stub
-
+      file.renameTo(new File(newName));
     }
 
   }

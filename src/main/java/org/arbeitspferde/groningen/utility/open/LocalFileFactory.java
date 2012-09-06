@@ -40,13 +40,13 @@ public class LocalFileFactory implements FileFactory {
 
   @Override
   public AbstractFile forFile(String path, String mode) throws IOException {
-    log.info(String.format("Creating LocalFile proxy for '%s'.", path));
+    log.info(String.format("Creating LocalFile proxy for '%s'. Ignoring mode.", path));
     return new LocalFileProxy(path);
   }
 
   @Override
   public AbstractFile forFile(String path) throws IOException {
-    log.info(String.format("Creating LocalFile proxy for '%s'."));
+    log.info(String.format("Creating LocalFile proxy for '%s'.", path));
     return new LocalFileProxy(path);
   }
 

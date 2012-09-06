@@ -45,8 +45,8 @@ import org.arbeitspferde.groningen.utility.InputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.OutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.BackgroundServices;
+import org.arbeitspferde.groningen.utility.open.LocalFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullFileEventNotifierFactory;
-import org.arbeitspferde.groningen.utility.open.NullFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullInputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.NullMetricExporter;
 import org.arbeitspferde.groningen.utility.open.NullOutputLogStreamFactory;
@@ -72,7 +72,7 @@ public class OpenModule extends AbstractModule {
     bind(MetricExporter.class).to(NullMetricExporter.class);
     bind(SupplementalSettingsProcessor.class).to(NullSupplementalSettingsProcessor.class);
     bind(SubjectInterrogator.class).to(NullSubjectInterrogator.class);
-    bind(FileFactory.class).to(NullFileFactory.class);
+    bind(FileFactory.class).to(LocalFileFactory.class);
     bind(FileEventNotifierFactory.class).to(NullFileEventNotifierFactory.class);
     bind(InputLogStreamFactory.class).to(NullInputLogStreamFactory.class);
     bind(OutputLogStreamFactory.class).to(NullOutputLogStreamFactory.class);

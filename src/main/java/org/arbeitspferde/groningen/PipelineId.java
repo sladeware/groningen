@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 
 /**
- * Id used to uniquely identify pipelines
+ * Id used to uniquely identify pipelines.
  */
 @PipelineScoped
 public class PipelineId implements Comparable<PipelineId> {

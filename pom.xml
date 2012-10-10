@@ -8,6 +8,10 @@
   <packaging>jar</packaging>
 
   <name>Groningen</name>
+  <description>Groningen is a framework to run automated experiments on servers
+  that run on the Java Virtual Machine (JVM) such that the most optimal JVM
+  settings outcome can be reached with the least amount of human effort and time
+  while maximizing safety.</description>
   <url>http://code.google.com/p/groningen</url>
 
   <properties>
@@ -201,6 +205,25 @@
               </fileset>
             </filesets>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.8</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+            <docencoding>UTF-8</docencoding>
+            <linksource>true</linksource>
+          </configuration>
+          <executions>
+            <execution>
+              <id>generate-javadoc-site-report</id>
+              <phase>site</phase>
+              <goals>
+                <goal>javadoc</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
   </build>

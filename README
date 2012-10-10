@@ -14,4 +14,4 @@ $ mvn assembly:single
 
 = RUNNING
 
-$ java -jar target/groningen-1.0-SNAPSHOT-jar-with-dependencies.jar 
+$ java -jar target/groningen-1.0-SNAPSHOT-jar-with-dependencies.jar

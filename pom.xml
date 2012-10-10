@@ -15,19 +15,19 @@
     <protoc.executable>/usr/bin/protoc</protoc.executable>
   </properties>
 
-  <profiles> 
-    <profile> 
-      <id>protoc-config</id> 
-      <activation> 
-        <property> 
-          <name>env.PROTOC_EXECUTABLE</name> 
-        </property> 
-    </activation> 
-      <properties> 
-        <protoc.executable>${env.PROTOC_EXECUTABLE}</protoc.executable> 
-      </properties> 
-    </profile> 
-  </profiles> 
+  <profiles>
+    <profile>
+      <id>protoc-config</id>
+      <activation>
+        <property>
+          <name>env.PROTOC_EXECUTABLE</name>
+        </property>
+    </activation>
+      <properties>
+        <protoc.executable>${env.PROTOC_EXECUTABLE}</protoc.executable>
+      </properties>
+    </profile>
+  </profiles>
 
   <pluginRepositories>
     <pluginRepository>

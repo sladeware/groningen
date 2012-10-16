@@ -20,14 +20,10 @@ import com.google.common.util.concurrent.Service.State;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 
-import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SystemAdapter;
 import org.arbeitspferde.groningen.config.ConfigManager;
-import org.arbeitspferde.groningen.config.GroningenConfig;
-import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.config.ProtoBufConfigManager;
 import org.arbeitspferde.groningen.config.ProtoBufConfigManagerFactory;
 import org.arbeitspferde.groningen.config.StubConfigManager;
@@ -53,13 +49,11 @@ public class GroningenWorkhorse implements Runnable {
   private static final Logger log =
       Logger.getLogger(GroningenWorkhorse.class.getCanonicalName());
 
-  private final Provider<Pipeline> pipelineProvider;
   private final Service backgroundServices;
-    private final SystemAdapter systemAdapter;
-  private final BlockScope pipelineScope;
+  private final SystemAdapter systemAdapter;
   private final Settings settings;
-  private final PipelineIdGenerator pipelineIdGenerator;
   private final ProtoBufConfigManagerFactory protoBufConfigManagerFactory;
+  private final PipelineManager pipelineManager;
   private final Build build;
 
   @Inject
@@ -67,14 +61,13 @@ public class GroningenWorkhorse implements Runnable {
       final PipelineIdGenerator pipelineIdGenerator,
       final Service backgroundServices,
       final SystemAdapter systemAdapter,
-      @Named(PipelineScoped.SCOPE_NAME) final BlockScope pipelineScope,
-      final Settings settings, final ProtoBufConfigManagerFactory protoBufConfigManagerFactory,
+      final Settings settings,
+      final PipelineManager pipelineManager,
+      final ProtoBufConfigManagerFactory protoBufConfigManagerFactory,
       final Build build) {
-    this.pipelineProvider = pipelineProvider;
-    this.pipelineIdGenerator = pipelineIdGenerator;
     this.backgroundServices = backgroundServices;
     this.systemAdapter = systemAdapter;
-    this.pipelineScope = pipelineScope;
+    this.pipelineManager = pipelineManager;
     this.settings = settings;
     this.protoBufConfigManagerFactory = protoBufConfigManagerFactory;
     this.build = build;
@@ -157,19 +150,17 @@ public class GroningenWorkhorse implements Runnable {
 
       ConfigManager configManager = createConfigManager(settings.getConfigFileName());
 
-      GroningenConfig firstConfig = configManager.queryConfig();
-      PipelineId pipelineId = pipelineIdGenerator.generatePipelineId(firstConfig);
-
-      pipelineScope.enter();
+      PipelineId pipelineId = pipelineManager.startPipeline(configManager, true);
+      Pipeline pipeline = pipelineManager.findPipelineById(pipelineId);
+      if (pipeline == null) {
+        throw new RuntimeException(String.format("Pipeline %s died almost immediately",
+            pipelineId.toString()));
+      }
+      
       try {
-        pipelineScope.seed(PipelineId.class, pipelineId);
-        pipelineScope.seed(ConfigManager.class, configManager);
-
-        Pipeline pipeline = pipelineProvider.get();
-
-        pipeline.run();
-      } finally {
-        pipelineScope.exit();
+        pipeline.joinPipeline();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
 
       systemAdapter.exit(0);

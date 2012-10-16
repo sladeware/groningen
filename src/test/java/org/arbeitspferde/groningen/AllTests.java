@@ -18,7 +18,6 @@ package org.arbeitspferde.groningen;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.arbeitspferde.groningen.PipelineIdGeneratorTest;
 import org.arbeitspferde.groningen.common.CmdProcessTest;
 import org.arbeitspferde.groningen.common.EvaluatedSubjectTest;
 import org.arbeitspferde.groningen.common.StatisticsTest;
@@ -61,6 +60,7 @@ public class AllTests extends TestSuite{
     suite.addTestSuite(BaseModuleTest.class);
     suite.addTestSuite(PipelineIdGeneratorTest.class);
     suite.addTestSuite(PipelineIdTest.class);
+    suite.addTestSuite(PipelineManagerTest.class);
     suite.addTestSuite(ServicesModuleTest.class);
     
     // org.arbeitspferde.groningen.common tests

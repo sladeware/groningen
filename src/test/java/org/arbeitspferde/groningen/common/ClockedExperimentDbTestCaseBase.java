@@ -19,6 +19,7 @@ package org.arbeitspferde.groningen.common;
 import junit.framework.TestCase;
 
 import org.arbeitspferde.groningen.LocalFileFactory;
+import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
@@ -53,7 +54,7 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
 
     experimentDb = new ExperimentDb(clock, new LocalFileFactory(),
         new NullInputLogStreamFactory(), new NullOutputLogStreamFactory());
-    monitor = new DisplayMediator(clock, experimentDb);
+    monitor = new DisplayMediator(clock, experimentDb, new PipelineId("pipeline_id"));
     metricExporter = new MetricExporter() {
       @Override
       public void register(String name, String description, MetricListener<?> metric) {}

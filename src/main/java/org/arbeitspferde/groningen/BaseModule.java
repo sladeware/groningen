@@ -77,12 +77,12 @@ public class BaseModule extends AbstractModule {
       .toInstance(pipelineIterationScope);
 
     // Singleton bindings
-    bind(Pipeline.class).in(Singleton.class);
     bind(GroningenServlet.class).in(Singleton.class);
     bind(Clock.class).to(SystemClock.class);
     bind(PipelineIdGenerator.class).in(Singleton.class);
 
     // Pipeline-scoped bindings
+    bind(Pipeline.class).in(PipelineScoped.class);
     bind(PipelineId.class)
       .toProvider(SimpleScope.<PipelineId>seededKeyProvider())
       .in(PipelineScoped.class);

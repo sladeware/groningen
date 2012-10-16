@@ -16,11 +16,9 @@
 package org.arbeitspferde.groningen.display;
 
 
+import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
-import org.arbeitspferde.groningen.display.DisplayMediator;
-import org.arbeitspferde.groningen.display.Displayable;
-import org.arbeitspferde.groningen.display.DisplayableObject;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
@@ -39,7 +37,7 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    mediator = new DisplayMediator(clock, experimentDb);
+    mediator = new DisplayMediator(clock, experimentDb, new PipelineId("pipeline_id"));
     experimentDb.nextExperimentId();
   }
 

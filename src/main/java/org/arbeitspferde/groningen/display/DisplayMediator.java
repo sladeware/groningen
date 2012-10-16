@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 
+import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
@@ -48,6 +49,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
 
   private final Clock clock;
   private final ExperimentDb experimentDb;
+  private final PipelineId pipelineId;
 
   /** List of objects to be monitored */
   @VisibleForTesting final List<Displayable> monitoredObjects =
@@ -90,12 +92,14 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   private DisplayClusters displayableClusters;
 
   @Inject
-  public DisplayMediator (final Clock clock, final ExperimentDb experimentDb) {
+  public DisplayMediator (final Clock clock, final ExperimentDb experimentDb,
+      final PipelineId pipelineId) {
     Preconditions.checkNotNull(clock, "clock may not be null.");
     Preconditions.checkNotNull(experimentDb, "experimentDb may not be null.");
 
     this.clock = clock;
     this.experimentDb = experimentDb;
+    this.pipelineId = pipelineId;
   }
 
   /**
@@ -313,6 +317,8 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   public String toHtml() {
     StringBuilder builder = new StringBuilder();
 
+    builder.append("<p><H2>Pipeline " + pipelineId.toString() + "</H2></p>");
+    
     // display warnings
     if (!warnings.isEmpty()) {
       builder.append("<p><H2>WARNINGS!</H2></p>");

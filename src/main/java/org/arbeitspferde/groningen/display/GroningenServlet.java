@@ -17,13 +17,15 @@ package org.arbeitspferde.groningen.display;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import org.arbeitspferde.groningen.Pipeline;
+import org.arbeitspferde.groningen.PipelineId;
+import org.arbeitspferde.groningen.PipelineManager;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,16 +38,17 @@ import javax.servlet.http.HttpServletResponse;
 @Singleton
 public class GroningenServlet extends HttpServlet {
   @VisibleForTesting boolean isInitialized = false;
-  private final Provider<Pipeline> pipelineProvider;
 
+  private final PipelineManager pipelineManager;
+  
   /**
    * Constructor for the GroningenServlet class
    *
    * @param objectToDisplayProvider a {@link Displayable}
    */
   @Inject
-  public GroningenServlet(final Provider<Pipeline> pipelineProvider) {
-    this.pipelineProvider = pipelineProvider;
+  public GroningenServlet(final PipelineManager pipelineManager) {
+    this.pipelineManager = pipelineManager;
     isInitialized = true;
   }
 
@@ -73,7 +76,14 @@ public class GroningenServlet extends HttpServlet {
     out.println("</head>");
 
     out.println("<body>");
-    out.println("<p>" + pipelineProvider.get().getDisplayable().toHtml() + "</p>");
+
+    Map<PipelineId, Pipeline> pipelinesSnapshot = pipelineManager.getAllPipelines();
+    for (PipelineId id : pipelinesSnapshot.keySet()) {
+      Pipeline pipeline = pipelinesSnapshot.get(id);
+      out.println("<p>" + pipeline.getDisplayable().toHtml() + "</p>");
+      out.println("<hr/>");
+    }
+
     out.println("</body>");
     out.println("</html>");
   }

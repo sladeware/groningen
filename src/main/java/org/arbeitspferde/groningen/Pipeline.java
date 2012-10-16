@@ -25,6 +25,7 @@ import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
+import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.display.Displayable;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.generator.SubjectShuffler;
@@ -33,6 +34,7 @@ import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +46,7 @@ import java.util.logging.Logger;
  * to be used simultaneously (see pipelineIterationCount metrics, for example). Explicitly
  * marked this class with {@link Singleton} annotation for a while.
  */
-@Singleton
+@PipelineScoped
 public class Pipeline {
   private static final Logger log = Logger.getLogger(Pipeline.class.getCanonicalName());
 
@@ -74,9 +76,15 @@ public class Pipeline {
   private final Provider<PipelineIteration> pipelineIterationProvider;
 
   private final PipelineStageDisplayer pipelineStageDisplayer;
+  
+  private final Thread pipelineThread;
 
   /** Counts the number of pipeline iterations */
   private AtomicLong pipelineIterationCount = new AtomicLong(1);
+  
+  private PipelineIteration currentIteration;
+
+  private AtomicBoolean isKilled;
 
   private static class PipelineStageDisplayer {
     private PipelineIteration currentIteration;
@@ -90,6 +98,10 @@ public class Pipeline {
     public synchronized String toString() {
       return stages[currentIteration != null ? currentIteration.getStage() : 0];
     }
+  }
+  
+  private synchronized void setCurrentIteration(PipelineIteration currentIteration) {
+    this.currentIteration = currentIteration;
   }
 
   @Inject
@@ -112,7 +124,9 @@ public class Pipeline {
     this.configManager = configManager;
     this.pipelineIterationProvider = pipelineIterationProvider;
     this.pipelineId = pipelineId;
+    this.pipelineThread = Thread.currentThread();
 
+    isKilled = new AtomicBoolean();
     pipelineStageDisplayer = new PipelineStageDisplayer();
 
     metricExporter.register(
@@ -125,6 +139,18 @@ public class Pipeline {
     return pipelineId;
   }
 
+  public synchronized PipelineIteration currentIteration() {
+    return currentIteration;
+  }
+
+  public void kill() {
+    isKilled.set(true);
+  }
+
+  public void joinPipeline() throws InterruptedException {
+    pipelineThread.join();
+  }
+  
   /**
    * Ready the monitoring.
    */
@@ -154,6 +180,8 @@ public class Pipeline {
            * should be created per-pipeline
            */
           PipelineIteration iteration = pipelineIterationProvider.get();
+          setCurrentIteration(currentIteration);
+          
           pipelineStageDisplayer.setCurrentIteration(iteration);
           monitor.maxIndividuals(subjectsToDisplay.get());
 
@@ -179,7 +207,7 @@ public class Pipeline {
           pipelineIterationScope.exit();
         }
         pipelineIterationCount.incrementAndGet();
-      } while (notCompleted);
+      } while (notCompleted  && !isKilled.get());
     } catch (Exception e) {
       log.log(Level.SEVERE, "Fatal error", e);
       throw new RuntimeException(e);

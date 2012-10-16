@@ -62,6 +62,7 @@ public class BaseModuleTest extends TestCase {
   private Injector injector;
   private BlockScope pipelineScope;
   private BlockScope pipelineIterationScope;
+  private PipelineId pipelineId;
   private GroningenConfig stubConfig;
 
   @Override
@@ -74,7 +75,7 @@ public class BaseModuleTest extends TestCase {
         Names.named(PipelineScoped.SCOPE_NAME)));
     pipelineIterationScope = injector.getInstance(Key.get(BlockScope.class,
         Names.named(PipelineIterationScoped.SCOPE_NAME)));
-
+    pipelineId = new PipelineId("pipelineId");
     stubConfig = new StubConfigManager.StubConfig() {
       @Override
       public GroningenParamsOrBuilder getParamBlock() {
@@ -109,6 +110,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionDisplayMediator() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       final DisplayMediator displayMediator = injector.getInstance(DisplayMediator.class);
 
       assertNotNull(displayMediator);
@@ -120,6 +123,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionDisplayable() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       final Displayable displayable = injector.getInstance(Displayable.class);
 
       assertNotNull(displayable);
@@ -131,6 +136,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionMonitor() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       final MonitorGroningen monitor = injector.getInstance(MonitorGroningen.class);
 
       assertNotNull(monitor);
@@ -142,6 +149,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionMonitorAndDisplayableAsPerPipelineObjects() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       final MonitorGroningen monitor = injector.getInstance(MonitorGroningen.class);
       final Displayable displayable = injector.getInstance(Displayable.class);
 
@@ -154,6 +163,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionExperimentDb() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       final ExperimentDb experimentDb = injector.getInstance(ExperimentDb.class);
 
       assertNotNull(experimentDb);
@@ -165,6 +176,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionGenerator() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       pipelineIterationScope.enter();
       GroningenConfigParamsModule.nailConfigToScope(stubConfig, pipelineIterationScope);
 
@@ -188,6 +201,8 @@ public class BaseModuleTest extends TestCase {
   public void testInjector_ProvisionSubjectInterrogator() {
     pipelineScope.enter();
     try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
+      
       pipelineIterationScope.enter();
       GroningenConfigParamsModule.nailConfigToScope(stubConfig, pipelineIterationScope);
       try {
@@ -251,8 +266,6 @@ public class BaseModuleTest extends TestCase {
   }
 
   public void testInjector_ProvisionPipeline() {
-    final PipelineId mockPipelineId =
-        EasyMock.createNiceMock(PipelineId.class);
     final ConfigManager mockConfigManager =
         EasyMock.createNiceMock(ConfigManager.class);
     final PipelineSynchronizer mockSynchronizer =
@@ -262,7 +275,7 @@ public class BaseModuleTest extends TestCase {
 
     pipelineScope.enter();
     try {
-      pipelineScope.seed(PipelineId.class, mockPipelineId);
+      pipelineScope.seed(PipelineId.class, pipelineId);
       pipelineScope.seed(ConfigManager.class, mockConfigManager);
       pipelineScope.seed(PipelineSynchronizer.class, mockSynchronizer);
 

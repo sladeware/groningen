@@ -15,12 +15,10 @@
 
 package org.arbeitspferde.groningen.display;
 
-import com.google.inject.Provider;
-
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.Pipeline;
-import org.arbeitspferde.groningen.display.GroningenServlet;
+import org.arbeitspferde.groningen.PipelineManager;
+import org.easymock.EasyMock;
 
 /**
  * The test for {@link GroningenServlet}
@@ -28,13 +26,10 @@ import org.arbeitspferde.groningen.display.GroningenServlet;
 public class GroningenServletTest extends TestCase {
   /* Tests the constructor */
   public void testServletInitialization() {
-    GroningenServlet srvlet = new GroningenServlet(new Provider<Pipeline>() {
-      @Override
-      public Pipeline get() {
-        return null;
-      }
-    });
-    assertTrue(srvlet.isInitialized);
+    PipelineManager pipelineManager = EasyMock.createMock(PipelineManager.class);
+    GroningenServlet servlet = new GroningenServlet(pipelineManager);
+
+    assertTrue(servlet.isInitialized);
   }
 
 }

@@ -15,3 +15,61 @@ $ mvn assembly:single
 = RUNNING
 
 $ java -jar target/groningen-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+= USING ECLIPSE
+Be sure to export »M2_REPO« to »${HOME}/.m2/repository« before invoking
+Eclipse.  This is due to the nature in which Maven exports the project object
+model to Eclipse's native format.
+
+$ M2_REPO="${HOME}/.m2/repository" eclipse
+
+The Eclipse definition can be regenerated as such:
+
+$ mvn eclipse:eclipse
+
+= USING INTELLIJ IDEA
+Give the MAVEN SUNDRIES section below a read.
+
+$ mvn dependency:sources
+$ mvn dependency:resolve -Dclassifier=javadoc
+
+IDEA should be ready to import the project now.
+
+= MAVEN SUNDRIES
+== Built With
+$ mvn --version
+Apache Maven 2.2.1 (rdebian-1)
+Java version: 1.6.0_20
+Java home: /usr/lib/jvm/java-6-openjdk/jre
+Default locale: de_DE, platform encoding: UTF-8
+OS name: "linux" version: "2.6.32-41-generic" arch: "amd64" Family: "unix"
+
+== Useful Source Assistance with ${HOME}/.m2/settings.xml
+"""<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <localRepository/>
+  <interactiveMode/>
+  <usePluginRegistry/>
+  <offline/>
+  <pluginGroups/>
+  <servers/>
+  <mirrors/>
+  <proxies/>
+  <profiles>
+  <profile>
+      <id>downloadSources</id>
+      <properties>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>           
+      </properties>
+  </profile>
+  </profiles>
+  
+  <activeProfiles>
+    <activeProfile>downloadSources</activeProfile>
+  </activeProfiles>
+</settings>
+"""
+

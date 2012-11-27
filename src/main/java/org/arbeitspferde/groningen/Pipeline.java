@@ -162,6 +162,10 @@ public class Pipeline {
            "Current pipeline stage");
   }
 
+  public GroningenConfig getConfig() {
+    return configManager.queryConfig();
+  }
+
   public void run() {
     try {
       GroningenConfig firstConfig = configManager.queryConfig();

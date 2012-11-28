@@ -19,7 +19,17 @@
     <protoc.executable>/usr/bin/protoc</protoc.executable>
   </properties>
 
-  <profiles>
+    <repositories>
+      <repository>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+        <id>com.matttproud</id>
+          <url>https://github.com/matttproud/com.matttproud-maven-repository/raw/master/snapshots</url>
+      </repository>
+    </repositories>
+
+    <profiles>
     <profile>
       <id>protoc-config</id>
       <activation>
@@ -112,6 +122,11 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
+      <dependency>
+          <groupId>com.matttproud</groupId>
+          <artifactId>jawzall</artifactId>
+          <version>1</version>
+      </dependency>
   </dependencies>
 
   <build>

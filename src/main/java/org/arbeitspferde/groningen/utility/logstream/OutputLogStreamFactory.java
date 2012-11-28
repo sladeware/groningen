@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility;
+package org.arbeitspferde.groningen.utility.logstream;
 import java.io.IOException;
 import java.io.OutputStream;
 

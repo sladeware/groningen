@@ -13,26 +13,19 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility.open;
+package org.arbeitspferde.groningen.utility.logstream;
 import com.google.inject.Singleton;
 
-import org.arbeitspferde.groningen.utility.OutputLogStream;
-import org.arbeitspferde.groningen.utility.OutputLogStreamFactory;
-
-import java.io.OutputStream;
+import java.io.InputStream;
 
 /**
- * A simple factory that does NOT yet create {@link OutputLogStream} instances.
+ * A simple factory that does NOT yet create {@link InputLogStream} instances.
  */
 @Singleton
-public class NullOutputLogStreamFactory implements OutputLogStreamFactory {
-  @Override
-  public OutputLogStream forStream(final OutputStream stream) {
-    throw new RuntimeException("Not implemented.");
-  }
+public class NullInputLogStreamFactory implements InputLogStreamFactory {
 
   @Override
-  public OutputLogStream rotatingStreamForSpecification(final Specification specification) {
+  public InputLogStream forStream(InputStream inputStream) {
     throw new RuntimeException("Not implemented.");
   }
 }

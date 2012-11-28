@@ -13,19 +13,15 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility;
-import java.io.Closeable;
-import java.io.Flushable;
+package org.arbeitspferde.groningen.utility.logstream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import javax.annotation.concurrent.NotThreadSafe;
+import java.io.InputStream;
 
 /**
- * A {@link OutputLogStream} is responsible for encapsulating byte-encoded data emissions in a
- * record-oriented format that can be processed ex post facto.
+ * {@link InputLogStreamFactory} is responsible for provisioning {@link InputLogStream} instances
+ * to the user subject to the underlying storage implementation and methodology.  It may be as
+ * simple as a local file or some clustered store.
  */
-@NotThreadSafe
-public interface OutputLogStream extends Flushable, Closeable {
-  public void write(final ByteBuffer entry) throws IOException;
+public interface InputLogStreamFactory {
+  public InputLogStream forStream(final InputStream inputStream) throws IOException;
 }

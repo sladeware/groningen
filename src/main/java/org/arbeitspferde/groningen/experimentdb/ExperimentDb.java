@@ -30,10 +30,10 @@ import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.AbstractFile;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.FileFactory;
-import org.arbeitspferde.groningen.utility.InputLogStream;
-import org.arbeitspferde.groningen.utility.InputLogStreamFactory;
-import org.arbeitspferde.groningen.utility.OutputLogStream;
-import org.arbeitspferde.groningen.utility.OutputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.InputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.InputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 
 import java.io.IOException;
 import java.io.InputStream;

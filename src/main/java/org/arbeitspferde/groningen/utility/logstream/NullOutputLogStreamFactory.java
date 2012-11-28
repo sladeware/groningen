@@ -13,13 +13,23 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility;
-import java.io.Closeable;
-import java.nio.ByteBuffer;
+package org.arbeitspferde.groningen.utility.logstream;
+import com.google.inject.Singleton;
+
+import java.io.OutputStream;
 
 /**
- * A {@link InputLogStream} is responsible for decoding record-oriented emissions for ex post facto
- * analysis.
+ * A simple factory that does NOT yet create {@link OutputLogStream} instances.
  */
-public interface InputLogStream extends Iterable<ByteBuffer>, Closeable {
+@Singleton
+public class NullOutputLogStreamFactory implements OutputLogStreamFactory {
+  @Override
+  public OutputLogStream forStream(final OutputStream stream) {
+    throw new RuntimeException("Not implemented.");
+  }
+
+  @Override
+  public OutputLogStream rotatingStreamForSpecification(final Specification specification) {
+    throw new RuntimeException("Not implemented.");
+  }
 }

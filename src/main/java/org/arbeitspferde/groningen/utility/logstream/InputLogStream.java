@@ -13,15 +13,13 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility;
-import java.io.IOException;
-import java.io.InputStream;
+package org.arbeitspferde.groningen.utility.logstream;
+import java.io.Closeable;
+import java.nio.ByteBuffer;
 
 /**
- * {@link InputLogStreamFactory} is responsible for provisioning {@link InputLogStream} instances
- * to the user subject to the underlying storage implementation and methodology.  It may be as
- * simple as a local file or some clustered store.
+ * A {@link InputLogStream} is responsible for decoding record-oriented emissions for ex post facto
+ * analysis.
  */
-public interface InputLogStreamFactory {
-  public InputLogStream forStream(final InputStream inputStream) throws IOException;
+public interface InputLogStream extends Iterable<ByteBuffer>, Closeable {
 }

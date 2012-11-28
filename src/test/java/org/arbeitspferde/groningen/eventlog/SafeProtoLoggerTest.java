@@ -18,9 +18,8 @@ package org.arbeitspferde.groningen.eventlog;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.proto.Event;
-import org.arbeitspferde.groningen.utility.OutputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.easymock.EasyMock;
 
 import java.nio.ByteBuffer;

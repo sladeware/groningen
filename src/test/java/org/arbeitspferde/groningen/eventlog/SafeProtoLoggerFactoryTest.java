@@ -21,11 +21,9 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.arbeitspferde.groningen.Helper;
-import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
-import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerFactory;
 import org.arbeitspferde.groningen.proto.Event;
-import org.arbeitspferde.groningen.utility.OutputLogStream;
-import org.arbeitspferde.groningen.utility.OutputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 import org.easymock.EasyMock;
 
 import java.io.File;

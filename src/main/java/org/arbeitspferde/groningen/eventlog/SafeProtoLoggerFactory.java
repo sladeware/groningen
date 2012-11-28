@@ -22,9 +22,9 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 
 import org.arbeitspferde.groningen.proto.Event;
-import org.arbeitspferde.groningen.utility.OutputLogStream;
-import org.arbeitspferde.groningen.utility.OutputLogStreamFactory;
-import org.arbeitspferde.groningen.utility.OutputLogStreamFactory.Specification;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory.Specification;
 
 import java.io.IOException;
 import java.util.Timer;

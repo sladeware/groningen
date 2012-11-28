@@ -26,8 +26,8 @@ import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 import org.arbeitspferde.groningen.utility.PinnedClock;
-import org.arbeitspferde.groningen.utility.open.NullInputLogStreamFactory;
-import org.arbeitspferde.groningen.utility.open.NullOutputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.NullInputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.NullOutputLogStreamFactory;
 
 /**
  * Test case base class for tests using {@link ExperimentDb} and {@link Clock}.

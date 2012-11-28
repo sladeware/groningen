@@ -18,7 +18,7 @@ package org.arbeitspferde.groningen.eventlog;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.GeneratedMessage;
 
-import org.arbeitspferde.groningen.utility.OutputLogStream;
+import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 
 import java.io.Flushable;
 import java.io.IOException;
@@ -28,9 +28,13 @@ import java.util.logging.Logger;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+/*
+ [OutputLogStream] -> [SafeProtoLogger]
+ */
+
 /**
  * A generic RecordIO-based Protocol Buffer logger that supports automatically flushing and rotating
- * log buffers on given intervals and works around {@link OutputLogStream}'s single-threaded
+ * log buffers on given intervals and works around {@link org.arbeitspferde.groningen.utility.logstream.OutputLogStream}'s single-threaded
  * design.
  *
  * @param <T> The type of Protocol Buffer byte message that shall be encoded in each emission to
@@ -66,7 +70,7 @@ public class SafeProtoLogger<T extends GeneratedMessage> implements Flushable {
       throw new IllegalArgumentException(
           String.format("Unable to log uninitialized entry '''%s'''", proto));
     }
-
+      proto.writeDelimitedTo(null);
     final ByteBuffer buffer = ByteBuffer.wrap(proto.toByteArray());
 
     synchronized (stream) {

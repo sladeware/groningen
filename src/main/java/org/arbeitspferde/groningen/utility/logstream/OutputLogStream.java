@@ -13,22 +13,20 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.utility.open;
-import com.google.inject.Singleton;
+package org.arbeitspferde.groningen.utility.logstream;
+import com.google.protobuf.Message;
 
-import org.arbeitspferde.groningen.utility.InputLogStream;
-import org.arbeitspferde.groningen.utility.InputLogStreamFactory;
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
 
-import java.io.InputStream;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
- * A simple factory that does NOT yet create {@link InputLogStream} instances.
+ * A {@link OutputLogStream} is responsible for encapsulating Protocol Buffer
+ * emissions in a record-oriented format that can be processed ex post facto.
  */
-@Singleton
-public class NullInputLogStreamFactory implements InputLogStreamFactory {
-
-  @Override
-  public InputLogStream forStream(InputStream inputStream) {
-    throw new RuntimeException("Not implemented.");
-  }
+@NotThreadSafe
+public interface OutputLogStream extends Flushable, Closeable {
+  public void write(final Message message) throws IOException;
 }

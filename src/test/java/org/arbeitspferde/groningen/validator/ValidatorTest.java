@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.validator;
 
 import com.google.common.collect.Lists;
-
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
@@ -24,16 +23,15 @@ import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.experimentdb.CommandLine;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
+import org.arbeitspferde.groningen.experimentdb.ExperimentDb.ExperimentCache;
 import org.arbeitspferde.groningen.experimentdb.PauseTime;
 import org.arbeitspferde.groningen.experimentdb.ResourceMetric;
 import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
-import org.arbeitspferde.groningen.experimentdb.ExperimentDb.ExperimentCache;
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
 import org.arbeitspferde.groningen.subject.Subject;
-import org.arbeitspferde.groningen.validator.Validator;
 import org.easymock.EasyMock;
 
 import java.util.List;

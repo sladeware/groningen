@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.extractor;
 
 import com.google.common.base.Optional;
-
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.subject.Subject;
@@ -24,6 +23,7 @@ import org.arbeitspferde.groningen.utility.FileFactory;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
 
 /**
  * An instance of {@code Extractor} is given a {@link SubjectStateBridge} in its constructor

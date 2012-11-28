@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
-import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
 
 /**
  * The test for {@link SubjectRestart}.

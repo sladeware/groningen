@@ -18,8 +18,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.experimentdb.ResourceMetric;
-
 /**
  * The test for {@link ResourceMetric}.
  */

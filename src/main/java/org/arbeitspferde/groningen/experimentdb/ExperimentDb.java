@@ -20,7 +20,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-
 import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
@@ -212,8 +211,7 @@ public class ExperimentDb {
       for (SubjectStateBridge subject : subjects) {
         experimentBuilder.addSubjectIds(subject.getIdOfObject());
       }
-      ByteBuffer buf = ByteBuffer.wrap(experimentBuilder.build().toByteArray());
-      out.write(buf);
+      out.write(experimentBuilder.build());
 
       // Then write out all the subjects in the experiment
       final JvmFlag[] arguments = JvmFlag.values();
@@ -236,8 +234,7 @@ public class ExperimentDb {
           commandLineBuilder.addArgument(argumentBuilder);
         }
         subjectBuilder.setCommandLine(commandLineBuilder);
-        buf = ByteBuffer.wrap(subjectBuilder.build().toByteArray());
-        out.write(buf);
+        out.write(subjectBuilder.build());
       }
 
       if (out != null) {

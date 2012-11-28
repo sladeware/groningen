@@ -16,10 +16,10 @@
 package org.arbeitspferde.groningen.utility.open;
 
 import com.google.inject.Singleton;
-
 import org.arbeitspferde.groningen.utility.AbstractFile;
 import org.arbeitspferde.groningen.utility.FileFactory;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Produce {@link AbstractFile}s that proxy {@link LocalFile} and

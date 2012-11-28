@@ -1,4 +1,4 @@
-package org.arbeitspferde.groningen.utility.logstream.format;
+package org.arbeitspferde.groningen.utility.logstream.format.open;
 
 import com.google.protobuf.Message;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
@@ -8,25 +8,25 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @NotThreadSafe
-public class Delimited implements OutputLogStream {
-    private final OutputStream outputStream;
+class Delimited implements OutputLogStream {
+    private final OutputStream proxied;
 
-    public Delimited(final OutputStream outputStream) {
-        this.outputStream = outputStream;
+    Delimited(final OutputStream proxied) {
+        this.proxied = proxied;
     }
 
     @Override
     public void write(final Message message) throws IOException {
-        message.writeDelimitedTo(outputStream);
+        message.writeDelimitedTo(proxied);
     }
 
     @Override
     public void close() throws IOException {
-        outputStream.close();
+        proxied.close();
     }
 
     @Override
     public void flush() throws IOException {
-        outputStream.flush();
+        proxied.flush();
     }
 }

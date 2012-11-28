@@ -19,8 +19,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.experimentdb.PauseTime;
-
 /**
  * The test for {@link PauseTimes}.
  */

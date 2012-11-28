@@ -17,16 +17,13 @@ package org.arbeitspferde.groningen.eventlog;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.GeneratedMessage;
-
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Flushable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
-
-import javax.annotation.concurrent.ThreadSafe;
 
 /*
  [OutputLogStream] -> [SafeProtoLogger]
@@ -53,7 +50,6 @@ public class SafeProtoLogger<T extends GeneratedMessage> implements Flushable {
    *
    * @param stream The RecordIO writer.
    * @param loggerName The log name.
-   * @param flushEventTimer The timer that manages the automatic flushing.
    */
   SafeProtoLogger(final OutputLogStream stream, final String loggerName) {
     Preconditions.checkNotNull(stream, "stream may not be null.");
@@ -63,18 +59,13 @@ public class SafeProtoLogger<T extends GeneratedMessage> implements Flushable {
     this.loggerName = loggerName;
   }
 
-  public void logProtoEntry(final T proto) throws IOException {
-    Preconditions.checkNotNull(proto, "proto may not be null.");
-
-    if (!proto.isInitialized()) {
-      throw new IllegalArgumentException(
-          String.format("Unable to log uninitialized entry '''%s'''", proto));
-    }
-      proto.writeDelimitedTo(null);
-    final ByteBuffer buffer = ByteBuffer.wrap(proto.toByteArray());
+  public void logProtoEntry(final T message) throws IOException {
+    Preconditions.checkNotNull(message, "message may not be null.");
+    Preconditions.checkArgument(message.isInitialized(),
+        String.format("Unable to log uninitialized entry '''%s'''", message));
 
     synchronized (stream) {
-      stream.write(buffer);
+      stream.write(message);
       recordsPendingFlush.incrementAndGet();
     }
   }

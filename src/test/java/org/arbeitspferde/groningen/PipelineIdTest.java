@@ -16,10 +16,7 @@
 package org.arbeitspferde.groningen;
 
 
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.PipelineId;
 
 /**
  * Test for {@link PipelineId}

@@ -16,9 +16,7 @@
 package org.arbeitspferde.groningen;
 
 import com.google.inject.Provider;
-
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SimpleScope;
 import org.arbeitspferde.groningen.config.ConfigManager;

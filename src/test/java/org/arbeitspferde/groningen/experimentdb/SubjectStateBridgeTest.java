@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
-import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 
 /**
  * Test class for {@link SubjectStateBridge}.
@@ -32,7 +31,7 @@ public class SubjectStateBridgeTest extends ClockedExperimentDbTestCaseBase {
   protected void setUp() throws Exception {
     super.setUp();
   }
-  
+
   public void testDummy() {
     //TODO(team): remove as soon as we have some real tests here
   }

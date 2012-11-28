@@ -16,13 +16,11 @@
 package org.arbeitspferde.groningen.eventlog;
 
 
+import com.google.protobuf.Message;
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.easymock.EasyMock;
-
-import java.nio.ByteBuffer;
 
 /**
  * Tests for {@link SafeProtoLogger}.
@@ -44,7 +42,7 @@ public class SafeProtoLoggerTest extends TestCase {
   }
 
   public void testLogProtoEntry() throws Exception {
-    mockOutputLogStream.write(EasyMock.isA(ByteBuffer.class));
+    mockOutputLogStream.write(EasyMock.isA(Message.class));
     EasyMock.expectLastCall();
 
 

@@ -15,23 +15,21 @@
 
 package org.arbeitspferde.groningen.config;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.JvmSearchSpace;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A {@code GroningenConfig} constructed from a protocol buffer.

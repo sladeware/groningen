@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen;
 
 import com.google.inject.Inject;
-
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.executor.Executor;

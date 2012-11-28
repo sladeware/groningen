@@ -14,12 +14,9 @@
  */
 
 package org.arbeitspferde.groningen;
+
 import com.google.common.hash.Hashing;
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.PipelineId;
-import org.arbeitspferde.groningen.PipelineIdGenerator;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;

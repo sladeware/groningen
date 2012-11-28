@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen;
 
 import com.google.common.base.Preconditions;
-
 import org.arbeitspferde.groningen.config.PipelineScoped;
 
 /**
@@ -50,7 +49,7 @@ public class PipelineId implements Comparable<PipelineId> {
   public int compareTo(PipelineId o) {
     return stringRepresentation.compareTo(o.stringRepresentation);
   }
-  
+
   @Override
   public String toString() {
     return stringRepresentation;

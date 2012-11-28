@@ -21,7 +21,6 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.proto.Event;

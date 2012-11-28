@@ -15,23 +15,21 @@
 
 package org.arbeitspferde.groningen.experimentdb;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.arbeitspferde.groningen.experimentdb.ExperimentDb.write;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 import org.arbeitspferde.groningen.proto.ExperimentDbProtos;
 import org.arbeitspferde.groningen.subject.Subject;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.Nullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.arbeitspferde.groningen.experimentdb.ExperimentDb.write;
 
 /**
  * Subject class designed to be the main gateway to maintaining state on a

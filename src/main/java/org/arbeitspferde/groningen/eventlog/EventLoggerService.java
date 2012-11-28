@@ -19,7 +19,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.proto.Event;
 

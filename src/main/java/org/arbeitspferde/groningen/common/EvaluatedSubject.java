@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.common;
 
 import com.google.common.base.Preconditions;
-
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.joda.time.Instant;

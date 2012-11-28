@@ -18,7 +18,6 @@ package org.arbeitspferde.groningen.config;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.arbeitspferde.groningen.config.GroningenConfig.ClusterConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
@@ -27,11 +26,10 @@ import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfigurati
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * Stub for enabling a ConfigManagerProvider system. Classes defined here have a generic mutator

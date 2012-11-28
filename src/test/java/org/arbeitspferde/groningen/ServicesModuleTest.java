@@ -17,12 +17,7 @@ package org.arbeitspferde.groningen;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.BaseModule;
-import org.arbeitspferde.groningen.GroningenConfigParamsModule;
-import org.arbeitspferde.groningen.ServicesModule;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.open.OpenModule;
 

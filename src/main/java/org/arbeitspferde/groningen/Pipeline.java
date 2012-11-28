@@ -19,7 +19,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -76,12 +75,12 @@ public class Pipeline {
   private final Provider<PipelineIteration> pipelineIterationProvider;
 
   private final PipelineStageDisplayer pipelineStageDisplayer;
-  
+
   private final Thread pipelineThread;
 
   /** Counts the number of pipeline iterations */
   private AtomicLong pipelineIterationCount = new AtomicLong(1);
-  
+
   private PipelineIteration currentIteration;
 
   private AtomicBoolean isKilled;
@@ -99,7 +98,7 @@ public class Pipeline {
       return stages[currentIteration != null ? currentIteration.getStage() : 0];
     }
   }
-  
+
   private synchronized void setCurrentIteration(PipelineIteration currentIteration) {
     this.currentIteration = currentIteration;
   }
@@ -150,7 +149,7 @@ public class Pipeline {
   public void joinPipeline() throws InterruptedException {
     pipelineThread.join();
   }
-  
+
   /**
    * Ready the monitoring.
    */
@@ -185,7 +184,7 @@ public class Pipeline {
            */
           PipelineIteration iteration = pipelineIterationProvider.get();
           setCurrentIteration(currentIteration);
-          
+
           pipelineStageDisplayer.setCurrentIteration(iteration);
           monitor.maxIndividuals(subjectsToDisplay.get());
 

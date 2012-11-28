@@ -16,14 +16,13 @@
 package org.arbeitspferde.groningen.eventlog;
 
 import com.google.inject.Provider;
-
 import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.arbeitspferde.groningen.Helper;
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.format.open.DelimitedFactory;
 import org.easymock.EasyMock;
 
 import java.io.File;
@@ -31,7 +30,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -42,6 +40,7 @@ import java.util.logging.Logger;
 public class SafeProtoLoggerFactoryTest extends TestCase {
   private static final Logger log = Logger.getLogger(SafeProtoLoggerTest.class.getCanonicalName());
 
+  private DelimitedFactory delimitedFactory;
   private SafeProtoLoggerFactory factory;
   private Provider<Timer> mockDaemonTimerProvider;
   private Timer mockTimer;
@@ -60,26 +59,12 @@ public class SafeProtoLoggerFactoryTest extends TestCase {
     mockDaemonTimerProvider = EasyMock.createMock(Provider.class);
     mockTimer = EasyMock.createMock(Timer.class);
 
+    delimitedFactory = new DelimitedFactory();
     fakeOutputLogStreamFactory = new OutputLogStreamFactory() {
 
       @Override
-      public OutputLogStream forStream(final OutputStream stream) {
-        return new OutputLogStream() {
-          @Override
-          public void flush() throws IOException {
-            stream.flush();
-          }
-
-          @Override
-          public void close() throws IOException {
-            stream.close();
-          }
-
-          @Override
-          public void write(ByteBuffer entry) throws IOException {
-            stream.write(entry.array());
-          }
-        };
+      public OutputLogStream forStream(final OutputStream stream) throws IOException {
+        return delimitedFactory.forStream(new FileOutputStream(temporaryLogFile));
       }
 
       @Override

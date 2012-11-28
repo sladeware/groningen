@@ -15,16 +15,15 @@
 
 package org.arbeitspferde.groningen.experimentdb;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
-
 import org.arbeitspferde.groningen.config.NamedConfigParam;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * The Experiment Database In Memory Cache is used to store data locally in the

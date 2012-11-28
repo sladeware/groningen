@@ -22,12 +22,7 @@ import com.google.inject.Key;
 import com.google.inject.OutOfScopeException;
 import com.google.inject.ProvisionException;
 import com.google.inject.name.Names;
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.BaseModule;
-import org.arbeitspferde.groningen.GroningenConfigParamsModule;
-import org.arbeitspferde.groningen.ServicesModule;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;

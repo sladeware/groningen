@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.generator;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;

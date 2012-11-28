@@ -19,7 +19,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-
 import org.arbeitspferde.groningen.config.ProtoBufSource.ProtoBufSourceListener;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;

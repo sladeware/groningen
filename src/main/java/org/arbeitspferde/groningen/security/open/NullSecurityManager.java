@@ -14,8 +14,8 @@
  */
 
 package org.arbeitspferde.groningen.security.open;
-import com.google.inject.Singleton;
 
+import com.google.inject.Singleton;
 import org.arbeitspferde.groningen.security.VendorSecurityManager;
 
 import java.util.logging.Logger;

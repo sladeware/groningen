@@ -14,8 +14,8 @@
  */
 
 package org.arbeitspferde.groningen.utility;
-import com.google.common.base.Optional;
 
+import com.google.common.base.Optional;
 import org.joda.time.Instant;
 
 import java.util.concurrent.atomic.AtomicLong;

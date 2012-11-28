@@ -16,10 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 import com.google.common.collect.ImmutableList;
-
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
-import org.arbeitspferde.groningen.experimentdb.Experiment;
-import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 
 import java.util.Arrays;
 import java.util.Collections;

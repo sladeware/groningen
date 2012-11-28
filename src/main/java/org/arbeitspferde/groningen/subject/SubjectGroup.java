@@ -18,9 +18,8 @@ package org.arbeitspferde.groningen.subject;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-
-import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
+import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.PermanentFailure;
 import org.arbeitspferde.groningen.utility.TemporaryFailure;

@@ -18,9 +18,6 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.experimentdb.jvmflags.Formatters;
-import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
-
 /**
  * Tests for {@link Formatters}.
  */

@@ -19,7 +19,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.ProtocolMessageEnum;
-
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SimpleScope;
 import org.arbeitspferde.groningen.config.GroningenConfig;

@@ -18,7 +18,6 @@ package org.arbeitspferde.groningen.common;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.externalprocess.CmdProcessInvoker;
 import org.arbeitspferde.groningen.security.open.NullSecurityManager;
 import org.arbeitspferde.groningen.utility.MetricExporter;

@@ -16,10 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.experimentdb.jvmflags.DataSize;
 
 /**
  * Tests for {@link DataSize}.

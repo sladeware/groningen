@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.subject.open;
 
 import com.google.inject.Singleton;
-
 import org.arbeitspferde.groningen.subject.Subject;
 import org.arbeitspferde.groningen.subject.SubjectInterrogator;
 

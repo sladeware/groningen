@@ -16,11 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
-import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 
 /**
  * Tests for {@link JvmFlagSet}.

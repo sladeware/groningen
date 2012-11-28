@@ -22,7 +22,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.common.SupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.common.open.NullSupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.config.LegacyProgramConfigurationMediator;
@@ -41,15 +40,15 @@ import org.arbeitspferde.groningen.subject.open.NullSubjectInterrogator;
 import org.arbeitspferde.groningen.subject.open.NullSubjectManipulator;
 import org.arbeitspferde.groningen.utility.FileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.FileFactory;
-import org.arbeitspferde.groningen.utility.logstream.InputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+import org.arbeitspferde.groningen.utility.logstream.InputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.NullInputLogStreamFactory;
+import org.arbeitspferde.groningen.utility.logstream.NullOutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.BackgroundServices;
 import org.arbeitspferde.groningen.utility.open.LocalFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullFileEventNotifierFactory;
-import org.arbeitspferde.groningen.utility.logstream.NullInputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.NullMetricExporter;
-import org.arbeitspferde.groningen.utility.logstream.NullOutputLogStreamFactory;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

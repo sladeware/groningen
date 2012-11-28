@@ -22,7 +22,6 @@ import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
-import org.arbeitspferde.groningen.executor.Executor;
 import org.arbeitspferde.groningen.externalprocess.ProcessInvoker;
 import org.arbeitspferde.groningen.extractor.CollectionLogAddressor;
 import org.arbeitspferde.groningen.subject.HealthQuerier;

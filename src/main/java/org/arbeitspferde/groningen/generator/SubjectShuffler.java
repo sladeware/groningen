@@ -16,12 +16,11 @@
 package org.arbeitspferde.groningen.generator;
 
 import com.google.inject.Inject;
-
 import org.arbeitspferde.groningen.config.GroningenConfig;
-import org.arbeitspferde.groningen.config.NamedConfigParam;
-import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.config.GroningenConfig.ClusterConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
+import org.arbeitspferde.groningen.config.NamedConfigParam;
+import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.subject.ServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.Subject;

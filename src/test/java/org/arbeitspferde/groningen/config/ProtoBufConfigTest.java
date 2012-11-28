@@ -17,10 +17,6 @@ package org.arbeitspferde.groningen.config;
 
 
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.config.GroningenConfig;
-import org.arbeitspferde.groningen.config.ProtoBufConfig;
-import org.arbeitspferde.groningen.config.ProtoBufSearchSpaceBundle;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.JvmSearchSpace;

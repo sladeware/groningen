@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.common;
 
 
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.LocalFileFactory;
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.display.DisplayMediator;
@@ -62,5 +61,5 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
       @Override
       public void init() {}
     };
-  }  
+  }
 }

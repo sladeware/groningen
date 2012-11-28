@@ -23,8 +23,6 @@ import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb.ExperimentCache;
-import org.arbeitspferde.groningen.generator.Generator;
-import org.arbeitspferde.groningen.generator.SubjectShuffler;
 import org.easymock.EasyMock;
 
 /**

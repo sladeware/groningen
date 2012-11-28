@@ -20,7 +20,6 @@ import com.google.common.util.concurrent.Service.State;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SystemAdapter;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -156,7 +155,7 @@ public class GroningenWorkhorse implements Runnable {
         throw new RuntimeException(String.format("Pipeline %s died almost immediately",
             pipelineId.toString()));
       }
-      
+
       try {
         pipeline.joinPipeline();
       } catch (InterruptedException e) {

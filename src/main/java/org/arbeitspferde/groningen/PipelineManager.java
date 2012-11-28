@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -53,7 +52,7 @@ public class PipelineManager {
    * @param blockUntilStarted Block until pipeline's thread is actually started and the pipeline
    *                          itself is registered in the {@link PipelineManager}
    * @return {@link PipelineId} of the pipeline that is: a) about to be started
-   *         (if blockUntilStarted == false) b) was started (if blockUntilStarted == true) 
+   *         (if blockUntilStarted == false) b) was started (if blockUntilStarted == true)
    */
   public PipelineId startPipeline(final ConfigManager configManager,
       final boolean blockUntilStarted) {

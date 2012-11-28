@@ -14,8 +14,8 @@
  */
 
 package org.arbeitspferde.groningen.config.open;
-import com.google.inject.Singleton;
 
+import com.google.inject.Singleton;
 import org.arbeitspferde.groningen.config.LegacyProgramConfigurationMediator;
 
 /**

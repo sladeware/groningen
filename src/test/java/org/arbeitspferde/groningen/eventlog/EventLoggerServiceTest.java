@@ -17,11 +17,7 @@ package org.arbeitspferde.groningen.eventlog;
 
 
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.common.Settings;
-import org.arbeitspferde.groningen.eventlog.EventLoggerService;
-import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
-import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerFactory;
 import org.arbeitspferde.groningen.proto.Event;
 import org.easymock.EasyMock;
 

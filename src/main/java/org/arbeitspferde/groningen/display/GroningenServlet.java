@@ -18,19 +18,17 @@ package org.arbeitspferde.groningen.display;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.arbeitspferde.groningen.Pipeline;
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.PipelineManager;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 
 /**
  * A servlet to display Groningen specific information on the HUD.
@@ -40,7 +38,7 @@ public class GroningenServlet extends HttpServlet {
   @VisibleForTesting boolean isInitialized = false;
 
   private final PipelineManager pipelineManager;
-  
+
   /**
    * Constructor for the GroningenServlet class
    *

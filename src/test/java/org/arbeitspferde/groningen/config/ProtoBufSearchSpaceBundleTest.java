@@ -18,10 +18,7 @@ package org.arbeitspferde.groningen.config;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.Descriptors;
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.config.ProtoBufSearchSpaceBundle;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.JvmSearchSpace;

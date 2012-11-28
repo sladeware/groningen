@@ -20,16 +20,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.BaseModule;
-import org.arbeitspferde.groningen.GroningenConfigParamsModule;
-import org.arbeitspferde.groningen.Pipeline;
-import org.arbeitspferde.groningen.PipelineId;
-import org.arbeitspferde.groningen.PipelineIdGenerator;
-import org.arbeitspferde.groningen.PipelineSynchronizer;
-import org.arbeitspferde.groningen.ServicesModule;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SystemAdapter;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -111,7 +102,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       final DisplayMediator displayMediator = injector.getInstance(DisplayMediator.class);
 
       assertNotNull(displayMediator);
@@ -124,7 +115,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       final Displayable displayable = injector.getInstance(Displayable.class);
 
       assertNotNull(displayable);
@@ -137,7 +128,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       final MonitorGroningen monitor = injector.getInstance(MonitorGroningen.class);
 
       assertNotNull(monitor);
@@ -150,7 +141,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       final MonitorGroningen monitor = injector.getInstance(MonitorGroningen.class);
       final Displayable displayable = injector.getInstance(Displayable.class);
 
@@ -164,7 +155,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       final ExperimentDb experimentDb = injector.getInstance(ExperimentDb.class);
 
       assertNotNull(experimentDb);
@@ -177,7 +168,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       pipelineIterationScope.enter();
       GroningenConfigParamsModule.nailConfigToScope(stubConfig, pipelineIterationScope);
 
@@ -202,7 +193,7 @@ public class BaseModuleTest extends TestCase {
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineId.class, pipelineId);
-      
+
       pipelineIterationScope.enter();
       GroningenConfigParamsModule.nailConfigToScope(stubConfig, pipelineIterationScope);
       try {

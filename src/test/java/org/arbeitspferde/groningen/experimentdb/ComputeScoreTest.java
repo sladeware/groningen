@@ -18,8 +18,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.experimentdb.BaseComputeScore;
-
 public class ComputeScoreTest extends TestCase {
 
   enum TestEnum { A, B };

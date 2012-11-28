@@ -21,8 +21,6 @@ import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
-import org.arbeitspferde.groningen.profiling.Profile;
-import org.arbeitspferde.groningen.profiling.ProfilingRunnable;
 import org.arbeitspferde.groningen.utility.Clock;
 
 /**

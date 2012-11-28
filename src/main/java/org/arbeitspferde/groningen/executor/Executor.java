@@ -17,15 +17,14 @@ package org.arbeitspferde.groningen.executor;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-
 import org.arbeitspferde.groningen.PipelineSynchronizer;
 import org.arbeitspferde.groningen.common.FatalError;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
-import org.arbeitspferde.groningen.config.NamedConfigParam;
-import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.config.GroningenConfig.ClusterConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
+import org.arbeitspferde.groningen.config.NamedConfigParam;
+import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;

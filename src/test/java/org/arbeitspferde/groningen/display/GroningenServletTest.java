@@ -16,7 +16,6 @@
 package org.arbeitspferde.groningen.display;
 
 import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.PipelineManager;
 import org.easymock.EasyMock;
 

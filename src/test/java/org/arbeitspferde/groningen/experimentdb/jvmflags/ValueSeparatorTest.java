@@ -18,8 +18,6 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.experimentdb.jvmflags.ValueSeparator;
-
 /**
  * Tests for {@link ValueSeparator}.
  */

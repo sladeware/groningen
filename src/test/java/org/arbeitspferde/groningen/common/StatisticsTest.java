@@ -18,8 +18,6 @@ package org.arbeitspferde.groningen.common;
 
 import junit.framework.TestCase;
 
-import org.arbeitspferde.groningen.common.Statistics;
-
 import java.util.ArrayList;
 
 /**

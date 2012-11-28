@@ -17,10 +17,6 @@ package org.arbeitspferde.groningen.config;
 
 
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.config.ProtoBufConfig;
-import org.arbeitspferde.groningen.config.ProtoBufConfigManager;
-import org.arbeitspferde.groningen.config.ProtoBufSource;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.easymock.EasyMock;

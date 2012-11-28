@@ -22,7 +22,6 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SettingsProvider;

@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.experimentdb;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-
 import org.arbeitspferde.groningen.common.Statistics;
 
 import java.util.List;

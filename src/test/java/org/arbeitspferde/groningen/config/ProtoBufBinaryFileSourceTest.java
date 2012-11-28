@@ -17,12 +17,10 @@ package org.arbeitspferde.groningen.config;
 
 
 import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.arbeitspferde.groningen.Helper;
 import org.arbeitspferde.groningen.LocalFileFactory;
 import org.arbeitspferde.groningen.NullFileEventNotifierFactory;
-import org.arbeitspferde.groningen.config.ProtoBufBinaryFileSource;
 import org.arbeitspferde.groningen.config.open.NullLegacyProgramConfigurationMediator;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.ClusterConfig;

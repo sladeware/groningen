@@ -14,8 +14,8 @@
  */
 
 package org.arbeitspferde.groningen.utility;
-import com.google.inject.Singleton;
 
+import com.google.inject.Singleton;
 import org.joda.time.Instant;
 
 @Singleton

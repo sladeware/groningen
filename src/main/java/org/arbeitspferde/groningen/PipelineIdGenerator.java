@@ -19,7 +19,6 @@ import com.google.common.hash.HashFunction;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.utility.Clock;
 

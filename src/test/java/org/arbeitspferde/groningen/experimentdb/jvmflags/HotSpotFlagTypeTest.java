@@ -16,10 +16,7 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 
-
 import junit.framework.TestCase;
-
-import org.arbeitspferde.groningen.experimentdb.jvmflags.HotSpotFlagType;
 
 /**
  * Tests for {@link HotSpotFlagType}.

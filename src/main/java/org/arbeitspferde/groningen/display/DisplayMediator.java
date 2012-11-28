@@ -19,7 +19,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.PipelineScoped;
@@ -318,7 +317,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     StringBuilder builder = new StringBuilder();
 
     builder.append("<p><H2>Pipeline " + pipelineId.toString() + "</H2></p>");
-    
+
     // display warnings
     if (!warnings.isEmpty()) {
       builder.append("<p><H2>WARNINGS!</H2></p>");
@@ -352,7 +351,8 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     builder.append(explanations());
     builder.append("<br>");
 
-    return builder.toString();
+    final String emission = builder.toString();
+    return emission;
   }
 
   /**

@@ -19,7 +19,7 @@ public interface Settings {
   public Integer getPort();
   public Integer getStartupSubservicesDeadlineSeconds();
   public Integer getShutdownSubservicesDeadlineSeconds();
-  public String getConfigFileName();
+  public String[] getConfigFileNames();
   public String getEventLogPrefix();
   public Integer getEventLogRotateSizeBytes();
   public Integer getEventLogFlushIntervalSeconds();

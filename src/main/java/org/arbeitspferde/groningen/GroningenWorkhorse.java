@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.Service.State;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SystemAdapter;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -147,19 +148,23 @@ public class GroningenWorkhorse implements Runnable {
     try {
       startSubservices();
 
-      ConfigManager configManager = createConfigManager(settings.getConfigFileName());
+      for (String configPath : settings.getConfigFileNames()) {
+        ConfigManager configManager = createConfigManager(configPath);
 
-      PipelineId pipelineId = pipelineManager.startPipeline(configManager, true);
-      Pipeline pipeline = pipelineManager.findPipelineById(pipelineId);
-      if (pipeline == null) {
-        throw new RuntimeException(String.format("Pipeline %s died almost immediately",
-            pipelineId.toString()));
+        PipelineId pipelineId = pipelineManager.startPipeline(configManager, true);
+        Pipeline pipeline = pipelineManager.findPipelineById(pipelineId);
+        if (pipeline == null) {
+          throw new RuntimeException(String.format("Pipeline %s died almost immediately",
+              pipelineId.toString()));
+        }
       }
 
-      try {
-        pipeline.joinPipeline();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+      for (Pipeline pipeline : pipelineManager.getAllPipelines().values()) {
+        try {
+          pipeline.joinPipeline();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
       }
 
       systemAdapter.exit(0);

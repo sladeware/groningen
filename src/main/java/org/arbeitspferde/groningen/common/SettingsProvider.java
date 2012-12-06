@@ -59,10 +59,11 @@ public class SettingsProvider implements Provider<Settings> {
   public Integer shutdownSubservicesDeadlineSeconds = 60;
 
   @Option(
-      name = "--configFileName",
-      aliases = {"--f"},
-      usage = "The fully-qualified path to the configuration file.")
-  public String configFileName;
+      name = "--configFileNames",
+      aliases = {"--f", "--configFileName" /* TOTO(mbushkov): depreacated, remove soon */},
+      usage = "Comma-separated list of fully-qualified paths to the configuration files (one " +
+          "per pipeline).")
+  public String configFileNames;
 
   @Option(
       name = "--eventLogPrefix",
@@ -127,8 +128,8 @@ public class SettingsProvider implements Provider<Settings> {
       }
 
       @Override
-      public String getConfigFileName() {
-        return configFileName;
+      public String[] getConfigFileNames() {
+        return configFileNames.split(",");
       }
 
       @Override

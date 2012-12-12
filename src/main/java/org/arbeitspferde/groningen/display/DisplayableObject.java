@@ -45,4 +45,11 @@ public class DisplayableObject implements Displayable {
     return infoString + ": " + object.toString() + "<br>";
   }
 
+  public Object getObject() {
+    return object;
+  }
+
+  public String getInfoString() {
+    return infoString;
+  }
 }

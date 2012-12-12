@@ -19,12 +19,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.config.PipelineScoped;
+import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.generator.SubjectShuffler;
@@ -219,5 +221,12 @@ public class Pipeline {
 
   public Displayable getDisplayable() {
     return displayable;
+  }
+
+  public DisplayMediator getDisplayableInformationProvider() {
+    // TODO(sanragsood): Downcasting... DANGEROUS !
+    // Once the new interface is ready, decouple DisplayMediator from Displayable and directly
+    // inject DisplayMediator.
+    return (DisplayMediator) displayable;
   }
 }

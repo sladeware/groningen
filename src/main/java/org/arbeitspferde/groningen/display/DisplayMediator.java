@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.PipelineScoped;
@@ -461,5 +462,33 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
    */
   private long getExperimentId() {
     return experimentDb.getExperimentId();
+  }
+
+  /**
+   * Returns warnings generated for the pipeline.
+   */
+  public String[] getWarnings() {
+    return warnings.toArray(new String[0]);
+  }
+
+  public long getCumulativeExperimentIdSum() {
+    return cummulativeExperimentIdSum;
+  }
+
+  public EvaluatedSubject[] getCurrentExperimentSubjects() {
+    synchronized (currentEvaluatedSubjects) {
+      return currentEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
+    }
+  }
+
+  public EvaluatedSubject[] getAllExperimentSubjects() {
+    synchronized (alltimeEvaluatedSubjects) {
+      return alltimeEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
+    }
+  }
+
+  public DisplayableObject[] getMonitoredObjects() {
+    // TODO(sanragsood): Downcasting. Fix it.
+    return monitoredObjects.toArray(new DisplayableObject[0]);
   }
 }

@@ -81,8 +81,12 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   @VisibleForTesting final List<EvaluatedSubject> currentEvaluatedSubjects =
     Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
 
-  /** stores the current unique and merged evaluated subjects */
+  /** stores the all-time unique and merged evaluated subjects */
   @VisibleForTesting final List<EvaluatedSubject> alltimeEvaluatedSubjects =
+    Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
+
+  /** stores all evaluated subjects (no de-duplication) */
+  @VisibleForTesting final List<EvaluatedSubject> allEvaluatedSubjects =
     Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
 
   /** stores a list of warnings for display to the user */
@@ -226,16 +230,20 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
      * Take the average of duplicates in the most recent run */
     cleanRecentRun(tempEvaluatedSubjects);
 
-    /* populate the current target list */
+    /* Populate the current subject list */
     currentEvaluatedSubjects.clear();
     currentEvaluatedSubjects.addAll(tempEvaluatedSubjects);
     Collections.sort(currentEvaluatedSubjects, Collections.reverseOrder());
+
+    /* Populate the all subjects list */
+    allEvaluatedSubjects.addAll(tempEvaluatedSubjects);
+    Collections.sort(allEvaluatedSubjects, Collections.reverseOrder());
 
     /* Merge, detect and remove duplicates in the alltime list */
     mergeWeightedSumFitness(alltimeEvaluatedSubjects, tempEvaluatedSubjects);
     Collections.sort(alltimeEvaluatedSubjects, Collections.reverseOrder());
 
-    /* reset temporary list */
+    /* Reset temporary list */
     tempEvaluatedSubjects.clear();
   }
 
@@ -482,6 +490,12 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   public EvaluatedSubject[] getAllExperimentSubjects() {
+    synchronized (allEvaluatedSubjects) {
+      return allEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
+    }
+  }
+
+  public EvaluatedSubject[] getAlltimeExperimentSubjects() {
     synchronized (alltimeEvaluatedSubjects) {
       return alltimeEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
     }

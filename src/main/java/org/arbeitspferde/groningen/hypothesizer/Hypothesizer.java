@@ -584,9 +584,6 @@ public class Hypothesizer extends ProfilingRunnable {
         fitness = scorer.compute(subject);
       }
 
-      // Add it to the population's total fitness.
-      totalFitnessScore.addAndGet(fitness);
-
       // Store the subjects and their fitness scores to print them at the end.
       EvaluatedSubject evaluatedSubject = new EvaluatedSubject(clock, subject, fitness);
       evaluatedSubjects.add(evaluatedSubject);
@@ -597,6 +594,11 @@ public class Hypothesizer extends ProfilingRunnable {
         monitor.processGeneration();
         evaluatedSubjects.clear();
       }
+
+      // Add it to the population's total fitness. This is used for MONITORING PURPOSES.
+      // NB: There's no way to increment this without overwriting the tmp variable.
+      double tmpFitness = fitness;
+      totalFitnessScore.addAndGet(tmpFitness);
 
       return fitness;
     }

@@ -226,6 +226,10 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     displayableClusters = new DisplayClusters(tempEvaluatedSubjects);
     this.monitorObject(displayableClusters, "Clusters used in the last experiment");
 
+    /* Populate the all subjects list */
+    allEvaluatedSubjects.addAll(tempEvaluatedSubjects);
+    Collections.sort(allEvaluatedSubjects, Collections.reverseOrder());
+
     /* First detect and remove duplicates in the temp list
      * Take the average of duplicates in the most recent run */
     cleanRecentRun(tempEvaluatedSubjects);
@@ -234,10 +238,6 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     currentEvaluatedSubjects.clear();
     currentEvaluatedSubjects.addAll(tempEvaluatedSubjects);
     Collections.sort(currentEvaluatedSubjects, Collections.reverseOrder());
-
-    /* Populate the all subjects list */
-    allEvaluatedSubjects.addAll(tempEvaluatedSubjects);
-    Collections.sort(allEvaluatedSubjects, Collections.reverseOrder());
 
     /* Merge, detect and remove duplicates in the alltime list */
     mergeWeightedSumFitness(alltimeEvaluatedSubjects, tempEvaluatedSubjects);

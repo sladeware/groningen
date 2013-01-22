@@ -196,31 +196,30 @@ public class Executor extends ProfilingRunnable {
    * @param subjectGroup The subject group whose subjects should be restarted
    * @param numTries How many times to try this operation before throwing an
    *        exception. Must be positive
+   * @throws PermanentFailure when restarting fails
    */
-  private void restartGroup(SubjectGroup subjectGroup, int numTries) {
+  private void restartGroup(SubjectGroup subjectGroup, int numTries) throws PermanentFailure {
     Preconditions.checkArgument(numTries > 0, "numTries must be positive.");
 
     long switchRateLimit = subjectRestartRateLimit * 1000L;
     long maxWaitMillis = -1;
+    /** Number of milliseconds to backoff, which doubles each time. */
+    int backoff = 1000;
 
-    // TODO(team): All of these above should eventually become user configurable.
-    Exception caughtException = null;
     for (int i = 0; i < numTries; i++) {
       try {
         manipulator.restartGroup(subjectGroup, switchRateLimit, maxWaitMillis);
         return;
-      } catch (final TemporaryFailure e) {
-        log.log(Level.WARNING, "Exception during subject group restart", e);
-        caughtException = e;
-        sleep(1000);
-      } catch (final PermanentFailure e) {
-        caughtException = e;
-        break;
+      } catch (final Exception e) {
+        log.log(Level.SEVERE,
+            String.format("Exception during subject group (%s) restart after %s tries.",
+                subjectGroup, numTries), e);
+        sleep(backoff);
+        backoff *= 2;
       }
     }
-    throw new FatalError(
-        String.format(
-            "Unable to restart group after %s tries: ", numTries, subjectGroup), caughtException);
+    throw new PermanentFailure(String.format(
+        "Unable to restart subject group after %s tries: %s", subjectGroup, numTries));
   }
 
   /**
@@ -230,24 +229,27 @@ public class Executor extends ProfilingRunnable {
    * @param subject The subject to be restarted
    * @param numTries How many times to try this operation before throwing an
    *        exception. Must be positive
+   * @throws PermanentFailure when restarting fails
    */
-  private void restartSubject(Subject subject, int numTries) {
-    Exception caughtException = null;
+  private void restartSubject(Subject subject, int numTries) throws PermanentFailure {
+    Preconditions.checkArgument(numTries > 0, "numTries must be positive.");
+
+    /** Number of milliseconds to backoff, which doubles each time. */
+    int backoff = 1000;
     for (int i = 0; i < numTries; i++) {
       try {
         manipulator.restartIndividual(subject, executorWaitForOneSubjectRestartMs);
         return;
-      } catch (final TemporaryFailure e) {
-        log.log(Level.WARNING, "Exception during subject restart", e);
-        caughtException = e;
-        sleep(1000);
-      } catch (final PermanentFailure e) {
-        caughtException = e;
-        break;
+      } catch (final Exception e) {
+        log.log(Level.SEVERE,
+            String.format("Exception during subject (%s) restart after %s tries.",
+                subject, numTries), e);
+        sleep(backoff);
+        backoff *= 2;
       }
     }
-    throw new FatalError(String.format(
-        "Unable to restart subject after %s tries: %s", subject, numTries), caughtException);
+    throw new PermanentFailure(String.format(
+        "Unable to restart subject after %s tries: %s", subject, numTries));
   }
 
   /**
@@ -262,13 +264,15 @@ public class Executor extends ProfilingRunnable {
         // Restart the whole group, trying three times
         SubjectGroup group =
             new SubjectGroup(clusterName, groupName, userName, subjectGroup, servingAddressBuilder);
-        try {
-          group.initialize(manipulator);
-          restartGroup(group, 3);
-        } catch (final TemporaryFailure e) {
-          log.log(Level.WARNING, "Could not restart all subjects; may be transient problem.", e);
-        } catch (final PermanentFailure e) {
-          log.log(Level.WARNING, "Could not restart all subjects; may be permanent problem.", e);
+        boolean notDone = true;
+        while(notDone) {
+          try {
+            group.initialize(manipulator);
+            restartGroup(group, 6);
+            notDone = false;
+          } catch (Exception e) {
+            log.log(Level.SEVERE, "Could not restart all subjects.", e);
+          }
         }
       }
     }
@@ -532,7 +536,11 @@ public class Executor extends ProfilingRunnable {
   private void removeSubjectFromExperiment(SubjectStateBridge subject) {
     subjects.remove(subject);
     subjectSettingsFileManager.delete(subject.getAssociatedSubject().getExpSettingsFile());
-    restartSubject(subject.getAssociatedSubject(), 3);
+    try {
+      restartSubject(subject.getAssociatedSubject(), 4);
+    } catch (Exception e) {
+      log.severe("Removing a subject, even though restart failed." + e.toString());
+    }
     removeSubjectFromExperimentCount.incrementAndGet();
     subject.removeFromExperiment();
     log.info(String.format("Removing subject from experiment %s.", subject.getHumanIdentifier()));

@@ -261,7 +261,7 @@ public class Executor extends ProfilingRunnable {
       for (SubjectGroupConfig subjectGroup : cluster.getSubjectGroupConfigs()) {
         String groupName = subjectGroup.getName();
         String userName = subjectGroup.getUser();
-        // Restart the whole group, trying three times
+        // Restart the whole group; trying 6 times before logging an error and trying again.
         SubjectGroup group =
             new SubjectGroup(clusterName, groupName, userName, subjectGroup, servingAddressBuilder);
         boolean notDone = true;
@@ -309,7 +309,7 @@ public class Executor extends ProfilingRunnable {
 
   /**
    * Generate warnings about any missing or unusual command line flags
-   *
+  *
    * We check for these problems and possibly produce a warning:
    *   1. Missing -XX:+PrintGCApplicationStoppedTime
    */

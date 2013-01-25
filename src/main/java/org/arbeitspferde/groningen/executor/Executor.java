@@ -677,7 +677,8 @@ public class Executor extends ProfilingRunnable {
 
       final Period p = new Period(start, end);
 
-      return String.format("Approximately %s minutes remain.", p.getMinutes());
+      return String.format("Approximately %s days, %s hours and %s minutes remain.",
+          p.getDays(), p.getHours(), p.getMinutes());
     }
   }
 

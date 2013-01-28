@@ -15,6 +15,7 @@
 
 package org.arbeitspferde.groningen;
 
+import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
@@ -79,6 +80,7 @@ public class BaseModule extends AbstractModule {
     bind(GroningenServlet.class).in(Singleton.class);
     bind(Clock.class).to(SystemClock.class);
     bind(PipelineIdGenerator.class).in(Singleton.class);
+    bind(Gson.class).in(Singleton.class);
 
     // Pipeline-scoped bindings
     bind(Pipeline.class).in(PipelineScoped.class);

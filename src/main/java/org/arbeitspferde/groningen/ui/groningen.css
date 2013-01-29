@@ -1,0 +1,182 @@
+/* Copyright 2012 Google, Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+body {
+  padding: 60px;
+  font-size: 13px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.container {
+  width: 1200px;
+  padding-top: 15px;
+}
+
+input.search-query {
+  font-size: 13px;
+  width: 270px;
+  margin-bottom: 10px;
+}
+
+.expandlabel {
+  font-size: 11px;
+}
+
+.navbar-inner {
+  background-color: #000;
+  background-image: inherit;
+  color: #FFF;
+}
+
+.navbar .brand {
+  text-shadow: inherit;
+  color: #FFF;
+  margin-left: -10px;
+}
+
+dl.dl-horizontal {
+  font-size: 11px;
+  margin: 0;
+  border: 1px solid #DDD;
+}
+
+dl.dl-horizontal:hover {
+  background-color: #fcf8e3;
+  border-color: #fbeed5;
+}
+
+.dl-horizontal > dt {
+  width: 30px;
+}
+
+.dl-horizontal > dd {
+  margin-left: 40px;
+}
+
+.pipeline-box {
+  border: 1px solid #DDD;
+  border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.pipeline-content {
+  margin: 15px;
+}
+
+.breadcrumb {
+  padding: 14px 20px;
+  margin: 0;
+  color: #777;
+  border: 1px solid #DDD;
+  background-image: -moz-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -ms-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f5f5f5));
+  background-image: -webkit-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: -o-linear-gradient(top, #ffffff, #f5f5f5);
+  background-image: linear-gradient(top, #ffffff, #f5f5f5);
+  background-repeat: repeat-x;
+}
+
+.pipeline-box .nav.nav-tabs li:first-child {
+  margin-left: 7px;
+}
+
+.table th {
+  min-width: 40px;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+pre {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background-color: inherit;
+  text-align: left;
+  word-wrap: normal;
+}
+
+.primary-graph {
+  height: 250px;
+  cursor: move;
+  width: 680px;
+  margin-left: 30px;
+}
+
+.secondary-graph {
+  height: 60px;
+  width: 660px;
+  margin-left: 50px;
+  margin-top: 40px;
+}
+
+.axislabel {
+  position: absolute;
+  text-align: center;
+}
+
+.xaxislabel {
+  width: 100%;
+}
+
+.yaxislabel {
+  top: 50%;
+  left: 20px;
+  margin-top: 30px;
+  transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -webkit-transform-origin: 0 0;
+}
+
+li.action-button {
+  float: right;
+  margin-top: 3px;
+}
+
+.graph-point-tooltip {
+  position: absolute;
+  border: 1px solid #fdd;
+  padding: 2px;
+  background-color: #fee;
+  opacity: 0.8;
+}
+
+.empty-table-message {
+  margin-left: 5px;
+  font-style: italic;
+}
+
+.status {
+  margin-left: 10px;
+  margin-bottom: 25px;
+}
+
+.download-links {
+  margin-top: 10px;
+  margin-right: 40px;
+}

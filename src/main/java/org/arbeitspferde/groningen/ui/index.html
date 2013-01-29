@@ -1,0 +1,192 @@
+<!--
+Copyright 2012 Google, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Groningen</title>
+    <link rel="stylesheet" type="text/css" href="twitter_bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="groningen.css" />
+  </head>
+  <body>
+    <!-- Banner -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <a class="brand">Groningen</a>
+      </div>
+    </div>
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Sidebar -->
+      <div class="span4">
+        <input type="text" id="userfilter" class="search-query" placeholder="Filter by user" />
+        <span class="label clickable expandlabel" id="expandall" data-action="show">
+            Expand All »
+        </span>
+        <span class="label clickable expandlabel" id="collapseall" style="display:none;" data-action="hide">
+          « Collapse All
+        </span>
+        <ul id="pipelinelist" class="nav nav-tabs nav-stacked" style="margin-top:5px;"></ul>
+      </div>
+      <!-- Content Area -->
+      <div class="span10">
+        <div id="pinned"></div>
+        <div id="current"></div>
+      </div>
+    </div>
+    <script type="text/javascript" src="jquery/jquery.js"></script>
+    <script type="text/javascript" src="twitter_bootstrap/bootstrap.js"></script>
+    <script type="text/javascript" src="flot/flot.js"></script>
+    <script type="text/javascript" src="handlebars/handlebars.js"></script>
+    <script type="text/javascript" src="groningen.js"></script>
+    <script id="pipeline-group-template" type="text/x-handlebars-template">
+      {{#each this}}
+      {{#with this}}
+      <li class="clickable">
+        <a data-toggle="collapse" data-target="#collapse_{{user}}">{{user}}</a>
+        <div id="collapse_{{user}}" class="collapse">
+          {{#each pipelines}}
+          {{#with this}}
+          <dl class="dl-horizontal" data-pipelineid="{{pipelineId}}">
+            <dt>JOB</dt>
+            <dd>{{jobName}}</dd>
+            <dt>ID</dt>
+            <dd>{{pipelineId}}</dd>
+          </dl>
+          {{/with}}
+          {{/each}}
+        </div>
+        </li>
+      {{/with}}
+      {{/each}}
+    </script>
+    <script id="pipeline-template" type="text/x-handlebars-template">
+      <div class="pipeline-box" data-pipelineid="{{pipelineId}}">
+        <ul class="breadcrumb clickable" data-toggle="collapse" data-target="#pipeline_{{pipelineId}}">
+          <li>{{user}}<span class="divider"> / </span></li>
+          <li>{{jobName}}<span class="divider"> / </span>
+          <li>{{pipelineId}}</li>
+          <li class="action-button pin">
+            <span class="badge badge-success">PIN</span>
+          </li>
+          <li class="action-button remove" style="display:none;">
+            <span class="badge badge-important">REMOVE</span>
+          </li>
+        </ul>
+        <div id="pipeline_{{pipelineId}}" class="collapse in">
+          <div class="pipeline-content">
+            {{#if warnings}}
+            <div class="alert alert-error">
+            {{#each warnings}}
+              {{this}}<br/>
+            {{/each}}
+            </div>
+            {{/if}}
+            {{#if status}}
+            <div class="status">
+              {{#each status}}
+              {{#with this}}
+              <strong>{{description}}</strong>
+                -
+              <span class="muted">{{value}}</span><br/>
+              {{/with}}
+              {{/each}}
+            </div>
+            {{/if}}
+            <ul class="nav nav-tabs">
+              <li class="clickable">
+                <a href="#{{pipelineId}}_tab1" data-toggle="tab">Last experiment best individuals</a>
+              </li>
+              <li class="clickable">
+                <a href="#{{pipelineId}}_tab2" data-toggle="tab">All-time best individuals</a>
+              </li>
+              <li class="active clickable">
+                <a href="#{{pipelineId}}_tab3" data-toggle="tab">History</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div id="{{pipelineId}}_tab1" class="tab-pane">
+                {{#with lastExperimentScores}}
+                {{> scores-table}}
+                {{/with}}
+              </div>
+              <div id="{{pipelineId}}_tab2" class="tab-pane">
+                {{#with bestExperimentScores}}
+                {{> scores-table}}
+                {{/with}}
+              </div>
+              <div id="{{pipelineId}}_tab3" class="tab-pane active">
+                <div class="axislabel yaxislabel">Score</div>
+                <div class="primary-graph"></div>
+                <div class="axislabel xaxislabel">Generation Number</div>
+                <div class="secondary-graph"></div>
+                <div class="download-links pull-right">
+                  <span class="label">Downloads</span>
+                  <a href="/groningen/pipelines/{{pipelineId}}/csv">CSV</a>,
+                  <a href="/groningen/pipelines/{{pipelineId}}/config">Config</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script id="scores-table-partial" type="text/x-handlebars-template">
+      {{#if this}}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Exp.</th>
+            <th>Score</th>
+            <th>Unique Subject Command Line</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each this}}
+          {{#with this}}
+          <tr rel="tooltip" data-original-title="as on {{timestamp}}">
+            <td>{{experimentId}}</td>
+            <td>{{two-decimal-points score}}</td>
+            <td><pre>{{commandLine}}</pre></td>
+          </tr>
+          {{/with}}
+          {{/each}}
+        </tbody>
+      </table>
+      {{else}}
+      <span class="empty-table-message">List not populated yet.</span>
+      {{/if}}
+    </script>
+    <script id="graph-score-tooltip" type="text/x-handlebars-template">
+      <div class="graph-point-tooltip">
+        <strong>Score:</strong> {{score}}<br/>
+        <strong>JVM Settings:</strong> {{settings}}
+      </div>
+    </script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        groningen.initHandlebars();
+        groningen.attachEventHandlers();
+        groningen.updatePipelineList();
+        groningen.loadPinnedPipelines();
+      });
+    </script>
+  </body>
+</html>
+

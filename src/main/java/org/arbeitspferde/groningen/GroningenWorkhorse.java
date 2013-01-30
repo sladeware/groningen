@@ -15,8 +15,7 @@
 
 package org.arbeitspferde.groningen;
 
-import com.google.common.util.concurrent.Service;
-import com.google.common.util.concurrent.Service.State;
+import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -30,7 +29,6 @@ import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -49,7 +47,7 @@ public class GroningenWorkhorse implements Runnable {
   private static final Logger log =
       Logger.getLogger(GroningenWorkhorse.class.getCanonicalName());
 
-  private final Service backgroundServices;
+  private final ServiceManager backgroundServices;
   private final SystemAdapter systemAdapter;
   private final Settings settings;
   private final ProtoBufConfigManagerFactory protoBufConfigManagerFactory;
@@ -59,7 +57,7 @@ public class GroningenWorkhorse implements Runnable {
   @Inject
   private GroningenWorkhorse(final Provider<Pipeline> pipelineProvider,
       final PipelineIdGenerator pipelineIdGenerator,
-      final Service backgroundServices,
+      final ServiceManager backgroundServices,
       final SystemAdapter systemAdapter,
       final Settings settings,
       final PipelineManager pipelineManager,
@@ -107,19 +105,8 @@ public class GroningenWorkhorse implements Runnable {
     log.info(
         String.format("Starting subservices; will wait %s seconds at most...", startupDeadline));
     try {
-      final State state = backgroundServices.start().get(startupDeadline, TimeUnit.SECONDS);
-
-      if (state != State.RUNNING) {
-        log.severe(String.format(
-            "After waiting %s seconds,  not all of the subservices could be started and were" +
-                "in state %s.", startupDeadline, state));
-        throw new RuntimeException("Not all subservices could be started.");
-      }
+      backgroundServices.startAsync().awaitHealthy(startupDeadline, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
-      throw new RuntimeException(e);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (ExecutionException e) {
       throw new RuntimeException(e);
     }
   }
@@ -129,12 +116,8 @@ public class GroningenWorkhorse implements Runnable {
       final int shutdownDeadline = settings.getShutdownSubservicesDeadlineSeconds();
       log.info(String.format(
           "Waiting %s seconds for shutdown services to commence...", shutdownDeadline));
-      backgroundServices.stop().get(shutdownDeadline, TimeUnit.SECONDS);
+      backgroundServices.stopAsync().awaitStopped(shutdownDeadline, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
-      throw new RuntimeException(e);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } catch (ExecutionException e) {
       throw new RuntimeException(e);
     }
   }

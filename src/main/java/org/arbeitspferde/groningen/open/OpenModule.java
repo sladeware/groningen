@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.open;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -45,7 +44,6 @@ import org.arbeitspferde.groningen.utility.logstream.InputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.logstream.NullInputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.logstream.NullOutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
-import org.arbeitspferde.groningen.utility.open.BackgroundServices;
 import org.arbeitspferde.groningen.utility.open.LocalFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullFileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.open.NullMetricExporter;
@@ -67,7 +65,6 @@ public class OpenModule extends AbstractModule {
   protected void configure() {
     log.info("Binding open injectables.");
 
-    bind(Service.class).to(BackgroundServices.class);
     bind(MetricExporter.class).to(NullMetricExporter.class);
     bind(SupplementalSettingsProcessor.class).to(NullSupplementalSettingsProcessor.class);
     bind(SubjectInterrogator.class).to(NullSubjectInterrogator.class);

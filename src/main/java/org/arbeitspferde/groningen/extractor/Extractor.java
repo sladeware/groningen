@@ -113,62 +113,69 @@ public class Extractor implements Runnable {
 
     final String logLocation = addressor.get().logPathFor(subject, config.get());
 
-    parse(logLocation);
+    try {
+      parse(logLocation);
+    } catch (Exception e) {
+      log.log(Level.WARNING, String.format("Unable to parse log location: %s", logLocation), e);
+    }
   }
 
   /** Parse the input log filename and update signals as required */
   public void parse(String filename) {
     try {
-
-      final InputStream inputStream =
-          fileFactory.forFile(filename).inputStreamFor();
+      final InputStream inputStream = fileFactory.forFile(filename).inputStreamFor();
       final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
       final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+      try {
+        String line = null;
+        String token = null;
+        boolean parserActivated = true;
+        while ((line = bufferedReader.readLine()) != null) {
+          // We use -XX:+PrintGCApplicationStoppedTime to output pause time data that we parse here
+          // from the input gc.log or STDOUT of the experimental subject
+          int beginIndex = line.indexOf(PAUSE_TIME_LINE_SIGNATURE);
+          if (beginIndex >= 0) {
+            // Filter output.
+            if (parserActivated) {
+              parserActivated = false;
 
-      String line = null;
-      String token = null;
-      boolean parserActivated = true;
-      while ((line = bufferedReader.readLine()) != null) {
-        // We use -XX:+PrintGCApplicationStoppedTime to output pause time data that we parse here
-        // from the input gc.log or STDOUT of the experimental subject
-        int beginIndex = line.indexOf(PAUSE_TIME_LINE_SIGNATURE);
-        if (beginIndex >= 0) {
-          // Filter output.
-          if (parserActivated) {
-            parserActivated = false;
+              final StringTokenizer stringTokenizer = new StringTokenizer(line.substring(beginIndex));
 
-            final StringTokenizer stringTokenizer = new StringTokenizer(line.substring(beginIndex));
+              for (int i = 0; i < TOKEN_DEPTH; i++) {
+                if (stringTokenizer.hasMoreTokens()) {
+                  token = stringTokenizer.nextToken();
+                } else {
+                  break;
+                }
+              }
 
-            for (int i = 0; i < TOKEN_DEPTH; i++) {
-              if (stringTokenizer.hasMoreTokens()) {
-                token = stringTokenizer.nextToken();
-              } else {
-                break;
+              double pauseTimeSecs;
+
+              try {
+                pauseTimeSecs = Double.valueOf(token.trim()).doubleValue();
+              } catch (final Exception e) {
+                log.log(Level.WARNING,
+                    String.format("Unable to parse pause time '%s'. Defaulting to 0.0", token), e);
+                pauseTimeSecs = 0.0;
+              }
+              bridge.getPauseTime().incrementPauseTime(pauseTimeSecs);
+              if (verbose) {
+                log.info(String.format("Paused %s seconds", token));
               }
             }
-
-            double pauseTimeSecs;
-
-            try {
-              pauseTimeSecs = Double.valueOf(token.trim()).doubleValue();
-            } catch (final Exception e) {
-              log.log(Level.WARNING,
-                  String.format("Unable to parse pause time '%s'. Defaulting to 0.0", token), e);
-              pauseTimeSecs = 0.0;
-            }
-            bridge.getPauseTime().incrementPauseTime(pauseTimeSecs);
-            if (verbose) {
-              log.info(String.format("Paused %s seconds", token));
-            }
+          } else {
+            parserActivated = true;
           }
-        } else {
-          parserActivated = true;
         }
+        logSuccessfulParseCount.incrementAndGet();
+      } catch (final Exception e) {
+        log.log(Level.WARNING, "Problems processing the log file.", e);
+        logFailedParseCount.incrementAndGet();
+      } finally {
+        bufferedReader.close();
       }
-      bufferedReader.close();
-      logSuccessfulParseCount.incrementAndGet();
-    } catch (final IOException e) {
-      log.log(Level.WARNING, "Problems processing the log file.", e);
+    } catch (final Exception e) {
+      log.log(Level.WARNING, "Problems creating the log file reader.", e);
       logFailedParseCount.incrementAndGet();
     }
   }

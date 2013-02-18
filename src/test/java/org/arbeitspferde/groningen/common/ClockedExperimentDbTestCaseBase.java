@@ -17,7 +17,7 @@ package org.arbeitspferde.groningen.common;
 
 
 import junit.framework.TestCase;
-import org.arbeitspferde.groningen.LocalFileFactory;
+
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
@@ -25,12 +25,11 @@ import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 import org.arbeitspferde.groningen.utility.PinnedClock;
-import org.arbeitspferde.groningen.utility.logstream.NullInputLogStreamFactory;
-import org.arbeitspferde.groningen.utility.logstream.NullOutputLogStreamFactory;
 
 /**
- * Test case base class for tests using {@link ExperimentDb} and {@link Clock}.
+ * Test case base class for tests using {@link ExperimentDb}.
  */
+//TODO(mbushkov) renaming needed - Clock is no longer used.
 public class ClockedExperimentDbTestCaseBase extends TestCase {
   /** Contants used for mocked clock source */
   protected static final long DEFAULT_TIME_MS = 1000000000L;
@@ -51,8 +50,7 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
   protected void setUp() throws Exception {
     clock = new PinnedClock(DEFAULT_TIME_MS, INCREMENT_MS);
 
-    experimentDb = new ExperimentDb(clock, new LocalFileFactory(),
-        new NullInputLogStreamFactory(), new NullOutputLogStreamFactory());
+    experimentDb = new ExperimentDb();
     monitor = new DisplayMediator(clock, experimentDb, new PipelineId("pipeline_id"));
     metricExporter = new MetricExporter() {
       @Override

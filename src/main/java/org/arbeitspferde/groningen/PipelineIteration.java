@@ -107,7 +107,7 @@ public class PipelineIteration {
     boolean notComplete = hypothesizer.notComplete();
 
     if (notComplete) {
-      // Run the Generator and rety until it succeeds
+      // Run the Generator and retry until it succeeds
       currentPipelineStage.set(1);
       boolean done;
       do {

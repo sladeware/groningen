@@ -16,6 +16,9 @@
 package org.arbeitspferde.groningen.common;
 
 public interface Settings {
+  public Integer getNumShards();
+  public Integer getShardIndex();
+  public String getDatastore();
   public Integer getPort();
   public Integer getStartupSubservicesDeadlineSeconds();
   public Integer getShutdownSubservicesDeadlineSeconds();

@@ -35,7 +35,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PipelineManagerTest extends TestCase {
   private BlockScope pipelineScope;
   private Pipeline pipelineMock;
-  private PipelineIdGenerator pipelineIdGenerator;
+  private Datastore dataStoreMock;
+  private PipelineIdGenerator pipelineIdGeneratorMock;
 
   private PipelineManager pipelineManager;
 
@@ -44,7 +45,8 @@ public class PipelineManagerTest extends TestCase {
     super.setUp();
 
     pipelineMock = EasyMock.createNiceMock(Pipeline.class);
-    pipelineIdGenerator = EasyMock.createNiceMock(PipelineIdGenerator.class);
+    dataStoreMock = EasyMock.createNiceMock(Datastore.class);
+    pipelineIdGeneratorMock = EasyMock.createNiceMock(PipelineIdGenerator.class);
     pipelineScope = new SimpleScope();
 
     Provider<Pipeline> pipelineProvider = new Provider<Pipeline>() {
@@ -54,7 +56,8 @@ public class PipelineManagerTest extends TestCase {
       }
     };
 
-    pipelineManager = new PipelineManager(pipelineIdGenerator, pipelineScope, pipelineProvider);
+    pipelineManager = new PipelineManager(pipelineIdGeneratorMock, pipelineScope,
+        pipelineProvider, dataStoreMock);
   }
 
   /**
@@ -65,7 +68,7 @@ public class PipelineManagerTest extends TestCase {
     ConfigManager configManager = new StubConfigManager();
 
     EasyMock.expect(
-        pipelineIdGenerator.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
+        pipelineIdGeneratorMock.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
           andReturn(new PipelineId("pipelineId"));
 
     final ReentrantLock lock = new ReentrantLock();
@@ -79,7 +82,7 @@ public class PipelineManagerTest extends TestCase {
         return null;
       }});
 
-    EasyMock.replay(pipelineMock, pipelineIdGenerator);
+    EasyMock.replay(pipelineMock, pipelineIdGeneratorMock);
 
     lock.lock();
     try {
@@ -99,7 +102,7 @@ public class PipelineManagerTest extends TestCase {
     ConfigManager configManager = new StubConfigManager();
 
     EasyMock.expect(
-        pipelineIdGenerator.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
+        pipelineIdGeneratorMock.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
           andReturn(new PipelineId("pipelineId"));
 
     EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
@@ -109,7 +112,7 @@ public class PipelineManagerTest extends TestCase {
         return null;
       }});
 
-    EasyMock.replay(pipelineMock, pipelineIdGenerator);
+    EasyMock.replay(pipelineMock, pipelineIdGeneratorMock);
 
     PipelineId id = pipelineManager.startPipeline(configManager, true);
     assertNotNull(pipelineManager.findPipelineById(id));

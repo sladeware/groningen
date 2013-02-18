@@ -33,7 +33,7 @@ public class PipelineIdTest extends TestCase {
     assertTrue(!id1.equals(id2));
     assertTrue(!id2.equals(id1));
   }
-
+  
   public void testHashIsConsistent() {
     PipelineId id1 = new PipelineId("id1");
     PipelineId id1Copy = new PipelineId("id1");
@@ -41,5 +41,5 @@ public class PipelineIdTest extends TestCase {
 
     assertTrue(id1.hashCode() == id1Copy.hashCode());
     assertTrue(id1.hashCode() != id2.hashCode());
-  }
+  }  
 }

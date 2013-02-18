@@ -20,6 +20,7 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import org.arbeitspferde.groningen.Datastore.DatastoreException;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -29,6 +30,7 @@ import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
+import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.generator.SubjectShuffler;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
@@ -69,6 +71,10 @@ public class Pipeline {
   private final Provider<SubjectShuffler> shuffler;
 
   private final Hypothesizer hypothesizer;
+  
+  private final ExperimentDb experimentDb;
+  
+  private final Datastore datastore;
 
   private final ConfigManager configManager;
 
@@ -77,7 +83,7 @@ public class Pipeline {
   private final Provider<PipelineIteration> pipelineIterationProvider;
 
   private final PipelineStageDisplayer pipelineStageDisplayer;
-
+  
   private final Thread pipelineThread;
 
   /** Counts the number of pipeline iterations */
@@ -112,6 +118,7 @@ public class Pipeline {
     MonitorGroningen monitor,
     Provider<SubjectShuffler> shuffler,
     Hypothesizer hypothesizer,
+    Datastore datastore,
     ConfigManager configManager,
     Provider<PipelineIteration> pipelineIterationProvider,
     PipelineId pipelineId,
@@ -122,10 +129,13 @@ public class Pipeline {
     this.monitor = monitor;
     this.shuffler = shuffler;
     this.hypothesizer = hypothesizer;
+    this.datastore = datastore;
     this.configManager = configManager;
     this.pipelineIterationProvider = pipelineIterationProvider;
     this.pipelineId = pipelineId;
     this.pipelineThread = Thread.currentThread();
+    
+    this.experimentDb = new ExperimentDb();
 
     isKilled = new AtomicBoolean();
     pipelineStageDisplayer = new PipelineStageDisplayer();
@@ -150,6 +160,17 @@ public class Pipeline {
 
   public void joinPipeline() throws InterruptedException {
     pipelineThread.join();
+  }
+  
+  public void restoreState(PipelineState state) {
+    if (!pipelineId.equals(state.pipelineId())) {
+      throw new RuntimeException("trying to assign state from another pipeline");
+    }
+    experimentDb.reset(state.experimentDb());
+  }
+  
+  public PipelineState state() {
+    return new PipelineState(pipelineId, configManager.queryConfig(), experimentDb);
   }
 
   /**
@@ -212,10 +233,16 @@ public class Pipeline {
           pipelineIterationScope.exit();
         }
         pipelineIterationCount.incrementAndGet();
+        
+        try {
+          datastore.writePipelines(new PipelineState[] { state() });
+        } catch (DatastoreException e) {
+          log.severe("can't write pipeline into datastore: " + e.getMessage());
+        }
       } while (notCompleted  && !isKilled.get());
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       log.log(Level.SEVERE, "Fatal error", e);
-      throw new RuntimeException(e);
+      throw e;
     }
   }
 

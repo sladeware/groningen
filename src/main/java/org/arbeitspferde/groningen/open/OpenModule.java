@@ -20,11 +20,15 @@ import com.google.common.hash.Hashing;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
+import org.arbeitspferde.groningen.Datastore;
 import org.arbeitspferde.groningen.common.SupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.common.open.NullSupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.config.LegacyProgramConfigurationMediator;
 import org.arbeitspferde.groningen.config.open.NullLegacyProgramConfigurationMediator;
+import org.arbeitspferde.groningen.datastore.MemoryDatastore;
 import org.arbeitspferde.groningen.extractor.CollectionLogAddressor;
 import org.arbeitspferde.groningen.extractor.open.NullCollectionLogAddressor;
 import org.arbeitspferde.groningen.security.VendorSecurityManager;
@@ -64,6 +68,10 @@ public class OpenModule extends AbstractModule {
   @Override
   protected void configure() {
     log.info("Binding open injectables.");
+
+    MapBinder<String, Datastore> datastoreBinder = MapBinder.newMapBinder(binder(), String.class,
+        Datastore.class);
+    datastoreBinder.addBinding(MemoryDatastore.class.getCanonicalName()).to(MemoryDatastore.class);
 
     bind(MetricExporter.class).to(NullMetricExporter.class);
     bind(SupplementalSettingsProcessor.class).to(NullSupplementalSettingsProcessor.class);

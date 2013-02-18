@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SettingsProvider;
@@ -49,6 +50,7 @@ import org.arbeitspferde.groningen.validator.Validator;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.Map;
 import java.util.Timer;
 
 /**
@@ -108,7 +110,25 @@ public class BaseModule extends AbstractModule {
     install(new FactoryModuleBuilder()
         .implement(ConfigManager.class, ProtoBufConfigManager.class)
         .build(ProtoBufConfigManagerFactory.class));
+  }
 
+  @Provides
+  @Named("numShards")
+  public Integer produceNumShards(Settings settings) {
+    return settings.getNumShards();
+  }
+
+  @Provides
+  @Named("shardIndex")
+  public Integer produceShardIndex(Settings settings) {
+    return settings.getShardIndex();
+  }
+
+  @Provides
+  @Singleton
+  public Datastore produceDatastore(Settings settings,
+      Map<String, Provider<Datastore>> datastorePlugins) {
+    return datastorePlugins.get(settings.getDatastore()).get();
   }
 
   @Provides

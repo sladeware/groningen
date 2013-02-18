@@ -23,12 +23,15 @@ import org.arbeitspferde.groningen.config.PipelineScoped;
  */
 @PipelineScoped
 public class PipelineId implements Comparable<PipelineId> {
-  private final String stringRepresentation;
+  private final String id;
 
-  public PipelineId(String stringRepresentation) {
-    Preconditions.checkNotNull(stringRepresentation);
-
-    this.stringRepresentation = stringRepresentation;
+  public PipelineId(String id) {
+    Preconditions.checkNotNull(id);
+    this.id = id;
+  }  
+    
+  public String id() {
+    return id;
   }
 
   @Override
@@ -36,22 +39,22 @@ public class PipelineId implements Comparable<PipelineId> {
     if (obj == null || !(obj instanceof PipelineId)) {
       return false;
     } else {
-      return stringRepresentation.equals(((PipelineId) obj).stringRepresentation);
+      return id.equals(((PipelineId) obj).id);
     }
   }
 
   @Override
   public int hashCode() {
-    return stringRepresentation.hashCode();
+    return id.hashCode();
   }
 
   @Override
   public int compareTo(PipelineId o) {
-    return stringRepresentation.compareTo(o.stringRepresentation);
+    return id.compareTo(o.id);
   }
 
   @Override
   public String toString() {
-    return stringRepresentation;
+    return id;
   }
 }

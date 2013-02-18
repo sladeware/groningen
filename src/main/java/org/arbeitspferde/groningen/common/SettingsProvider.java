@@ -43,6 +43,29 @@ public class SettingsProvider implements Provider<Settings> {
   private final String[] args;
   private final SupplementalSettingsProcessor supplementalSettingsProcessor;
 
+  /*
+   * In case Groningen isn't able to hold the load with a single server instance, it will be
+   * sharded.
+   * I.e. multiple server instances (shards) will run simultaneously. They will manage different
+   * pipelines based on their pipeline ids (see {@link PipelineIdGenerator} and
+   * shardIndexForPipelineId). Also see sharding-aware {@link PipelineRestorer} as an example
+   * of how sharding support is implemented.
+   */
+  @Option(
+      name = "--numShards",
+      usage = "Total number of shards in this Groningen deployment.")
+  public int numShards = 1;
+
+  @Option(
+      name = "--shardIndex",
+      usage = "Index of this server instance's shard in this Groningen deployment.")
+  public int shardIndex = 0;
+
+  @Option(
+      name = "--datastore",
+      usage = "Datastore class to use.")
+  public String datastore = "org.arbeitspferde.groningen.datastore.MemoryDatastore";
+
   @Option(
       name = "--port",
       usage = "The port on which to service HTTP requests.")
@@ -145,6 +168,21 @@ public class SettingsProvider implements Provider<Settings> {
       @Override
       public Integer getEventLogFlushIntervalSeconds() {
         return eventLogFlushIntervalSeconds;
+      }
+
+      @Override
+      public Integer getNumShards() {
+        return numShards;
+      }
+
+      @Override
+      public Integer getShardIndex() {
+        return shardIndex;
+      }
+
+      @Override
+      public String getDatastore() {
+        return datastore;
       }
     };
   }

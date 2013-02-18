@@ -60,6 +60,7 @@ public class AllTests extends TestSuite{
     suite.addTestSuite(PipelineIdGeneratorTest.class);
     suite.addTestSuite(PipelineIdTest.class);
     suite.addTestSuite(PipelineManagerTest.class);
+    suite.addTestSuite(PipelineRestorerTest.class);
     suite.addTestSuite(ServicesModuleTest.class);
 
     // org.arbeitspferde.groningen.common tests

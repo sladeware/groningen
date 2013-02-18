@@ -19,6 +19,7 @@ import com.google.common.hash.HashFunction;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.utility.Clock;
 
@@ -30,13 +31,19 @@ public class PipelineIdGenerator {
   private final String servingAddress;
   private final Clock clock;
   private final HashFunction hashFunction;
+  private final int shardIndex;
+  private final int numShards;
 
   @Inject
-  public PipelineIdGenerator(@Named("servingAddress") final String systemServingAddress,
+  public PipelineIdGenerator(@Named("shardIndex") final Integer shardIndex,
+      @Named("numShards") final Integer numShards,
+      @Named("servingAddress") final String systemServingAddress,
       final Clock clock, final HashFunction hashFunction) {
     this.servingAddress = systemServingAddress;
     this.clock = clock;
     this.hashFunction = hashFunction;
+    this.shardIndex = shardIndex;
+    this.numShards = numShards;
   }
 
   /**
@@ -53,5 +60,10 @@ public class PipelineIdGenerator {
     sb.append("_");
     sb.append(config.getProtoConfig().toString());
     return new PipelineId(hashFunction.hashString(sb).toString());
+  }
+  
+  public int shardIndexForPipelineId(PipelineId id) {
+    /* TODO(mbushkov): implement proper sharding support */
+    return shardIndex;
   }
 }

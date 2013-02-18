@@ -198,13 +198,8 @@ public class Hypothesizer extends ProfilingRunnable {
     }
 
     if (gaEngine.isTerminated()) {
-      try {
-        experimentDb.cleanUp();
-      } catch (IOException e) {
-        logger.log(Level.SEVERE, "Unable to perform final clean up.", e);
-        throw new RuntimeException(e);
-      }
       logger.info("Hypothesizer has reached termination conditions.");
+      experimentDb.cleanUp();
       notComplete = false;
     }
   }

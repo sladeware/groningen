@@ -4,6 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
+import org.arbeitspferde.groningen.Datastore.DatastoreException;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -31,20 +33,91 @@ public class PipelineManager {
   private final PipelineIdGenerator pipelineIdGenerator;
   private final BlockScope pipelineScope;
   private final Provider<Pipeline> pipelineProvider;
+  private final Datastore datastore;
 
   private ConcurrentMap<PipelineId, Pipeline> pipelines;
 
   @Inject
   public PipelineManager(PipelineIdGenerator pipelineIdGenerator,
       @Named(PipelineScoped.SCOPE_NAME) BlockScope pipelineScope,
-      Provider<Pipeline> pipelineProvider) {
+      Provider<Pipeline> pipelineProvider,
+      Datastore datastore) {
     this.pipelineIdGenerator = pipelineIdGenerator;
     this.pipelineScope = pipelineScope;
     this.pipelineProvider = pipelineProvider;
-
+    this.datastore = datastore;
     this.pipelines = new ConcurrentHashMap<PipelineId, Pipeline>();
   }
 
+  public PipelineId restorePipeline(final PipelineState pipelineState,
+      final ConfigManager configManager, final boolean blockUntilStarted) {
+    final GroningenConfig firstConfig = configManager.queryConfig();
+    final PipelineId pipelineId = pipelineState.pipelineId();
+
+    final ReentrantLock pipelineConstructionLock = new ReentrantLock();
+    final Condition pipelineConstructionCondition = pipelineConstructionLock.newCondition();
+    // NOTE(mbushkov): using AtomicReference here is somewhat redundant. We use a dedicated lock
+    // (pipelineConstructionLock) and do not require atomicity. Still it's very handy to just
+    // use a reference class that is already in a standard library
+    final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
+
+    log.fine("starting thread for pipeline (restoring) " + pipelineId.toString());
+    Thread pipelineThread = new Thread("pipeline-restore-" + pipelineId.toString()) {
+      @Override
+      public void run() {
+        try {
+          pipelineScope.enter();
+          try {
+            pipelineScope.seed(PipelineId.class, pipelineId);
+            pipelineScope.seed(ConfigManager.class, configManager);
+
+            Pipeline pipeline;
+            pipelineConstructionLock.lock();
+            try {
+              pipeline = pipelineProvider.get();
+              pipelineReference.set(pipeline);
+              pipelines.put(pipelineId, pipeline);
+              pipelineConstructionCondition.signal();
+            } finally {
+              pipelineConstructionLock.unlock();
+            }
+
+            log.fine("running pipeline " + pipelineId.toString());
+            pipeline.restoreState(pipelineState);
+            
+            pipeline.run();
+          } finally {
+            pipelineScope.exit();
+            pipelines.remove(pipelineId);
+
+            try {
+              datastore.deletePipelines(new PipelineId[] { pipelineId });
+            } catch (DatastoreException e) {
+              log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
+                  pipelineId.toString(), e.getMessage()));
+            }
+          }
+        } catch (RuntimeException e) {
+          log.severe(e.toString());
+        }
+      }
+    };
+    pipelineThread.start();
+
+    if (blockUntilStarted) {
+      pipelineConstructionLock.lock();
+      try {
+        while (pipelineReference.get() == null) {
+          pipelineConstructionCondition.awaitUninterruptibly();
+        }
+      } finally {
+        pipelineConstructionLock.unlock();
+      }
+    }
+
+    return pipelineId;    
+  }
+  
   /**
    * Start new Pipeline with a given {@link ConfigManager}
    *
@@ -87,11 +160,26 @@ public class PipelineManager {
               pipelineConstructionLock.unlock();
             }
 
+            log.fine("writing to datastore " + pipelineId.toString());
+            try {
+              datastore.createPipeline(pipeline.state(), /* checkForConflicts */ true);
+            } catch (DatastoreException e) {
+              log.severe(String.format("writing to datastore failed (pipeline id: %s): %s",
+                  pipelineId.toString(), e.getMessage()));
+            }
+            
             log.fine("running pipeline " + pipelineId.toString());
-            pipeline.run();
+            pipeline.run();            
           } finally {
             pipelineScope.exit();
             pipelines.remove(pipelineId);
+            
+            try {
+              datastore.deletePipelines(new PipelineId[] { pipelineId });
+            } catch (DatastoreException e) {
+              log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
+                  pipelineId.toString(), e.getMessage()));
+            }
           }
         } catch (RuntimeException e) {
           log.severe(e.toString());

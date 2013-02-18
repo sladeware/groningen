@@ -19,7 +19,19 @@ syntax = "proto2";
 option java_package = "org.arbeitspferde.groningen.proto";
 option java_outer_classname = "ExperimentDbProtos";
 
-package org.arbeitpferde.groeningen.proto;
+package org.arbeitpferde.groningen.proto;
+
+import "groningen_config.proto";
+
+message PipelineId {
+  required string id = 1;
+}
+
+message PipelineState {
+  required PipelineId id = 1;
+  required org.arbeitspferde.groningen.proto.ProgramConfiguration configuration = 2;
+  repeated Subject subjects = 3;
+}
 
 message Experiment {
   required uint64 id = 1;

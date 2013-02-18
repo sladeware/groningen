@@ -28,11 +28,13 @@ import org.joda.time.Instant;
  * Test for {@link PipelineIdGenerator}
  */
 public class PipelineIdGeneratorTest extends TestCase {
+  private static final int SHARD_INDEX = 0;
+  private static final int NUM_SHARDS = 1;
   private static final String SERVING_ADDRESS = "myservingaddress:31337";
 
   private final Clock mockClock = EasyMock.createNiceMock(Clock.class);
   private final PipelineIdGenerator pipelineIdGenerator =
-      new PipelineIdGenerator(SERVING_ADDRESS, mockClock, Hashing.md5());
+      new PipelineIdGenerator(SHARD_INDEX, NUM_SHARDS, SERVING_ADDRESS, mockClock, Hashing.md5());
   private final GroningenConfig stubConfig = new StubConfigManager.StubConfig() {
     @Override
     public ProgramConfiguration getProtoConfig() {

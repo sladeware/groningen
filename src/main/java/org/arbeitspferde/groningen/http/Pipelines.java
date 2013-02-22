@@ -98,13 +98,13 @@ public class Pipelines {
   private static ExperimentInfo[] extractExperimentInfo(
       EvaluatedSubject[] subjects, long cumulativeExperimentIdSum) {
     ArrayList<ExperimentInfo> experimentScores = new ArrayList<ExperimentInfo>();
-    int count = 0;
+    int count = 1;
     for (EvaluatedSubject subject : subjects) {
       experimentScores.add(new ExperimentInfo(
-          subject.getExperimentId(), subject.getFitness() / cumulativeExperimentIdSum,
+          subject.getExperimentId(), count,
           subject.getBridge().getCommandLine().toArgumentString(),
           df.format(subject.getTimeStamp().getMillis())));
-      if (++count >= NUM_EXPERIMENT_SCORES) {
+      if (count++ >= NUM_EXPERIMENT_SCORES) {
         break;
       }
     }
@@ -131,9 +131,6 @@ public class Pipelines {
           status.add(new StatusData(statusObj.getInfoString(), statusObj.getObject().toString()));
         }
         pipelineInfo.status = status.toArray(new StatusData[0]);
-        // Last Experiment Scores
-        pipelineInfo.lastExperimentScores = extractExperimentInfo(
-            infoProvider.getCurrentExperimentSubjects(), 1);
         // Best Experiment Scores
         EvaluatedSubject[] alltimeSubjects = infoProvider.getAlltimeExperimentSubjects();
         long cumulativeExperimentIdSum = infoProvider.getCumulativeExperimentIdSum();

@@ -22,7 +22,6 @@ package org.arbeitspferde.groningen.http;
 public class DetailedPipelineInfo extends PipelineInfo {
 
   public String[] warnings;
-  public ExperimentInfo[] lastExperimentScores;
   public ExperimentInfo[] bestExperimentScores;
   public HistoricalData[] history;
   public StatusData[] status;

@@ -37,6 +37,13 @@ groningen.pipelineGroupTemplate_ = null;
 groningen.pipelineTemplate_ = null;
 
 /**
+ * Handlebars template for pipeline content only.
+ * @private
+ * @type {function}
+ */
+groningen.pipelineContentTemplate_ = null;
+
+/**
  * Handlebars template for graph datapoint tooltip.
  * @private
  * @type {function}
@@ -67,6 +74,19 @@ groningen.getPipelineTemplate_ = function() {
     groningen.pipelineTemplate_ = Handlebars.compile(source);
   }
   return groningen.pipelineTemplate_;
+};
+
+/**
+ * Returns Handlebars template for pipeline content.
+ * @private
+ * @return {function} Handlebars template.
+ */
+groningen.getPipelineContentTemplate_ = function() {
+  if (groningen.pipelineContentTemplate_ == null) {
+    var source = $('#pipeline-content-partial').html();
+    groningen.pipelineContentTemplate_ = Handlebars.compile(source);
+  }
+  return groningen.pipelineContentTemplate_;
 };
 
 /**
@@ -101,7 +121,7 @@ groningen.attachEventHandlers = function() {
   $('body').on('click', '.breadcrumb > .pin', function(eventObj) {
     $(this).parents('.pipeline-box')
         .appendTo('#pinned')
-        .find('.action-button')
+        .find('.action-button:not(.refresh)')
         .toggle();
     groningen.updateLocationHash_();
     eventObj.stopPropagation();
@@ -110,6 +130,22 @@ groningen.attachEventHandlers = function() {
   $('body').on('click', '.breadcrumb > .remove', function() {
     $(this).parents('.pipeline-box').remove();
     groningen.updateLocationHash_();
+  });
+  // Refresh a pipeline
+  $('body').on('click', '.breadcrumb > .refresh', function(eventObj) {
+    eventObj.stopPropagation();
+    var pipelineContainer = $(this).parents('.pipeline-box');
+    pipelineContainer.attr('disabled', 'true')
+        .children('div.collapse')
+        .collapse('hide')
+        .remove();
+    var pipelineId = pipelineContainer.attr('data-pipelineid');
+    groningen.fetchPipelines_(pipelineId, function(pipelineContainer) {
+      return function(data) {
+      groningen.renderPipelineContent_(data[0], pipelineContainer);
+      pipelineContainer.attr('disabled', false);
+      };
+    }(pipelineContainer));
   });
 };
 
@@ -181,7 +217,7 @@ groningen.loadPinnedPipelines = function() {
       $.each(data, function(_, dataItem) {
         groningen.renderPipeline_(dataItem, '#pinned');
       });
-      $('#pinned .action-button').toggle();
+      $('#pinned .action-button:not(.refresh)').toggle();
       $('#pinned .pipeline-box > div.collapse').collapse('hide');
     });
   }
@@ -208,6 +244,33 @@ groningen.fetchPipelines_ = function(pipelineIds, renderingFunction) {
  */
 groningen.renderPipeline_ = function(pipelineData, parentSelector) {
   var template = groningen.getPipelineTemplate_();
+  groningen.renderPipelineWithTemplate_(pipelineData, parentSelector, template);
+};
+
+/**
+ * Renders the content section of the pipeline.
+ * @private
+ * @param {DetailedPipelineInfo} pipelineData JSON representation of detailed
+ *     information about the pipeline.
+ * @param {string} parentSelector jQuery selector for parent div which will hold
+ *     the rendered elements.
+ */
+groningen.renderPipelineContent_ = function(pipelineData, parentSelector) {
+  var template = groningen.getPipelineContentTemplate_();
+  groningen.renderPipelineWithTemplate_(pipelineData, parentSelector, template);
+};
+
+/**
+ * Renders pipeline data using a given Handlebars template
+ * @private
+ * @param {DetailedPipelineInfo} pipelineData JSON representation of detailed
+ *     information about the pipeline.
+ * @param {string} parentSelector jQuery selector for parent div which will hold
+ *     the rendered elements.
+ * @param {function} template Handlebars template.
+ */
+groningen.renderPipelineWithTemplate_ = function(
+    pipelineData, parentSelector, template) {
   $(template(pipelineData))
       .appendTo(parentSelector)
       .find('[rel=tooltip]')
@@ -227,8 +290,8 @@ groningen.renderPipeline_ = function(pipelineData, parentSelector) {
  * @param {Array} data History data to be rendered on graph.
  */
 groningen.renderGraph_ = function(pipelineId, data) {
-  var primarySelector = '#' + pipelineId + '_tab3 .primary-graph';
-  var secondarySelector = '#' + pipelineId + '_tab3 .secondary-graph';
+  var primarySelector = '#' + pipelineId + '_tab2 .primary-graph';
+  var secondarySelector = '#' + pipelineId + '_tab2 .secondary-graph';
   var firstTabSelector = 'a[href=#' + pipelineId + '_tab1]';
   var maxGeneration = -1;
   var maxScore = -1.0;
@@ -287,9 +350,8 @@ groningen.renderGraph_ = function(pipelineId, data) {
  */
 groningen.initHandlebars = function() {
   Handlebars.registerPartial('scores-table', $('#scores-table-partial').html());
-  Handlebars.registerHelper('two-decimal-points', function(num) {
-    return num.toFixed(2);
-  });
+  Handlebars.registerPartial(
+      'pipeline-content', $('#pipeline-content-partial').html());
 };
 
 /**

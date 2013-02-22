@@ -21,16 +21,16 @@ package org.arbeitspferde.groningen.http;
 public class ExperimentInfo {
 
   public long experimentId;
-  public double score;
+  public int rank;
   public String commandLine;
   public String timestamp;
 
   public ExperimentInfo() {
   }
 
-  public ExperimentInfo(long experimentId, double score, String commandLine, String timestamp) {
+  public ExperimentInfo(long experimentId, int rank, String commandLine, String timestamp) {
     this.experimentId = experimentId;
-    this.score = score;
+    this.rank = rank;
     this.commandLine = commandLine;
     this.timestamp = timestamp;
   }

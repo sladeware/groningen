@@ -156,6 +156,7 @@ pre {
 li.action-button {
   float: right;
   margin-top: 3px;
+  margin-left: 3px;
 }
 
 .graph-point-tooltip {

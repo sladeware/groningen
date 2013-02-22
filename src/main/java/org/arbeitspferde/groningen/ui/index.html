@@ -82,6 +82,9 @@ limitations under the License.
           <li>{{user}}<span class="divider"> / </span></li>
           <li>{{jobName}}<span class="divider"> / </span>
           <li>{{pipelineId}}</li>
+          <li class="action-button refresh">
+            <span class="badge badge-info">REFRESH</span>
+          </li>
           <li class="action-button pin">
             <span class="badge badge-success">PIN</span>
           </li>
@@ -89,58 +92,53 @@ limitations under the License.
             <span class="badge badge-important">REMOVE</span>
           </li>
         </ul>
-        <div id="pipeline_{{pipelineId}}" class="collapse in">
-          <div class="pipeline-content">
-            {{#if warnings}}
-            <div class="alert alert-error">
-            {{#each warnings}}
-              {{this}}<br/>
+        {{> pipeline-content}}
+      </div>
+    </script>
+    <script id="pipeline-content-partial" type="text/x-handlebars-template">
+      <div id="pipeline_{{pipelineId}}" class="collapse in">
+        <div class="pipeline-content">
+          {{#if warnings}}
+          <div class="alert alert-error">
+          {{#each warnings}}
+            {{this}}<br/>
+          {{/each}}
+          </div>
+          {{/if}}
+          {{#if status}}
+          <div class="status">
+            {{#each status}}
+            {{#with this}}
+            <strong>{{description}}</strong>
+              -
+            <span class="muted">{{value}}</span><br/>
+            {{/with}}
             {{/each}}
-            </div>
-            {{/if}}
-            {{#if status}}
-            <div class="status">
-              {{#each status}}
-              {{#with this}}
-              <strong>{{description}}</strong>
-                -
-              <span class="muted">{{value}}</span><br/>
+          </div>
+          {{/if}}
+          <ul class="nav nav-tabs">
+            <li class="clickable">
+              <a href="#{{pipelineId}}_tab1" data-toggle="tab">Best Individuals</a>
+            </li>
+            <li class="active clickable">
+              <a href="#{{pipelineId}}_tab2" data-toggle="tab">History</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div id="{{pipelineId}}_tab1" class="tab-pane">
+              {{#with bestExperimentScores}}
+              {{> scores-table}}
               {{/with}}
-              {{/each}}
             </div>
-            {{/if}}
-            <ul class="nav nav-tabs">
-              <li class="clickable">
-                <a href="#{{pipelineId}}_tab1" data-toggle="tab">Last experiment best individuals</a>
-              </li>
-              <li class="clickable">
-                <a href="#{{pipelineId}}_tab2" data-toggle="tab">All-time best individuals</a>
-              </li>
-              <li class="active clickable">
-                <a href="#{{pipelineId}}_tab3" data-toggle="tab">History</a>
-              </li>
-            </ul>
-            <div class="tab-content">
-              <div id="{{pipelineId}}_tab1" class="tab-pane">
-                {{#with lastExperimentScores}}
-                {{> scores-table}}
-                {{/with}}
-              </div>
-              <div id="{{pipelineId}}_tab2" class="tab-pane">
-                {{#with bestExperimentScores}}
-                {{> scores-table}}
-                {{/with}}
-              </div>
-              <div id="{{pipelineId}}_tab3" class="tab-pane active">
-                <div class="axislabel yaxislabel">Score</div>
-                <div class="primary-graph"></div>
-                <div class="axislabel xaxislabel">Generation Number</div>
-                <div class="secondary-graph"></div>
-                <div class="download-links pull-right">
-                  <span class="label">Downloads</span>
-                  <a href="/groningen/pipelines/{{pipelineId}}/csv">CSV</a>,
-                  <a href="/groningen/pipelines/{{pipelineId}}/config">Config</a>
-                </div>
+            <div id="{{pipelineId}}_tab2" class="tab-pane active">
+              <div class="axislabel yaxislabel">Score</div>
+              <div class="primary-graph"></div>
+              <div class="axislabel xaxislabel">Generation Number</div>
+              <div class="secondary-graph"></div>
+              <div class="download-links pull-right">
+                <span class="label">Downloads</span>
+                <a href="/groningen/pipelines/{{pipelineId}}/csv">CSV</a>,
+                <a href="/groningen/pipelines/{{pipelineId}}/config">Config</a>
               </div>
             </div>
           </div>
@@ -152,8 +150,8 @@ limitations under the License.
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
+            <th>Rank</th>
             <th>Exp.</th>
-            <th>Score</th>
             <th>Unique Subject Command Line</th>
           </tr>
         </thead>
@@ -161,8 +159,8 @@ limitations under the License.
           {{#each this}}
           {{#with this}}
           <tr rel="tooltip" data-original-title="as on {{timestamp}}">
+            <td>{{rank}}</td>
             <td>{{experimentId}}</td>
-            <td>{{two-decimal-points score}}</td>
             <td><pre>{{commandLine}}</pre></td>
           </tr>
           {{/with}}

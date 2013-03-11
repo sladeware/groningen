@@ -255,6 +255,8 @@ public class ProtoBufFileSource implements ProtoBufSource {
       intermediateString.append(buffer, 0, length);
     }
 
+    // TODO(team): rework such that this is a Reader that does rewrite on
+    // the fly
     final String migratedString = legacyProgramConfigurationMediator
         .migrateLegacyConfiguration(intermediateString.toString());
 

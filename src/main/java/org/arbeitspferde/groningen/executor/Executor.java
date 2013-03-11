@@ -668,7 +668,7 @@ public class Executor extends ProfilingRunnable {
       final long start = startTime.get();
       final long end = endTime.get();
 
-      if (start== end) {
+      if (start == end) {
         return "Experiment didn't start yet, still preprocessing.";
       }
       if (start > end) {

@@ -135,6 +135,8 @@ groningen.attachEventHandlers = function() {
   $('body').on('click', '.breadcrumb > .refresh', function(eventObj) {
     eventObj.stopPropagation();
     var pipelineContainer = $(this).parents('.pipeline-box');
+    if (pipelineContainer.attr('disabled') == 'disabled')
+      return;
     pipelineContainer.attr('disabled', 'true')
         .children('div.collapse')
         .collapse('hide')

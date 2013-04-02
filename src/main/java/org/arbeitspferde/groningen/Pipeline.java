@@ -93,6 +93,8 @@ public class Pipeline {
 
   private AtomicBoolean isKilled;
 
+  private GroningenConfig currentIterationConfig = null;
+
   private static class PipelineStageDisplayer {
     private PipelineIteration currentIteration;
     private final String[] stages = {"Hypothesizer", "Generator", "Executor", "Validator"};
@@ -185,12 +187,13 @@ public class Pipeline {
   }
 
   public GroningenConfig getConfig() {
-    return configManager.queryConfig();
+    return currentIterationConfig;
   }
 
   public void run() {
     try {
       GroningenConfig firstConfig = configManager.queryConfig();
+      currentIterationConfig = firstConfig;
       configureMonitoring();
 
       boolean firstIteration = true;
@@ -200,6 +203,7 @@ public class Pipeline {
 
         try {
           GroningenConfig config = configManager.queryConfig();
+          currentIterationConfig = config;
           GroningenConfigParamsModule.nailConfigToScope(config, pipelineIterationScope);
           /*
            * TODO(team): Seeding these objects here is not good. In an ideal world they

@@ -47,7 +47,6 @@ public class PipelineIteration {
 
   private final GroningenConfig config;
   private final PipelineSynchronizer pipelineSynchronizer;
-  private final ExperimentDb experimentDb;
   private final Executor executor;
   private final Generator generator;
   private final Hypothesizer hypothesizer;
@@ -64,7 +63,6 @@ public class PipelineIteration {
   @Inject
   public PipelineIteration(final GroningenConfig config,
       final PipelineSynchronizer pipelineSynchronizer,
-      final ExperimentDb experimentDb,
       final Executor executor,
       final Generator generator,
       final Hypothesizer hypothesizer,
@@ -73,7 +71,6 @@ public class PipelineIteration {
 
     this.config = config;
     this.pipelineSynchronizer = pipelineSynchronizer;
-    this.experimentDb = experimentDb;
     this.executor = executor;
     this.generator = generator;
     this.hypothesizer = hypothesizer;
@@ -99,9 +96,6 @@ public class PipelineIteration {
 
     // Synchronization within the pipeline iteration - after the config is updated
     pipelineSynchronizer.iterationStartHook();
-
-    experimentDb.putArguments(config.getParamBlock().getDuration(),
-        config.getParamBlock().getRestart());
 
     hypothesizer.run(config);
     boolean notComplete = hypothesizer.notComplete();

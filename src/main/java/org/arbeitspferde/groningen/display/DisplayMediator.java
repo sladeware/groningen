@@ -18,13 +18,20 @@ package org.arbeitspferde.groningen.display;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+import org.arbeitspferde.groningen.HistoryDatastore;
+import org.arbeitspferde.groningen.HistoryDatastore.HistoryDatastoreException;
+import org.arbeitspferde.groningen.Pipeline;
+import org.arbeitspferde.groningen.PipelineHistoryState;
 import org.arbeitspferde.groningen.PipelineId;
+import org.arbeitspferde.groningen.PipelineManager;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.utility.Clock;
+import org.joda.time.Instant;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -35,6 +42,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Encapsulates the Groningen information to be displayed on the HUD Implements a
@@ -42,6 +50,8 @@ import java.util.Set;
  */
 @PipelineScoped
 public class DisplayMediator implements Displayable, MonitorGroningen {
+  private static final Logger log = Logger.getLogger(DisplayMediator.class.getCanonicalName());
+  
   private static final Joiner commaJoiner = Joiner.on(",");
 
   /** Time keeping */
@@ -50,6 +60,8 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   private final Clock clock;
   private final ExperimentDb experimentDb;
   private final PipelineId pipelineId;
+  private final HistoryDatastore historyDatastore;
+  private final PipelineManager pipelineManager;
 
   /** List of objects to be monitored */
   @VisibleForTesting final List<Displayable> monitoredObjects =
@@ -85,10 +97,6 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   @VisibleForTesting final List<EvaluatedSubject> alltimeEvaluatedSubjects =
     Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
 
-  /** stores all evaluated subjects (no de-duplication) */
-  @VisibleForTesting final List<EvaluatedSubject> allEvaluatedSubjects =
-    Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
-
   /** stores a list of warnings for display to the user */
   @VisibleForTesting final List<String> warnings =
       Collections.synchronizedList(new ArrayList<String>());
@@ -97,13 +105,13 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
 
   @Inject
   public DisplayMediator (final Clock clock, final ExperimentDb experimentDb,
+      final HistoryDatastore historyDatastore, final PipelineManager pipelineManager,
       final PipelineId pipelineId) {
-    Preconditions.checkNotNull(clock, "clock may not be null.");
-    Preconditions.checkNotNull(experimentDb, "experimentDb may not be null.");
-
     this.clock = clock;
     this.experimentDb = experimentDb;
     this.pipelineId = pipelineId;
+    this.historyDatastore = historyDatastore;
+    this.pipelineManager = pipelineManager;
   }
 
   /**
@@ -226,10 +234,9 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     displayableClusters = new DisplayClusters(tempEvaluatedSubjects);
     this.monitorObject(displayableClusters, "Clusters used in the last experiment");
 
-    /* Populate the all subjects list */
-    allEvaluatedSubjects.addAll(tempEvaluatedSubjects);
-    Collections.sort(allEvaluatedSubjects, Collections.reverseOrder());
-
+    Pipeline pipeline = pipelineManager.findPipelineById(pipelineId);
+    assert(pipeline != null);
+    
     /* First detect and remove duplicates in the temp list
      * Take the average of duplicates in the most recent run */
     cleanRecentRun(tempEvaluatedSubjects);
@@ -490,9 +497,17 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   public EvaluatedSubject[] getAllExperimentSubjects() {
-    synchronized (allEvaluatedSubjects) {
-      return allEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
+    List<EvaluatedSubject> allSubjects = Lists.newArrayList();
+    PipelineHistoryState[] states = new PipelineHistoryState[] {};
+    try {
+      states = historyDatastore.getStatesForPipelineId(pipelineId);
+    } catch (HistoryDatastoreException e) {
+      log.severe(e.getMessage());
     }
+    for (PipelineHistoryState state : states) {
+      allSubjects.addAll(Lists.newArrayList(state.evaluatedSubjects()));
+    }
+    return allSubjects.toArray(new EvaluatedSubject[] {});
   }
 
   public EvaluatedSubject[] getAlltimeExperimentSubjects() {

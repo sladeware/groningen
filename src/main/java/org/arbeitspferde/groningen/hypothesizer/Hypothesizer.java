@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.inject.Inject;
+
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineScoped;
@@ -54,7 +55,6 @@ import org.uncommons.watchmaker.framework.operators.ListCrossover;
 import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.Stagnation;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -189,17 +189,10 @@ public class Hypothesizer extends ProfilingRunnable {
       initialized = true;
     }
 
-    // Save the population.
-    try {
-      savePopulation(population);
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Unable to save the population to checkpoint file.", e);
-      throw new RuntimeException(e);
-    }
+    savePopulation(population);
 
     if (gaEngine.isTerminated()) {
       logger.info("Hypothesizer has reached termination conditions.");
-      experimentDb.cleanUp();
       notComplete = false;
     }
   }
@@ -214,7 +207,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
     Experiment lastExperiment = null;
 
-    lastExperiment = experimentDb.getExperiments().getLast();
+    lastExperiment = experimentDb.getLastExperiment();
 
     if (lastExperiment != null) {
       logger.info("Hypothesizer is starting from the checkpoint.");
@@ -316,7 +309,7 @@ public class Hypothesizer extends ProfilingRunnable {
    * stored in ExperDB.
    */
   private List<List<Integer>> loadPopulation() {
-    Experiment lastExperiment = experimentDb.getExperiments().getLast();
+    Experiment lastExperiment = experimentDb.getLastExperiment();
     logger.log(Level.INFO, String.format("Last experiment ID: %s", lastExperiment.getIdOfObject()));
     logger.log(Level.INFO,
         String.format("Last experiment subjects: %s", lastExperiment.getSubjectIds()));
@@ -357,18 +350,18 @@ public class Hypothesizer extends ProfilingRunnable {
   }
 
   /**
-   * Saves the population.
+   * Updates experiment db with current generation subjects.
    *
    * @Return The new experiment for that population,.
    */
-  private Experiment savePopulation(List<List<Integer>> population) throws IOException {
+  private Experiment savePopulation(List<List<Integer>> population) {
     Preconditions.checkArgument(population != null && population.size() > 0, "Invalid population.");
 
     List<Long> subjectIds = Lists.newArrayListWithExpectedSize(population.size());
     for (List<Integer> individual : population) {
       SubjectStateBridge subject;
 
-      subject = experimentDb.subjects.make();
+      subject = experimentDb.makeSubject();
 
       subjectIds.add(subject.getIdOfObject());
 
@@ -477,7 +470,7 @@ public class Hypothesizer extends ProfilingRunnable {
     }
 
     // Make and cache a new experiment with the new subject IDs.
-    Experiment experiment = experimentDb.getExperiments().make(subjectIds);
+    Experiment experiment = experimentDb.makeExperiment(subjectIds);
     return experiment;
   }
 
@@ -565,11 +558,11 @@ public class Hypothesizer extends ProfilingRunnable {
       // Look-up the last experiment.
       Experiment lastExperiment = null;
 
-      lastExperiment = experimentDb.getExperiments().getLast();
+      lastExperiment = experimentDb.getLastExperiment();
 
       // Get the candidate's subject from the last experiment.
       long subjectId = lastExperiment.getSubjectIds().get(index);
-      SubjectStateBridge subject = experimentDb.subjects.lookup(subjectId);
+      SubjectStateBridge subject = experimentDb.lookupSubject(subjectId);
 
       // Compute the candidate's fitness.
       double fitness;

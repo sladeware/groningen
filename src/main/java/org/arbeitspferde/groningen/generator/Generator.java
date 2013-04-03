@@ -88,7 +88,7 @@ public class Generator extends ProfilingRunnable {
   @Override
   public void profiledRun(final GroningenConfig config) throws RuntimeException {
     final Experiment lastExperiment;
-    lastExperiment = experimentDb.getExperiments().getLast();
+    lastExperiment = experimentDb.getLastExperiment();
     if (lastExperiment == null) {
       log.warning("Experiments do not exist. Skipping Generator stage.");
     } else {

@@ -65,7 +65,13 @@ public class SettingsProvider implements Provider<Settings> {
       name = "--datastore",
       usage = "Datastore class to use.")
   public String datastore = "org.arbeitspferde.groningen.datastore.MemoryDatastore";
-
+  
+  @Option(
+      name = "--historyDatastore",
+      usage = "Datastore class to use for history storage.")
+  public String historyDatastore =
+    "org.arbeitspferde.groningen.historydatastore.MemoryHistoryDatastore";
+  
   @Option(
       name = "--port",
       usage = "The port on which to service HTTP requests.")
@@ -183,6 +189,11 @@ public class SettingsProvider implements Provider<Settings> {
       @Override
       public String getDatastore() {
         return datastore;
+      }
+      
+      @Override
+      public String getHistoryDatastore() {
+        return historyDatastore;
       }
     };
   }

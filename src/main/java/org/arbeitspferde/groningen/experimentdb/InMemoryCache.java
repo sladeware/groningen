@@ -46,6 +46,10 @@ abstract class InMemoryCache<T extends InMemoryCache.Value<T>> {
       .expireAfterAccess(defaultInMemoryCacheTtl, TimeUnit.SECONDS)
       .build();
 
+  public void reset() {
+    cache.invalidateAll();
+  }
+  
   public void reset(InMemoryCache<T> anotherCache) {
     cache.invalidateAll();
     cache.putAll(anotherCache.cache.asMap());

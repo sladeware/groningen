@@ -56,11 +56,11 @@ public abstract class DatastoreTestBase extends TestCase {
       .withValue(JvmFlag.MAX_NEW_SIZE, 50L);
     final JvmFlagSet jvmFlagSet = jvmFlagSetBuilder.build();
     
-    SubjectStateBridge s1 = experimentDb.subjects.make();
+    SubjectStateBridge s1 = experimentDb.makeSubject();
     s1.storeCommandLine(jvmFlagSet);
-    SubjectStateBridge s2 = experimentDb.subjects.make();
+    SubjectStateBridge s2 = experimentDb.makeSubject();
     s2.storeCommandLine(jvmFlagSet);
-    experimentDb.getExperiments().make(ImmutableList.of(s1.getIdOfObject(),
+    experimentDb.makeExperiment(ImmutableList.of(s1.getIdOfObject(),
         s2.getIdOfObject()));
     return new PipelineState(pipelineId, config, experimentDb);    
   }
@@ -161,11 +161,11 @@ public abstract class DatastoreTestBase extends TestCase {
     assertEquals(state.pipelineId(), resultState.pipelineId());
     
     long[] subjectIds =
-        Longs.toArray(state.experimentDb().getExperiments().getLast().getSubjectIds());
+        Longs.toArray(state.experimentDb().getLastExperiment().getSubjectIds());
     Arrays.sort(subjectIds);
     
     long[] resultSubjectIds =
-        Longs.toArray(resultState.experimentDb().getExperiments().getLast().getSubjectIds());
+        Longs.toArray(resultState.experimentDb().getLastExperiment().getSubjectIds());
     Arrays.sort(resultSubjectIds);
     assertEquals(subjectIds.length, resultSubjectIds.length);
     for (int i = 0; i < subjectIds.length; ++i) {

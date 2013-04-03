@@ -61,6 +61,7 @@ public class Validator extends ProfilingRunnable {
   private final ExperimentDb experimentDb;
   private final EventLoggerService eventLoggerService;
   private final String servingAddress;
+  private GroningenConfig config;
   private final long startTime;
   private final MetricExporter metricExporter;
 
@@ -71,12 +72,14 @@ public class Validator extends ProfilingRunnable {
 
   @Inject
   public Validator(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
+      final GroningenConfig config,
       final EventLoggerService eventLoggerService,
       @Named("servingAddress") final String servingAddress,
       @Named("startTime") final Long startTime, final MetricExporter metricExporter) {
     super(clock, monitor);
 
     experimentDb = e;
+    this.config = config;
     this.eventLoggerService = eventLoggerService;
     this.servingAddress = servingAddress;
     this.startTime = startTime;
@@ -86,7 +89,7 @@ public class Validator extends ProfilingRunnable {
   @Override
   public void profiledRun(GroningenConfig config) {
     Experiment lastExperiment = null;
-    lastExperiment = experimentDb.getExperiments().getLast();
+    lastExperiment = experimentDb.getLastExperiment();
     if (lastExperiment == null) {
       logger.warning("Experiments do not exist. Skipping Validator stage.");
     } else {
@@ -189,7 +192,7 @@ public class Validator extends ProfilingRunnable {
 
     // Excessively flapping subjects are invalid because they're really bad for user facing services
     // even if we are only talking about a single subject.
-    if (subjectRestart.restartThresholdCrossed(this.experimentDb)) {
+    if (subjectRestart.restartThresholdCrossed(config)) {
       invalid = true;
       invalidDueToRestartThresholdCrossed.incrementAndGet();
       logger.warning(

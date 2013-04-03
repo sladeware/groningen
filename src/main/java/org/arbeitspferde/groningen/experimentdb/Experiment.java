@@ -87,7 +87,7 @@ public class Experiment extends InMemoryCache.Value<Experiment> {
     ImmutableList.Builder<SubjectStateBridge> builder = ImmutableList.builder();
 
     for (Long subjectId : subjectIds) {
-      SubjectStateBridge subject = experimentDb.subjects.lookup(subjectId);
+      SubjectStateBridge subject = experimentDb.lookupSubject(subjectId);
       if (subject != null) {
         builder.add(subject);
       } else {

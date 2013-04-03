@@ -33,6 +33,14 @@ message PipelineState {
   repeated Subject subjects = 3;
 }
 
+message PipelineHistoryState {
+  required PipelineId id = 1;
+  required org.arbeitspferde.groningen.proto.ProgramConfiguration configuration = 2;
+  repeated EvaluatedSubject evaluated_subjects = 3;
+  optional uint64 end_timestamp = 4;
+  optional uint64 experiment_id = 5;    
+}
+
 message Experiment {
   required uint64 id = 1;
   repeated uint64 subject_ids = 2;
@@ -45,6 +53,17 @@ message Subject {
   required uint64 id = 1;
   optional CommandLine command_line = 2;
   optional SubjectConfiguration configuration = 3;
+  
+  optional string cluster_name = 4;
+  optional string subject_group_name = 5;
+  optional string user_name = 6;
+  optional uint64 subject_group_index = 7;
+}
+
+message EvaluatedSubject {
+  optional Subject subject = 1;
+  optional double fitness = 2;
+  optional uint64 end_timestamp = 3; 
 }
 
 message CommandLine {

@@ -17,12 +17,15 @@ package org.arbeitspferde.groningen.experimentdb;
 
 
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
+import org.arbeitspferde.groningen.config.GroningenConfig;
+import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
+import org.easymock.EasyMock;
 
 /**
  * The test for {@link SubjectRestart}.
  */
 public class SubjectRestartTest extends ClockedExperimentDbTestCaseBase {
-  private static final int TEST_EXPERIMENT_DURATION = 3;
+  private static final int TEST_RESTART_THRESHOLD = 2;
 
   /** The object we are testing */
   private SubjectRestart t;
@@ -40,12 +43,16 @@ public class SubjectRestartTest extends ClockedExperimentDbTestCaseBase {
   }
 
   public void testRestartThresholdCrossed() {
-    experimentDb.putArguments(TEST_EXPERIMENT_DURATION, 2);
-
+    GroningenConfig mockGroningenConfig = EasyMock.createNiceMock(GroningenConfig.class);
+    GroningenParamsOrBuilder mockParams = EasyMock.createNiceMock(GroningenParamsOrBuilder.class);
+    EasyMock.expect(mockGroningenConfig.getParamBlock()).andReturn(mockParams).anyTimes();
+    EasyMock.expect(mockParams.getRestart()).andReturn(TEST_RESTART_THRESHOLD).anyTimes();
+    EasyMock.replay(mockGroningenConfig, mockParams);
+    
     SubjectRestart t2 = new SubjectRestart();
     t2.anotherRestart();
 
-    assertTrue(t.restartThresholdCrossed(experimentDb));
-    assertFalse(t2.restartThresholdCrossed(experimentDb));
+    assertTrue(t.restartThresholdCrossed(mockGroningenConfig));
+    assertFalse(t2.restartThresholdCrossed(mockGroningenConfig));
   }
 }

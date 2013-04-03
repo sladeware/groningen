@@ -21,7 +21,9 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import org.arbeitspferde.groningen.Datastore.DatastoreException;
+import org.arbeitspferde.groningen.HistoryDatastore.HistoryDatastoreException;
 import org.arbeitspferde.groningen.common.BlockScope;
+import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;
@@ -31,12 +33,18 @@ import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
+import org.arbeitspferde.groningen.experimentdb.FitnessScore;
+import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.generator.SubjectShuffler;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
+import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+import org.joda.time.Instant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -75,6 +83,10 @@ public class Pipeline {
   private final ExperimentDb experimentDb;
   
   private final Datastore datastore;
+
+  private final HistoryDatastore historyDatastore;
+  
+  private final Clock clock;
 
   private final ConfigManager configManager;
 
@@ -121,6 +133,9 @@ public class Pipeline {
     Provider<SubjectShuffler> shuffler,
     Hypothesizer hypothesizer,
     Datastore datastore,
+    HistoryDatastore historyDatastore,
+    ExperimentDb experimentDb,
+    Clock clock,
     ConfigManager configManager,
     Provider<PipelineIteration> pipelineIterationProvider,
     PipelineId pipelineId,
@@ -132,12 +147,13 @@ public class Pipeline {
     this.shuffler = shuffler;
     this.hypothesizer = hypothesizer;
     this.datastore = datastore;
+    this.historyDatastore = historyDatastore;
+    this.clock = clock;
     this.configManager = configManager;
     this.pipelineIterationProvider = pipelineIterationProvider;
     this.pipelineId = pipelineId;
     this.pipelineThread = Thread.currentThread();
-    
-    this.experimentDb = new ExperimentDb();
+    this.experimentDb = experimentDb;
 
     isKilled = new AtomicBoolean();
     pipelineStageDisplayer = new PipelineStageDisplayer();
@@ -173,6 +189,20 @@ public class Pipeline {
   
   public PipelineState state() {
     return new PipelineState(pipelineId, configManager.queryConfig(), experimentDb);
+  }
+  
+  public PipelineHistoryState historyState() {
+    List<EvaluatedSubject> evaluatedSubjects =
+        new ArrayList<EvaluatedSubject>();
+    for (SubjectStateBridge ssb : experimentDb.getLastExperiment().getSubjects()) {
+      evaluatedSubjects.add(new EvaluatedSubject(clock, ssb, FitnessScore.compute(ssb,
+          configManager.queryConfig())));
+    }
+    return new PipelineHistoryState(pipelineId,
+        configManager.queryConfig(),
+        Instant.now(), 
+        evaluatedSubjects.toArray(new EvaluatedSubject[] {}),
+        experimentDb.getExperimentId());
   }
 
   /**
@@ -233,16 +263,23 @@ public class Pipeline {
           }
 
           notCompleted = iteration.run();
+          
+          try {
+            datastore.writePipelines(new PipelineState[] { state() });
+          } catch (DatastoreException e) {
+            log.severe("can't write pipeline into datastore: " + e.getMessage());
+          }
+          
+          try {
+            historyDatastore.writeState(historyState());
+          } catch (HistoryDatastoreException e) {
+            log.severe(
+                "can't write pipeline history state into history datastore: " + e.getMessage());
+          }          
         } finally {
           pipelineIterationScope.exit();
         }
         pipelineIterationCount.incrementAndGet();
-        
-        try {
-          datastore.writePipelines(new PipelineState[] { state() });
-        } catch (DatastoreException e) {
-          log.severe("can't write pipeline into datastore: " + e.getMessage());
-        }
       } while (notCompleted  && !isKilled.get());
     } catch (RuntimeException e) {
       log.log(Level.SEVERE, "Fatal error", e);

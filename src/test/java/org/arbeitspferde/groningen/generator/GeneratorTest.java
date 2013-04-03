@@ -22,7 +22,6 @@ import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
-import org.arbeitspferde.groningen.experimentdb.ExperimentDb.ExperimentCache;
 import org.easymock.EasyMock;
 
 /**
@@ -32,7 +31,6 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
   /** The object instance we are testing. */
   private Generator mockGenerator;
   private GroningenConfig mockConfig;
-  private ExperimentCache mockExperimentCache;
   private Experiment mockExperiment;
   private SubjectShuffler mockShuffler;
   private SubjectSettingsFileManager mockSubjectSettingsFileManager;
@@ -44,7 +42,6 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
     monitor = EasyMock.createMock(MonitorGroningen.class);
     experimentDb = EasyMock.createMock(ExperimentDb.class);
     mockConfig = EasyMock.createMock(GroningenConfig.class);
-    mockExperimentCache = EasyMock.createMock(ExperimentCache.class);
     mockExperiment = EasyMock.createMock(Experiment.class);
     mockShuffler = EasyMock.createMock(SubjectShuffler.class);
     mockSubjectSettingsFileManager = EasyMock.createMock(SubjectSettingsFileManager.class);
@@ -56,13 +53,11 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
 
   /** Check that profiledRun works without exception. */
   public void testProfiledRun_WithExperiment() throws Exception {
-    EasyMock.expect(experimentDb.getExperiments()).andReturn(mockExperimentCache);
-    EasyMock.expect(mockExperimentCache.getLast()).andReturn(null);
+    EasyMock.expect(experimentDb.getLastExperiment()).andReturn(null);
 
     EasyMock.replay(monitor);
     EasyMock.replay(experimentDb);
     EasyMock.replay(mockConfig);
-    EasyMock.replay(mockExperimentCache);
     EasyMock.replay(mockExperiment);
     EasyMock.replay(mockSubjectSettingsFileManager);
 
@@ -71,7 +66,6 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.verify(monitor);
     EasyMock.verify(experimentDb);
     EasyMock.verify(mockConfig);
-    EasyMock.verify(mockExperimentCache);
     EasyMock.verify(mockExperiment);
     EasyMock.verify(mockSubjectSettingsFileManager);
   }

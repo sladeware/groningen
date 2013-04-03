@@ -132,6 +132,13 @@ public class BaseModule extends AbstractModule {
   }
 
   @Provides
+  @Singleton
+  public HistoryDatastore produceHistoryDatastore(Settings settings,
+      Map<String, Provider<HistoryDatastore>> historyDatastorePlugins) {
+    return historyDatastorePlugins.get(settings.getHistoryDatastore()).get();
+  }
+
+  @Provides
   @PipelineIterationScoped
   public PipelineSynchronizer producePipelineSynchronizer() {
     return new EmptyPipelineSynchronizer();

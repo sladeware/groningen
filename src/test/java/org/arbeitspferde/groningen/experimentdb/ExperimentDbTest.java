@@ -24,40 +24,16 @@ import java.util.Arrays;
  * The test for {@link ExperimentDb}.
  */
 public class ExperimentDbTest extends ClockedExperimentDbTestCaseBase {
-  private static final int TEST_EXPERIMENT_DURATION = 3;
-  private static final int TEST_RESTART_THRESHOLD = 7;
-
-  public void testArguments() throws Exception {
-    experimentDb.putArguments(TEST_EXPERIMENT_DURATION,
-        TEST_RESTART_THRESHOLD);
-    assertEquals(experimentDb.getExperimentDuration(),
-        TEST_EXPERIMENT_DURATION);
-    assertEquals(experimentDb.getRestartThreshold(), TEST_RESTART_THRESHOLD);
-  }
-
-  public void testExperimentCache() throws Exception {
-    Experiment e1 = experimentDb.getExperiments().make(Arrays.asList(2L));
+  public void testLastExperiment() throws Exception {
+    Experiment e1 = experimentDb.makeExperiment(Arrays.asList(2L));
 
     // Verify the results.
-    Experiment cachedExperiment = experimentDb.getExperiments().lookup(e1.getIdOfObject());
+    Experiment cachedExperiment = experimentDb.getLastExperiment();
     assertSame(e1, cachedExperiment);
   }
 
-  /**
-   * Tests {@link Experiment#lookup(long)} method with invalid arguments.
-   */
-  public void testExperimentLookupWithInvalidArguments() throws Exception {
-    try {
-      experimentDb.getExperiments().lookup(-1);
-      fail("Expected IllegalArgumentException.");
-    } catch (IllegalArgumentException expectedSoIgnore) { /* ignore */ }
-  }
-
-  /**
-   * Tests {@link Experiment#lookup(long)} method with an empty cache.
-   */
   public void testExperimentLookupWithEmptyCache() throws Exception {
-    Experiment experiment = experimentDb.getExperiments().lookup(1L);
+    Experiment experiment = experimentDb.getLastExperiment();
     assertNull(experiment);
   }
 
@@ -66,19 +42,19 @@ public class ExperimentDbTest extends ClockedExperimentDbTestCaseBase {
    */
   public void testGetLastCachedExperiment() throws Exception {
     // Cache a couple experiments
-    Experiment experiment1 = experimentDb.getExperiments().make(Arrays.asList(2L));
-    Experiment experiment2 = experimentDb.getExperiments().make(Arrays.asList(3L));
+    Experiment experiment1 = experimentDb.makeExperiment(Arrays.asList(2L));
+    Experiment experiment2 = experimentDb.makeExperiment(Arrays.asList(3L));
 
     assertTrue(experiment1.getIdOfObject() != experiment2.getIdOfObject());
     // Make sure you get back the last experiment you cached
-    assertSame(experiment2, experimentDb.getExperiments().getLast());
+    assertSame(experiment2, experimentDb.getLastExperiment());
   }
 
   public void testSubjectCache() throws Exception {
-    SubjectStateBridge e1 = experimentDb.subjects.make();
+    SubjectStateBridge e1 = experimentDb.makeSubject();
 
     // Verify the results.
-    SubjectStateBridge cachedSubject = experimentDb.subjects.lookup(e1.getIdOfObject());
+    SubjectStateBridge cachedSubject = experimentDb.lookupSubject(e1.getIdOfObject());
     assertSame(e1, cachedSubject);
   }
 
@@ -87,7 +63,7 @@ public class ExperimentDbTest extends ClockedExperimentDbTestCaseBase {
    */
   public void testSubjectLookupWithInvalidArguments() throws Exception {
     try {
-      experimentDb.subjects.lookup(-1);
+      experimentDb.lookupSubject(-1);
       fail("Expected IllegalArgumentException.");
     } catch (IllegalArgumentException expectedSoIgnore) { /* ignore */ }
   }
@@ -96,7 +72,7 @@ public class ExperimentDbTest extends ClockedExperimentDbTestCaseBase {
    * Tests {@link Experiment#lookup(long)} method with an empty cache.
    */
   public void testSubjectLookupWithEmptyCache() throws Exception {
-    SubjectStateBridge subject = experimentDb.subjects.lookup(1L);
+    SubjectStateBridge subject = experimentDb.lookupSubject(1L);
     assertNull(subject);
   }
 

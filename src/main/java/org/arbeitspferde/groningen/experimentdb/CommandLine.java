@@ -19,6 +19,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+
 import org.arbeitspferde.groningen.experimentdb.jvmflags.GcMode;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
@@ -100,8 +101,6 @@ public class CommandLine {
     Preconditions.checkNotNull(jvmFlagSet);
 
     this.jvmFlagSet = jvmFlagSet;
-
-
   }
 
   /**
@@ -570,5 +569,19 @@ public class CommandLine {
     logger.finer(String.format("Converted %s into %s.", jvmFlagSet, emission));
 
     return emission;
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof CommandLine)) {
+      return false;
+    } else {
+      return jvmFlagSet.toString().equals(((CommandLine) obj).jvmFlagSet.toString());
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return jvmFlagSet.toString().hashCode();
   }
 }

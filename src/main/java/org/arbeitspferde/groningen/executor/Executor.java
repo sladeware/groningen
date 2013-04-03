@@ -354,7 +354,7 @@ public class Executor extends ProfilingRunnable {
     monitor.monitorObject(timeLeft, "Time left until end of current experiment");
 
     // Get the experiment we're going to execute
-    lastExperiment = experimentDb.getExperiments().getLast();
+    lastExperiment = experimentDb.getLastExperiment();
     if (lastExperiment == null) {
       // TODO(team): should this be a warning or an error - how can this occur in a valid state?
       // how do we get out of this state to run the experiment?
@@ -511,7 +511,7 @@ public class Executor extends ProfilingRunnable {
 
     now.set(clock.now().getMillis());
     end.set(whenExperimentStarted + maxWarmup +
-        (1000 * 60 * (long) experimentDb.getExperimentDuration()));
+        (1000 * 60 * (long) config.getParamBlock().getDuration()));
 
     if (now.get() >= end.get()) {
       log.info("Experiment duration expired. Ending experiment.  Time elapsed: "
@@ -592,7 +592,7 @@ public class Executor extends ProfilingRunnable {
         subject.getSubjectRestart().setLastRestartTime(lastRestartTime);
         subject.getSubjectRestart().anotherRestart();
         restartedSubjectCount.incrementAndGet();
-        if (subject.getSubjectRestart().restartThresholdCrossed(experimentDb)) {
+        if (subject.getSubjectRestart().restartThresholdCrossed(config)) {
           log.warning(String.format("[MARKING UNHEALTHY]: %s restart threshold crossed.  %s > %s.",
               subject.getHumanIdentifier(), lastRestartTime, restartTime));
           subject.setState(SubjectStateBridge.State.UNHEALTHY);

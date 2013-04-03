@@ -16,12 +16,14 @@
 package org.arbeitspferde.groningen.display;
 
 
+import org.arbeitspferde.groningen.Pipeline;
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
+import org.easymock.EasyMock;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -29,7 +31,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * The test for {@link DisplayMediator}
  */
 public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
-  DisplayMediator mediator;
+  private DisplayMediator mediator;
+  private Pipeline pipelineMock;
+  
   Object obj1, obj2;
   String displayString1, displayString2;
   SubjectStateBridge subject1, subject2;
@@ -37,7 +41,17 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    mediator = new DisplayMediator(clock, experimentDb, new PipelineId("pipeline_id"));
+    
+    pipelineMock = EasyMock.createNiceMock(Pipeline.class);
+    EasyMock.expect(pipelineMock.id()).andReturn(new PipelineId("pipeline_id")).anyTimes();
+    EasyMock.expect(
+        pipelineManagerMock.findPipelineById(new PipelineId("pipeline_id")))
+        .andReturn(pipelineMock).anyTimes();
+    
+    EasyMock.replay(pipelineMock, pipelineManagerMock, historyDataStoreMock);
+    
+    mediator = new DisplayMediator(clock, experimentDb, historyDataStoreMock,
+        pipelineManagerMock, new PipelineId("pipeline_id"));
     experimentDb.nextExperimentId();
   }
 
@@ -79,14 +93,14 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
         .withValue(JvmFlag.USE_PARALLEL_OLD_GC, 0)
         .withValue(JvmFlag.USE_SERIAL_GC, 0);
 
-    subject1 = experimentDb.subjects.make();
+    subject1 = experimentDb.makeSubject();
     subject1.storeCommandLine(builder.build());
 
     builder.withValue(JvmFlag.HEAP_SIZE, 40)
         .withValue(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 32)
         .withValue(JvmFlag.CMS_EXP_AVG_FACTOR, 33);
 
-    subject2 = experimentDb.subjects.make();
+    subject2 = experimentDb.makeSubject();
     subject2.storeCommandLine(builder.build());
   }
 

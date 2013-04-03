@@ -18,13 +18,16 @@ package org.arbeitspferde.groningen.common;
 
 import junit.framework.TestCase;
 
+import org.arbeitspferde.groningen.HistoryDatastore;
 import org.arbeitspferde.groningen.PipelineId;
+import org.arbeitspferde.groningen.PipelineManager;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 import org.arbeitspferde.groningen.utility.PinnedClock;
+import org.easymock.EasyMock;
 
 /**
  * Test case base class for tests using {@link ExperimentDb}.
@@ -45,13 +48,20 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
   protected ExperimentDb experimentDb;
 
   protected MetricExporter metricExporter;
+  
+  protected HistoryDatastore historyDataStoreMock;
+  protected PipelineManager pipelineManagerMock;
 
   @Override
   protected void setUp() throws Exception {
     clock = new PinnedClock(DEFAULT_TIME_MS, INCREMENT_MS);
 
+    historyDataStoreMock = EasyMock.createNiceMock(HistoryDatastore.class);
+    pipelineManagerMock = EasyMock.createNiceMock(PipelineManager.class);
+
     experimentDb = new ExperimentDb();
-    monitor = new DisplayMediator(clock, experimentDb, new PipelineId("pipeline_id"));
+    monitor = new DisplayMediator(clock, experimentDb, historyDataStoreMock, pipelineManagerMock,
+        new PipelineId("pipeline_id"));
     metricExporter = new MetricExporter() {
       @Override
       public void register(String name, String description, MetricListener<?> metric) {}

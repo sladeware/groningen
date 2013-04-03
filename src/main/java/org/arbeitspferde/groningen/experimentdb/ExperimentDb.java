@@ -16,21 +16,18 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 import com.google.common.base.Joiner;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import com.google.common.base.Preconditions;
 
-import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.config.PipelineScoped;
-import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * The ExperimentDb contains Groningen data generated and used by each of the major Groningen
- * components.  The primary purpose of the Experiment Database is to hold global data that is
+ * components.  The primary purpose of the Experiment Database is to hold pipeline data that is
  * shared between the Groningen pipeline stages. This includes the JVM parameters of mutated
  * subjects, their GC log data and the updated JVM arguments comprising a new population. Pipeline
  * stages do not directly share data, but instead read and write the ExperimentDb.
@@ -48,15 +45,6 @@ public class ExperimentDb {
   /** Logger for this class */
   private static final Logger log = Logger.getLogger(ExperimentDb.class.getCanonicalName());
 
-  @Inject
-  @NamedConfigParam("checkpoint_file")
-  private Provider<String> checkpointFile = new Provider<String>() {
-    @Override
-    public String get() {
-      return GroningenParams.getDefaultInstance().getCheckpointFile();
-    }
-  };
-
   private static final Joiner spaceSeparator = Joiner.on(" ");
   private static final Joiner commaSpaceSeparator = Joiner.on(", ");
 
@@ -69,19 +57,15 @@ public class ExperimentDb {
    */
   private long currentExperimentId = 0;
 
-  /** current parameters values for running this instance of Groningen. */
-  private int experimentDuration = 0;
-  private int restartThreshold = 0;
-
   /** Experiments of this run */
-  private final ExperimentCache experiments = new ExperimentCache();
-
-  /** Subjects of this run */
-  public final SubjectCache subjects = new SubjectCache();
+  private Experiment lastExperiment; 
+  private Map<Long, SubjectStateBridge> subjects = new HashMap<Long, SubjectStateBridge>();
 
   public void reset(ExperimentDb anotherDb) {
-    experiments.reset(anotherDb.experiments);
-    subjects.reset(anotherDb.subjects);
+    localSubjectId = anotherDb.localSubjectId;
+    currentExperimentId = anotherDb.currentExperimentId;
+    lastExperiment = anotherDb.lastExperiment;
+    subjects = new HashMap<Long, SubjectStateBridge>(anotherDb.subjects);
   }
 
   /** Returns a string serializing and displaying list elements for humans. */
@@ -101,63 +85,13 @@ public class ExperimentDb {
     return log;
   }
 
-  /**
-   * Stores the current values of parameters passed into Groningen. Volatile
-   * storage.
-   */
-  public void putArguments(final int experimentDuration, final int restartThreshold) {
-    this.experimentDuration = experimentDuration;
-    this.restartThreshold = restartThreshold;
-
-    write("putArguments", experimentDuration, restartThreshold);
+  public synchronized Experiment makeExperiment(final List<Long> subjectIds) {
+    lastExperiment = new Experiment(ExperimentDb.this, nextExperimentId(), subjectIds);
+    return lastExperiment;
   }
 
-  public int getExperimentDuration() {
-    return this.experimentDuration;
-  }
-
-  public int getRestartThreshold() {
-    return this.restartThreshold;
-  }
-
-  /**
-   * Performs clean up before shut down.
-   */
-  public void cleanUp() {
-  }
-
-  /** Singleton class for the experiment cache stored in experiments */
-  public class ExperimentCache extends InMemoryCache<Experiment> {
-
-    private Experiment lastExperiment;
-
-    @Override
-    public void reset(InMemoryCache<Experiment> anotherCache) {
-      super.reset(anotherCache);
-      this.lastExperiment = ((ExperimentCache) anotherCache).lastExperiment;
-    }
-    
-    public synchronized Experiment lastExperiment() {
-      return lastExperiment;
-    }
-    
-    /**
-     * Makes a new experiment with the given subject ID and caches it. The
-     * subjects for the given {@code subjectIds} should have been cached already
-     * before calling this method.
-     *
-     * @param subjectIds subject IDs for this experiment
-     */
-    public synchronized Experiment make(final List<Long> subjectIds) {
-      lastExperiment = new Experiment(ExperimentDb.this, nextExperimentId(), subjectIds);
-
-      return register(lastExperiment);
-    }
-
-    /** Return the last experiment created */
-    public synchronized Experiment getLast() {
-      return lastExperiment;
-    }
+  public synchronized Experiment getLastExperiment() {
+    return lastExperiment;
   }
 
   /** Generate a new Experiment ID. */
@@ -170,24 +104,20 @@ public class ExperimentDb {
   public synchronized long getExperimentId() {
     return currentExperimentId;
   }
-
-  /** Singleton class for the subject cache stored in subjects */
-  public class SubjectCache extends InMemoryCache<SubjectStateBridge> {
-    /**
-     * Make a new subject and cache it.
-     */
-    public SubjectStateBridge make() {
-      return make(nextSubjectId());
-    }
-
-    /**
-     * Makes a new subject with the given ID and cache it.
-     *
-     * @param subjectId Subject ID
-     */
-    public SubjectStateBridge make(final long subjectId) {
-      return register(new SubjectStateBridge(ExperimentDb.this, subjectId));
-    }
+  
+  public SubjectStateBridge makeSubject() {
+    return makeSubject(nextSubjectId());
+  }
+  
+  public SubjectStateBridge makeSubject(final long subjectId) {
+    SubjectStateBridge bridge = new SubjectStateBridge(ExperimentDb.this, subjectId);
+    subjects.put(subjectId, bridge);
+    return bridge;
+  }
+  
+  public SubjectStateBridge lookupSubject(final long subjectId) {
+    Preconditions.checkArgument(subjectId >= 0, "subjectId should be > 0");
+    return subjects.get(subjectId);
   }
 
   /** Generate a new Subject ID */
@@ -195,22 +125,5 @@ public class ExperimentDb {
     final long id = ++localSubjectId;
     write("nextSubjectId(local)", id);
     return id;
-  }
-
-  /**
-   * @return the experiments
-   */
-  public ExperimentCache getExperiments() {
-    return experiments;
-  }
-
-  private InputStream streamFromByteBuffer(final ByteBuffer buffer) {
-    return new InputStream() {
-
-      @Override
-      public int read() {
-        return buffer.hasRemaining() ? buffer.get() : -1;
-      }
-    };
   }
 }

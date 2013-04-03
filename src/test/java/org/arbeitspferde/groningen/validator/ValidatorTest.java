@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.validator;
 
 import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
@@ -23,7 +24,6 @@ import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.experimentdb.CommandLine;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
-import org.arbeitspferde.groningen.experimentdb.ExperimentDb.ExperimentCache;
 import org.arbeitspferde.groningen.experimentdb.PauseTime;
 import org.arbeitspferde.groningen.experimentdb.ResourceMetric;
 import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
@@ -47,6 +47,8 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
   private EventLoggerService mockEventLoggerService;
   private String servingAddress;
 
+  private GroningenConfig mockGroningenConfig;
+
   @Override
   protected void setUp() throws Exception {
     super.setUp();
@@ -54,11 +56,13 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     mockEventLoggerService = EasyMock.createMock(EventLoggerService.class);
 
     experimentDb = EasyMock.createMock(ExperimentDb.class);
+    
+    mockGroningenConfig = EasyMock.createMock(GroningenConfig.class);
 
     servingAddress = "myservingaddress:31337";
 
-    validator = new Validator(clock, monitor, experimentDb, mockEventLoggerService,
-        servingAddress, START_TIME, metricExporter);
+    validator = new Validator(clock, monitor, experimentDb, mockGroningenConfig, 
+        mockEventLoggerService, servingAddress, START_TIME, metricExporter);
   }
 
   /**
@@ -68,7 +72,6 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
    * TODO(team): Validate Protocol Buffer emissions.
    */
   public void testProfiledRun() throws Exception {
-    final ExperimentCache mockExperimentCache = EasyMock.createMock(ExperimentCache.class);
     final Experiment mockExperiment = EasyMock.createMock(Experiment.class);
     final SubjectStateBridge mockSubjectA = EasyMock.createMock(SubjectStateBridge.class);
     final SubjectStateBridge mockSubjectB = EasyMock.createMock(SubjectStateBridge.class);
@@ -81,7 +84,7 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     final SubjectRestart mockSubjectBSubjectRestart = EasyMock.createMock(SubjectRestart.class);
     final CommandLine mockSubjectACommandLine = EasyMock.createMock(CommandLine.class);
     final CommandLine mockSubjectBCommandLine = EasyMock.createMock(CommandLine.class);
-    final GroningenConfig mockGroningenConfig = EasyMock.createMock(GroningenConfig.class);
+    
     final GroningenParamsOrBuilder mockGroningenParams =
         EasyMock.createMock(GroningenParamsOrBuilder.class);
     final Subject mockSubjectAAssociatedSubject = EasyMock.createMock(Subject.class);
@@ -95,14 +98,13 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     subjects.add(mockSubjectA);
     subjects.add(mockSubjectB);
 
-    EasyMock.expect(experimentDb.getExperiments()).andReturn(mockExperimentCache);
-    EasyMock.expect(mockExperimentCache.getLast()).andReturn(mockExperiment);
+    EasyMock.expect(experimentDb.getLastExperiment()).andReturn(mockExperiment);
     EasyMock.expect(mockExperiment.getSubjects()).andReturn(subjects);
     EasyMock.expect(mockSubjectA.getPauseTime()).andReturn(mockSubjectAPauseTime);
     EasyMock.expect(mockSubjectA.getResourceMetric()).andReturn(mockSubjectAResourceMetric);
     EasyMock.expect(mockSubjectA.getSubjectRestart()).andReturn(mockSubjectASubjectRestart);
     EasyMock.expect(mockSubjectA.getIdOfObject()).andReturn(1L);
-    EasyMock.expect(mockSubjectASubjectRestart.restartThresholdCrossed(experimentDb))
+    EasyMock.expect(mockSubjectASubjectRestart.restartThresholdCrossed(mockGroningenConfig))
         .andReturn(false);
     EasyMock.expect(mockSubjectASubjectRestart.didNotRun()).andReturn(false);
     EasyMock.expect(mockSubjectA.getCommandLine()).andReturn(mockSubjectACommandLine);
@@ -134,7 +136,7 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expect(mockSubjectB.getResourceMetric()).andReturn(mockSubjectBResourceMetric);
     EasyMock.expect(mockSubjectB.getSubjectRestart()).andReturn(mockSubjectBSubjectRestart);
     EasyMock.expect(mockSubjectB.getIdOfObject()).andReturn(1L);
-    EasyMock.expect(mockSubjectBSubjectRestart.restartThresholdCrossed(experimentDb))
+    EasyMock.expect(mockSubjectBSubjectRestart.restartThresholdCrossed(mockGroningenConfig))
         .andReturn(false);
     EasyMock.expect(mockSubjectBSubjectRestart.didNotRun()).andReturn(false);
     EasyMock.expect(mockSubjectB.getCommandLine()).andReturn(mockSubjectBCommandLine);
@@ -165,7 +167,6 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expectLastCall();
 
     EasyMock.replay(experimentDb);
-    EasyMock.replay(mockExperimentCache);
     EasyMock.replay(mockExperiment);
     EasyMock.replay(mockSubjectA);
     EasyMock.replay(mockSubjectB);
@@ -189,7 +190,6 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
 
     EasyMock.verify(experimentDb);
     EasyMock.verify(mockEventLoggerService);
-    EasyMock.verify(mockExperimentCache);
     EasyMock.verify(mockExperiment);
     EasyMock.verify(mockSubjectA);
     EasyMock.verify(mockSubjectB);

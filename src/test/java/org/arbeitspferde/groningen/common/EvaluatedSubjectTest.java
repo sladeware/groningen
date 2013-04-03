@@ -28,7 +28,7 @@ public class EvaluatedSubjectTest extends ClockedExperimentDbTestCaseBase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    subject = experimentDb.subjects.make();
+    subject = experimentDb.makeSubject();
 
     final JvmFlagSet.Builder builder = JvmFlagSet.builder()
         .withValue(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR, 1)

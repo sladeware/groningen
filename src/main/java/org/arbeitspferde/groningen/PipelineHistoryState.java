@@ -3,41 +3,55 @@ package org.arbeitspferde.groningen;
 import com.google.common.collect.Lists;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.ProtoBufConfig;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.experimentdb.CommandLine;
-import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 import org.arbeitspferde.groningen.proto.ExperimentDbProtos;
-import org.arbeitspferde.groningen.proto.ExperimentDbProtos.Subject;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
+import org.arbeitspferde.groningen.utility.PinnedClock;
+import org.joda.time.Instant;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Object representing PipelineState. Mainly used in {@link Datastore}.
+ * PipelineHistoryState encapsulates pipeline state after each iteration (unlike PipelineState
+ * it includes evaluated experiment results).
+ * 
+ * PipelineHistoryState is intended for HistoryDatastore. Please note that although
+ * HistoryDatastore's functionality resembles event evaluation system (see EventLoggerService),
+ * it's different from the latter. Unlike EventLoggerService, HistoryDatastore (and consequently,
+ * PipelineHistoryState is multiple-pipelines-aware).
+ * 
+ * Also, although PipelineHistoryState resembles PipelineState, they're kept separate, because
+ * their respective datastores, HistoryDatastore and Datastore, were designed to be totally
+ * independent of each other. 
  */
-public class PipelineState {
-  private PipelineId pipelineId;
-  private GroningenConfig config;
-  private ExperimentDb experimentDb;
-
-  public PipelineState(PipelineId pipelineId, GroningenConfig config, ExperimentDb experimentDb) {
+public class PipelineHistoryState {
+  private final PipelineId pipelineId;
+  private final GroningenConfig config;
+  private final Instant endTimestamp;
+  private final EvaluatedSubject[] evaluatedSubjects;
+  private final long experimentId;
+  
+  public PipelineHistoryState(PipelineId pipelineId, GroningenConfig config, Instant endTimestamp,
+      EvaluatedSubject[] evluatedSubjects, long experimentId) {
     this.pipelineId = pipelineId;
     this.config = config;
-    this.experimentDb = experimentDb;
+    this.endTimestamp = endTimestamp;
+    this.evaluatedSubjects = evluatedSubjects;
+    this.experimentId = experimentId;
   }
   
-  public PipelineState(byte[] bytes) {
-    org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState stateProto;
+  public PipelineHistoryState(byte[] bytes) {
+    ExperimentDbProtos.PipelineHistoryState stateProto;
     try {
-      stateProto = 
-          org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState.parseFrom(bytes);
+      stateProto = ExperimentDbProtos.PipelineHistoryState.parseFrom(bytes);
     } catch (InvalidProtocolBufferException e) {
       throw new RuntimeException(e);
     }
@@ -49,20 +63,19 @@ public class PipelineState {
       throw new RuntimeException(e);
     }
     
-    experimentDb = new ExperimentDb();
+    endTimestamp = new Instant(stateProto.getEndTimestamp());
     
-    final List<Long> subjectIds = Lists.newArrayList();
-    for (Subject subjectProto : stateProto.getSubjectsList()) {
-      final SubjectStateBridge bridge = experimentDb.makeSubject(subjectProto.getId());
-      subjectIds.add(subjectProto.getId());
+    experimentId = stateProto.getExperimentId();
+    
+    // TODO(mbushkov): we don't need it here. Refactor to create SubjectStateBridge without it.
+    ExperimentDb experimentDb = new ExperimentDb();
+    
+    List<EvaluatedSubject> evaluatedSubjectsList = Lists.newArrayList();
+    for (ExperimentDbProtos.EvaluatedSubject esProto : stateProto.getEvaluatedSubjectsList()) {
+      SubjectStateBridge bridge = experimentDb.makeSubject(esProto.getSubject().getId());
       
-      /* TODO(team): Migrate the stink that this switch statement is into a EnumMap or have
-       *             JvmFlagSet translate the mapping itself.
-       */
-
       final JvmFlagSet.Builder builder = JvmFlagSet.builder();
-
-      final ExperimentDbProtos.CommandLine cl = subjectProto.getCommandLine();
+      final ExperimentDbProtos.CommandLine cl = esProto.getSubject().getCommandLine();
       for (final ExperimentDbProtos.CommandLineArgument arg : cl.getArgumentList()) {
         final int value = Integer.parseInt(arg.getValue());
         final JvmFlag argument = JvmFlag.valueOf(arg.getName());
@@ -151,69 +164,95 @@ public class PipelineState {
             break;
         }
       }
-
+      
       final JvmFlagSet jvmFlagSet = builder.build();
       bridge.storeCommandLine(jvmFlagSet);
+      
+      EvaluatedSubject evaluatedSubject = new EvaluatedSubject(
+          new PinnedClock(esProto.getEndTimestamp()),
+          bridge,
+          esProto.getFitness(),
+          stateProto.getExperimentId());
+      evaluatedSubject.setClusterName(esProto.getSubject().getClusterName());
+      evaluatedSubject.setSubjectGroupIndex((int) esProto.getSubject().getSubjectGroupIndex());
+      evaluatedSubject.setSubjectGroupName(esProto.getSubject().getSubjectGroupName());
+      evaluatedSubject.setUserName(esProto.getSubject().getUserName());
+      
+      evaluatedSubjectsList.add(evaluatedSubject);
     }
     
-    experimentDb.makeExperiment(subjectIds);
+    evaluatedSubjects = evaluatedSubjectsList.toArray(new EvaluatedSubject[] {});
   }
+  
+  public byte[] toBytes() {
+    ExperimentDbProtos.PipelineId.Builder idProtoBuilder =
+        ExperimentDbProtos.PipelineId.newBuilder();
+    idProtoBuilder.setId(pipelineId.id());
+    ExperimentDbProtos.PipelineId idProto = idProtoBuilder.build();
+    
+    ProgramConfiguration configurationProto = config.getProtoConfig();
+    
+    List<ExperimentDbProtos.EvaluatedSubject> evaluatesSubjectsProtos = Lists.newArrayList();
+    for (EvaluatedSubject es : evaluatedSubjects) {
+      ExperimentDbProtos.EvaluatedSubject.Builder espBuilder =
+          ExperimentDbProtos.EvaluatedSubject.newBuilder();
+      
+      // Build Subject proto
+      ExperimentDbProtos.Subject.Builder spBuilder = ExperimentDbProtos.Subject.newBuilder();
+      spBuilder.setClusterName(es.getClusterName());
+      spBuilder.setSubjectGroupIndex(es.getSubjectGroupIndex());
+      spBuilder.setSubjectGroupName(es.getSubjectGroupName());
+      spBuilder.setUserName(es.getUserName());
+      
+      spBuilder.setId(es.getBridge().getIdOfObject());
+      
+      // Copy the command line
+      final JvmFlag[] arguments = JvmFlag.values();
+      final CommandLine commandLine = es.getBridge().getCommandLine();
+      final ExperimentDbProtos.CommandLine.Builder commandLineBuilder =
+          ExperimentDbProtos.CommandLine.newBuilder();
+      for (final JvmFlag argument : arguments) {
+        final long value = commandLine.getValue(argument);
+        final ExperimentDbProtos.CommandLineArgument.Builder argumentBuilder =
+            ExperimentDbProtos.CommandLineArgument.newBuilder();
 
+        argumentBuilder.setName(argument.name());
+        argumentBuilder.setValue(String.valueOf(value));
+        commandLineBuilder.addArgument(argumentBuilder);
+      }
+      spBuilder.setCommandLine(commandLineBuilder);
+      
+      espBuilder.setSubject(spBuilder.build());
+      espBuilder.setEndTimestamp(es.getTimeStamp().getMillis());
+      espBuilder.setFitness(es.getFitness());
+      
+      evaluatesSubjectsProtos.add(espBuilder.build());
+    }
+    
+    ExperimentDbProtos.PipelineHistoryState.Builder stateProtoBuilder =
+        ExperimentDbProtos.PipelineHistoryState.newBuilder();
+    stateProtoBuilder.setId(idProto);
+    stateProtoBuilder.setConfiguration(configurationProto);
+    stateProtoBuilder.addAllEvaluatedSubjects(evaluatesSubjectsProtos);
+    stateProtoBuilder.setEndTimestamp(endTimestamp.getMillis());
+    stateProtoBuilder.setExperimentId(experimentId);
+    
+    return stateProtoBuilder.build().toByteArray();
+  }
+  
   public PipelineId pipelineId() {
     return pipelineId;
   }
-
+  
   public GroningenConfig config() {
     return config;
   }
-
-  public ExperimentDb experimentDb() {
-    return experimentDb;
+  
+  public Instant endTimestamp() {
+    return endTimestamp;
   }
-
-  public byte[] toBytes() {
-    org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineId.Builder idProtoBuilder =
-        org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineId.newBuilder();
-    idProtoBuilder.setId(pipelineId.id());
-    org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineId idProto =
-        idProtoBuilder.build();
-
-    ProgramConfiguration configurationProto = config.getProtoConfig();
-
-    List<ExperimentDbProtos.Subject> subjectProtos = new ArrayList<ExperimentDbProtos.Subject>();
-    Experiment lastExperiment = experimentDb.getLastExperiment();
-
-    if (lastExperiment != null) {
-      // Then write out all the subjects in the experiment
-      final JvmFlag[] arguments = JvmFlag.values();
-      for (final SubjectStateBridge subject : lastExperiment.getSubjects()) {
-        final ExperimentDbProtos.Subject.Builder subjectBuilder =
-            ExperimentDbProtos.Subject.newBuilder();
-        subjectBuilder.setId(subject.getIdOfObject());
-
-        // Copy the command line
-        final CommandLine commandLine = subject.getCommandLine();
-        final ExperimentDbProtos.CommandLine.Builder commandLineBuilder =
-            ExperimentDbProtos.CommandLine.newBuilder();
-        for (final JvmFlag argument : arguments) {
-          final long value = commandLine.getValue(argument);
-          final ExperimentDbProtos.CommandLineArgument.Builder argumentBuilder =
-              ExperimentDbProtos.CommandLineArgument.newBuilder();
-
-          argumentBuilder.setName(argument.name());
-          argumentBuilder.setValue(String.valueOf(value));
-          commandLineBuilder.addArgument(argumentBuilder);
-        }
-        subjectBuilder.setCommandLine(commandLineBuilder);
-        subjectProtos.add(subjectBuilder.build());
-      }
-    }
-
-    org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState.Builder stateProtoBuilder =
-        org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState.newBuilder();
-    stateProtoBuilder.setId(idProto);
-    stateProtoBuilder.setConfiguration(configurationProto);
-    stateProtoBuilder.addAllSubjects(subjectProtos);
-    return stateProtoBuilder.build().toByteArray();
+  
+  public EvaluatedSubject[] evaluatedSubjects() {
+    return evaluatedSubjects;
   }
 }

@@ -15,6 +15,8 @@
 
 package org.arbeitspferde.groningen.experimentdb;
 
+import org.arbeitspferde.groningen.config.GroningenConfig;
+
 /**
  * The SubjectRestart class contains the number of subject restarts during an experiment that is
  * cached by subjectId. You can use restartThresholdCrossed(...) to find out if a subject crossed
@@ -55,8 +57,8 @@ public class SubjectRestart {
   }
 
   /** Returns whether or not the restart threshold has been crossed by the input subject */
-  public boolean restartThresholdCrossed(ExperimentDb experimentDb) {
-    return this.numberOfRestarts >= experimentDb.getRestartThreshold();
+  public boolean restartThresholdCrossed(GroningenConfig config) {
+    return this.numberOfRestarts >= config.getParamBlock().getRestart();
   }
 
   public void setLastRestartTime(long lastRestartTime) {

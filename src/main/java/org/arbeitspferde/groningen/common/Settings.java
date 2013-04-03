@@ -19,6 +19,7 @@ public interface Settings {
   public Integer getNumShards();
   public Integer getShardIndex();
   public String getDatastore();
+  public String getHistoryDatastore();
   public Integer getPort();
   public Integer getStartupSubservicesDeadlineSeconds();
   public Integer getShutdownSubservicesDeadlineSeconds();

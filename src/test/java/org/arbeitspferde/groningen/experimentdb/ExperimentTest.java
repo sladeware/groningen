@@ -77,10 +77,10 @@ public class ExperimentTest extends ClockedExperimentDbTestCaseBase {
 
   /** Tests {@link Experiment.getSubjects} */
   public void testGetSubjects() throws Exception {
-    SubjectStateBridge s1 = experimentDb.subjects.make();
-    SubjectStateBridge s2 = experimentDb.subjects.make();
-    Experiment e = experimentDb.getExperiments().make(ImmutableList.of(s1.getIdOfObject(),
-                                                                  s2.getIdOfObject()));
+    SubjectStateBridge s1 = experimentDb.makeSubject();
+    SubjectStateBridge s2 = experimentDb.makeSubject();
+    Experiment e = experimentDb.makeExperiment(ImmutableList.of(s1.getIdOfObject(),
+        s2.getIdOfObject()));
     List<SubjectStateBridge> subjects = e.getSubjects();
     assertEquals(2, subjects.size());
     assertSame(s1, subjects.get(0));

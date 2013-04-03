@@ -35,7 +35,14 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
   private final Clock clock;
   private Instant timeStamp;
   private final Fitness fitness = new Fitness();
+
   private long experimentId = EXPERIMENT_ID_UNINITIALIZED;
+  
+  private String clusterName;
+  private String subjectGroupName;
+  private String userName;
+  private int subjectGroupIndex;
+
 
   /** Constructors */
   public EvaluatedSubject(final Clock clock, final SubjectStateBridge subject, final double score,
@@ -49,6 +56,45 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
     this.bridge = bridge;
     setFitness(score);
     setTimeStamp(this.clock.now());
+    
+    if (bridge.getAssociatedSubject() != null) {
+      setClusterName(bridge.getAssociatedSubject().getSubjectGroup().getClusterName());
+      setSubjectGroupName(bridge.getAssociatedSubject().getSubjectGroup().getSubjectGroupName());
+      setUserName(bridge.getAssociatedSubject().getSubjectGroup().getUserName());
+      setSubjectGroupIndex(bridge.getAssociatedSubject().getSubjectIndex());
+    }
+  }
+  
+  public void setClusterName(String clusterName) {
+    this.clusterName = clusterName;
+  }
+  
+  public String getClusterName() {
+    return clusterName;
+  }
+  
+  public void setSubjectGroupName(String subjectGroupName) {
+    this.subjectGroupName = subjectGroupName;
+  }
+  
+  public String getSubjectGroupName() {
+    return subjectGroupName;
+  }
+  
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+  
+  public String getUserName() {
+    return userName;
+  }
+  
+  public void setSubjectGroupIndex(int subjectGroupIndex) {
+    this.subjectGroupIndex = subjectGroupIndex;
+  }
+  
+  public int getSubjectGroupIndex() {
+    return subjectGroupIndex;
   }
 
   /** Set and get methods */

@@ -97,6 +97,8 @@ public class Pipeline {
   private final PipelineStageDisplayer pipelineStageDisplayer;
   
   private final Thread pipelineThread;
+  
+  private final PipelineSynchronizer pipelineSynchronizer;
 
   /** Counts the number of pipeline iterations */
   private AtomicLong pipelineIterationCount = new AtomicLong(1);
@@ -139,7 +141,8 @@ public class Pipeline {
     ConfigManager configManager,
     Provider<PipelineIteration> pipelineIterationProvider,
     PipelineId pipelineId,
-    final MetricExporter metricExporter) {
+    final MetricExporter metricExporter,
+    PipelineSynchronizer pipelineSynchronizer) {
 
     this.pipelineIterationScope = pipelineIterationScope;
     this.displayable = displayable;
@@ -152,6 +155,7 @@ public class Pipeline {
     this.configManager = configManager;
     this.pipelineIterationProvider = pipelineIterationProvider;
     this.pipelineId = pipelineId;
+    this.pipelineSynchronizer = pipelineSynchronizer;
     this.pipelineThread = Thread.currentThread();
     this.experimentDb = experimentDb;
 
@@ -285,6 +289,10 @@ public class Pipeline {
       log.log(Level.SEVERE, "Fatal error", e);
       throw e;
     }
+  }
+
+  public PipelineSynchronizer getPipelineSynchronizer() {
+    return pipelineSynchronizer;
   }
 
   public Displayable getDisplayable() {

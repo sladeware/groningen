@@ -72,6 +72,8 @@ message GroningenParams {
   optional int32 number_of_executor_threads = 14 [ default = 3 ];
 
   // Groningen can run with various amounts of interaction between pipeline steps
+  // This value is only read on creation of the pipeline (and not updated
+  // between iterations
   enum PipelineSynchMode {
     // No synchronization is performed. Groningen will run the subjects for the
     // duration specified in param_block, and on completion of an iteration of
@@ -90,6 +92,11 @@ message GroningenParams {
     //   forever should the external agent crash or otherwise fail to signal
     //   the end of the experiment.
     BASIC_SEMAPHORE = 1;
+
+    // Provides a single point of synchronization at the end of an iteration at
+    // which the pipeline will pause a flag is set allowing it to continue. The
+    // flag can be set before the pipeline reaches the sync point.
+    ITERATION_FINALIZATION_ONLY = 2;
   }
   optional PipelineSynchMode pipeline_sync_type = 15 [ default = NONE ];
 

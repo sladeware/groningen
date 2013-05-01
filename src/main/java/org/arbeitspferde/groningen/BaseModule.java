@@ -21,6 +21,7 @@ import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
@@ -44,6 +45,7 @@ import org.arbeitspferde.groningen.externalprocess.CmdProcessInvoker;
 import org.arbeitspferde.groningen.externalprocess.ProcessInvoker;
 import org.arbeitspferde.groningen.generator.Generator;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
+import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.SystemClock;
 import org.arbeitspferde.groningen.validator.Validator;
@@ -110,6 +112,15 @@ public class BaseModule extends AbstractModule {
     install(new FactoryModuleBuilder()
         .implement(ConfigManager.class, ProtoBufConfigManager.class)
         .build(ProtoBufConfigManagerFactory.class));
+
+    bind(PipelineSynchronizer.class).to(EmptyPipelineSynchronizer.class);
+    MapBinder<GroningenParams.PipelineSynchMode, PipelineSynchronizer> pipelineSycMapBinder =
+        MapBinder.newMapBinder(
+            binder(), GroningenParams.PipelineSynchMode.class, PipelineSynchronizer.class);
+    pipelineSycMapBinder.addBinding(GroningenParams.PipelineSynchMode.NONE)
+        .to(EmptyPipelineSynchronizer.class);
+    pipelineSycMapBinder.addBinding(GroningenParams.PipelineSynchMode.ITERATION_FINALIZATION_ONLY)
+        .to(IterationFinalizationSynchronizer.class);
   }
 
   @Provides
@@ -136,12 +147,6 @@ public class BaseModule extends AbstractModule {
   public HistoryDatastore produceHistoryDatastore(Settings settings,
       Map<String, Provider<HistoryDatastore>> historyDatastorePlugins) {
     return historyDatastorePlugins.get(settings.getHistoryDatastore()).get();
-  }
-
-  @Provides
-  @PipelineIterationScoped
-  public PipelineSynchronizer producePipelineSynchronizer() {
-    return new EmptyPipelineSynchronizer();
   }
 
   /**

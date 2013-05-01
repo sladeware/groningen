@@ -20,31 +20,73 @@ package org.arbeitspferde.groningen;
  * pipeline to synchronize with other agents, most likely external to the process.
  *
  * Most methods are expected to be able to block.
+ * 
+ * The interface provides hooks for the pipeline to call into and mechanisms to signal a
+ * pipeline waiting within the hooks. These can be used to block on/receive notification that the
+ * iteration has progressed to/through the points laid out below. The sync points and steps within
+ * the pipeline are enumerated below.
+ * 
+ * Steps in the iteration are preceeded with 'step: ' while sync points are preceeded
+ * by 'sync: '
+ * 
+ *  sync: IterationStartSync
+ *  step: Hypothesizer
+ *  step: ExperimentalArgumentPush
+ *  sync: ExperimentalArgPreRestartSync
+ *  step: InitialRestart
+ *  sync: InitialRestartCompleteSync
+ *  step: TasksWatched
+ *  sync: EndGenerationFlagged: the iteration is flagged to be completed, less of a direct
+ *        synchronization point than advisoratory.
+ *  step: ExperimentalArgumentsCleared
+ *  step: FinalRestart
+ *  step: ScoresAssessed
+ *  step: ScoringComplete
+ *  sync: IterationFinalizedSync
+ *  
+ * The interface provides methods through which combinations of these synchronization
+ * points can be built into ways to synchronize the pipeline with external applications and/or
+ * conditions.
+ * 
+ * Pipeline most pipeline hooks are expected to block.
  */
 public interface PipelineSynchronizer {
   /**
-   * Hook for synchronization before the Hypothesizer is run.
+   * Expose which synchronization points are supported by a {@link PipelineSynchronizer} such
+   * that methods calling into a synchronizer can verify all operatons are available before
+   * starting a sequence of synchronization steps
+   * 
+   * @param points a variable number/array of sync points to check against
+   * @return true iff all requested SyncPoints are supported by the synchronizer
+   */
+  public boolean supportsSyncPoints(SyncPoint ... points);
+
+  /**
+   * Pipeline hook for synchronization at IterationStartSync, before the Hypothesizer is run.
    *
    * This method can block.
    */
   public void iterationStartHook();
 
   /**
-   * Hook for synchronization between the Generator and Executor.
+   * Pipeline hook for synchronization at ExperimentalArgPreRestartSync, between the Generator
+   * and Executor.
    *
    * This method can block.
    */
   public void executorStartHook();
 
   /**
-   * Hook for signaling that tasks have been restarted with the experimental arguments.
+   * Pipeline hook for synchronization at InitialRestartCompleteSync, signaling that tasks have
+   * been restarted with the experimental arguments.
    *
    * This method can block but is not expected to.
    */
   public void initialSubjectRestartCompleteHook();
 
   /**
-   * Polling method for external notification that the executor should complete the experiment.
+   * Pipeline polling method for external notification that the executor should complete the
+   * experiment, and occurs EndGenerationFlagged in the iteration progression laid out above.
    * This is not notification of an external error condition, instead, it is external signaling
    * that the experiment has concluded.
    *
@@ -55,9 +97,80 @@ public interface PipelineSynchronizer {
   public boolean shouldFinalizeExperiment();
 
   /**
-   * Hook for synchronization after the final Extractor has run in this iteration.
+   * Pipeline hook for synchronization at IterationFinalizedSync, after the final Extractor has
+   * run in this iteration.
    *
    * This method can block.
    */
   public void finalizeCompleteHook();
+  
+  /**
+   * Wait for the pipeline to arrive at IterationStartSync sync point with an optional time to wait.
+   *
+   * @params maxWaitSecs max time to wait in seconds, <= 0 will use an unbounded wait
+   * @returns true iff the wait was fulfilled by the pipeline reaching the point before the
+   *          specified wait time passed.
+   */
+  boolean blockTilIterationStart(long maxWaitSecs) throws UnsupportedOperationException;
+
+  /**
+   * Signal the pipeline that the iteration can commence (ie progress past IterationStartSync).
+   */
+  void allowPastIterationStart() throws UnsupportedOperationException;
+
+  /**
+   * Wait for the pipeline to finish writing the the experimental argument files (or block at
+   * the ExperimentalArgPreRestartSync sync point).
+   *
+   * @params maxWaitSecs max time to wait in seconds, <= 0 will use an unbounded wait
+   * @returns true iff the wait was fulfilled by the pipeline reaching the point before the
+   *          specified wait time passed.
+   */
+  boolean blockTilExperimentArgsPushed(long maxWaitSecs)
+      throws UnsupportedOperationException;
+
+  /**
+   * Signal the pipeline that the iteration can proceed past the writing of the experimental arg
+   * files which corresponds to the ExperimentalArgPreRestartSync sync point..
+   */
+  void allowPastExperimentArgsPushed() throws UnsupportedOperationException;
+
+  /**
+   * Wait for the pipeline to finish restarting the tasks with experimental arguments
+   * (InitialRestartCompleteSync sync point). 
+   *
+   * @params maxWaitSecs max time to wait in seconds, <= 0 will use an unbounded wait
+   * @returns true iff the wait was fulfilled by the pipeline reaching the point before the
+   *          specified wait time passed.
+   */
+  boolean blockTilRestartedWithExpArgs(long maxWaitSecs)
+      throws UnsupportedOperationException;
+  
+  /**
+   * Signal the pipeline that it can proceed past the InitialRestartCompleteSync sync point. 
+   */
+  void allowPastRestartedWithExpArgs() throws UnsupportedOperationException;
+
+  /**
+   * Signal the pipeline to begin to finish the iteration by restarting the tasks and scoring the
+   * individual tasks. Brings the iteration to the EndGenerationFlagged sync point.
+   */
+  void flagEndOfIteration() throws UnsupportedOperationException;
+  
+  /**
+   * Wait for the pipeline to finish scoring tasks, in other words wait for the pipeline to
+   * arrive at the IterationFinalizedSync sync point. 
+   *
+   * @params maxWaitSecs max time to wait in seconds, <= 0 will use an unbounded wait
+   * @returns true iff the wait was fulfilled by the pipeline reaching the point before the
+   *          specified wait time passed.
+   */
+  boolean blockTilIterationFinalization(long maxWaitSecs)
+      throws UnsupportedOperationException;
+
+  /**
+   * Signal the pipeline that the iteration can finalize the iteration and start another by
+   * proceeding past IterationFinalizedSync. 
+   */
+  void allowPastIterationFinalization() throws UnsupportedOperationException;
 }

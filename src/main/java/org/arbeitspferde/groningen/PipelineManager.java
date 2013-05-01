@@ -1,15 +1,16 @@
 package org.arbeitspferde.groningen;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-
 import org.arbeitspferde.groningen.Datastore.DatastoreException;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineScoped;
+import org.arbeitspferde.groningen.proto.Params.GroningenParams.PipelineSynchMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,6 +36,7 @@ public class PipelineManager {
   private final BlockScope pipelineScope;
   private final Provider<Pipeline> pipelineProvider;
   private final Datastore datastore;
+  private final Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap;
 
   private ConcurrentMap<PipelineId, Pipeline> pipelines;
 
@@ -41,11 +44,13 @@ public class PipelineManager {
   public PipelineManager(PipelineIdGenerator pipelineIdGenerator,
       @Named(PipelineScoped.SCOPE_NAME) BlockScope pipelineScope,
       Provider<Pipeline> pipelineProvider,
-      Datastore datastore) {
+      Datastore datastore,
+      Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap) {
     this.pipelineIdGenerator = pipelineIdGenerator;
     this.pipelineScope = pipelineScope;
     this.pipelineProvider = pipelineProvider;
     this.datastore = datastore;
+    this.synchronizerProviderMap = synchronizerProviderMap;
     this.pipelines = new ConcurrentHashMap<PipelineId, Pipeline>();
   }
 
@@ -53,6 +58,7 @@ public class PipelineManager {
       final ConfigManager configManager, final boolean blockUntilStarted) {
     final GroningenConfig firstConfig = configManager.queryConfig();
     final PipelineId pipelineId = pipelineState.pipelineId();
+    final PipelineSynchronizer synchronizer = getRequestedPipelineSynchronizer(firstConfig);
 
     final ReentrantLock pipelineConstructionLock = new ReentrantLock();
     final Condition pipelineConstructionCondition = pipelineConstructionLock.newCondition();
@@ -68,6 +74,7 @@ public class PipelineManager {
         try {
           pipelineScope.enter();
           try {
+            pipelineScope.seed(PipelineSynchronizer.class, synchronizer);
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
 
@@ -131,6 +138,7 @@ public class PipelineManager {
       final boolean blockUntilStarted) {
     final GroningenConfig firstConfig = configManager.queryConfig();
     final PipelineId pipelineId = pipelineIdGenerator.generatePipelineId(firstConfig);
+    final PipelineSynchronizer synchronizer = getRequestedPipelineSynchronizer(firstConfig);
 
     final ReentrantLock pipelineConstructionLock = new ReentrantLock();
     final Condition pipelineConstructionCondition = pipelineConstructionLock.newCondition();
@@ -146,6 +154,7 @@ public class PipelineManager {
         try {
           pipelineScope.enter();
           try {
+            pipelineScope.seed(PipelineSynchronizer.class, synchronizer);
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
 
@@ -218,5 +227,29 @@ public class PipelineManager {
    */
   public Map<PipelineId, Pipeline> getAllPipelines() {
     return new HashMap<PipelineId, Pipeline>(pipelines);
+  }
+  
+  /**
+   * Map a requested mode of synchronizer the pipeline to a {@link PipelineSynchronizer} that
+   * performs that type of synchronization.
+   * 
+   * @param config the {@link GroningenConfig} specifying the requested experiment
+   * @return the type of PipelineSynchronizer that implements the requested type of
+   *         synchronization, null if both there exists no direct mapping AND there is
+   *         not a mapping for the default type of synchronization - NONE
+   */
+  @VisibleForTesting
+  PipelineSynchronizer getRequestedPipelineSynchronizer(GroningenConfig config) {
+    PipelineSynchMode syncMode = config.getParamBlock().getPipelineSyncType();
+    Provider<PipelineSynchronizer> syncProvider = synchronizerProviderMap.get(syncMode);
+    if (syncProvider == null) {
+      log.log(Level.WARNING, "no guice binding for " + syncMode.name());
+      syncProvider = synchronizerProviderMap.get(PipelineSynchMode.NONE);
+      if (syncProvider == null) {
+        log.log(Level.SEVERE, "no named binding for default syncMode NONE");
+        return null;
+      }
+    }
+    return syncProvider.get();
   }
 }

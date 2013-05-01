@@ -20,6 +20,16 @@ package org.arbeitspferde.groningen;
  */
 public class EmptyPipelineSynchronizer implements PipelineSynchronizer {
 
+  /** @see PipelineSynchronizer#supportsSyncPoints(org.arbeitspferde.groningen.SyncPoint[]) */
+  @Override
+  public boolean supportsSyncPoints(SyncPoint... points) {
+    if (points.length > 0) {
+      return false;
+    }
+    return true;
+  }
+
+  // Pipeline Hooks
   public EmptyPipelineSynchronizer() {}
 
   @Override
@@ -38,4 +48,62 @@ public class EmptyPipelineSynchronizer implements PipelineSynchronizer {
 
   @Override
   public void finalizeCompleteHook() {}
+  
+  // Sync Points
+  @Override
+  public boolean blockTilIterationStart(long maxWaitSecs) throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public void allowPastIterationStart() throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public boolean blockTilExperimentArgsPushed(long maxWaitSecs)
+      throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public void allowPastExperimentArgsPushed() throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public boolean blockTilRestartedWithExpArgs(long maxWaitSecs)
+      throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public void allowPastRestartedWithExpArgs() throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public void flagEndOfIteration() throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public boolean blockTilIterationFinalization(long maxWaitSecs)
+      throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
+
+  @Override
+  public void allowPastIterationFinalization() throws UnsupportedOperationException {
+    throw new UnsupportedOperationException(
+        this.getClass().getEnclosingMethod().getName() + " implements no sync points");
+  }
 }

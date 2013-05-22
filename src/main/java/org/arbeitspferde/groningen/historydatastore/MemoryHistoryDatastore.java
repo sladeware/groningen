@@ -1,5 +1,7 @@
 package org.arbeitspferde.groningen.historydatastore;
 
+import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.HistoryDatastore;
 import org.arbeitspferde.groningen.PipelineHistoryState;
 import org.arbeitspferde.groningen.PipelineId;
@@ -37,22 +39,22 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
   }
 
   @Override
-  public PipelineId[] listPipelinesIds() {
-    return data.keySet().toArray(new PipelineId[] {});
+  public List<PipelineId> listPipelinesIds() {
+    return Lists.newArrayList(data.keySet());
   }
 
   @Override
-  public PipelineHistoryState[] getStatesForPipelineId(PipelineId pipelineId) {
+  public List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId) {
     List<PipelineHistoryState> states = data.get(pipelineId);
     if (states == null) {
       return null;
     } else {
-      return states.toArray(new PipelineHistoryState[] {});
+      return states;
     }
   }
 
   @Override
-  public PipelineHistoryState[] getStatesForPipelineId(
+  public List<PipelineHistoryState> getStatesForPipelineId(
       PipelineId pipelineId, Instant afterTimestamp) {
     List<PipelineHistoryState> states = data.get(pipelineId);
     if (states == null) {
@@ -64,7 +66,7 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
           results.add(s);
         }
       }
-      return results.toArray(new PipelineHistoryState[] {});
+      return results;
     }
   }
 }

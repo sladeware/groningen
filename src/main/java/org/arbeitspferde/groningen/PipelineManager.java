@@ -1,6 +1,7 @@
 package org.arbeitspferde.groningen;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -98,7 +99,7 @@ public class PipelineManager {
             pipelines.remove(pipelineId);
 
             try {
-              datastore.deletePipelines(new PipelineId[] { pipelineId });
+              datastore.deletePipelines(Lists.newArrayList(pipelineId));
             } catch (DatastoreException e) {
               log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
                   pipelineId.toString(), e.getMessage()));
@@ -184,7 +185,7 @@ public class PipelineManager {
             pipelines.remove(pipelineId);
             
             try {
-              datastore.deletePipelines(new PipelineId[] { pipelineId });
+              datastore.deletePipelines(Lists.newArrayList(pipelineId));
             } catch (DatastoreException e) {
               log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
                   pipelineId.toString(), e.getMessage()));

@@ -3,13 +3,13 @@ package org.arbeitspferde.groningen.datastore;
 import org.arbeitspferde.groningen.Datastore;
 
 /**
- * Test for {@link MemoryDatastore}.
+ * Test for {@link InMemoryDatastore}.
  */
-public class MemoryDatastoreTest extends DatastoreTestBase {
+public class InMemoryDatastoreTest extends DatastoreTestBase {
 
   @Override
   protected Datastore createDatastore() {
-    return new MemoryDatastore();
+    return new InMemoryDatastore();
   }
 
   @Override
@@ -17,3 +17,4 @@ public class MemoryDatastoreTest extends DatastoreTestBase {
   }
 
 }
+

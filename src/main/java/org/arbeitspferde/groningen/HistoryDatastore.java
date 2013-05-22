@@ -2,6 +2,8 @@ package org.arbeitspferde.groningen;
 
 import org.joda.time.Instant;
 
+import java.util.List;
+
 /**
  * Datastore for historical data.
  */
@@ -31,9 +33,11 @@ public interface HistoryDatastore {
   
   void writeState(PipelineHistoryState state) throws HistoryDatastoreException;
   
-  PipelineId[] listPipelinesIds() throws HistoryDatastoreException;
-  PipelineHistoryState[] getStatesForPipelineId(PipelineId pipelineId)
+  List<PipelineId> listPipelinesIds() throws HistoryDatastoreException;
+  
+  List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId)
     throws HistoryDatastoreException;
-  PipelineHistoryState[] getStatesForPipelineId(PipelineId pipelineId, Instant afterTimestamp)
+  
+  List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId, Instant afterTimestamp)
     throws HistoryDatastoreException;
 }

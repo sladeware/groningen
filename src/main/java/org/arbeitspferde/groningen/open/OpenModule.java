@@ -29,7 +29,7 @@ import org.arbeitspferde.groningen.common.SupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.common.open.NullSupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.config.LegacyProgramConfigurationMediator;
 import org.arbeitspferde.groningen.config.open.NullLegacyProgramConfigurationMediator;
-import org.arbeitspferde.groningen.datastore.MemoryDatastore;
+import org.arbeitspferde.groningen.datastore.InMemoryDatastore;
 import org.arbeitspferde.groningen.extractor.CollectionLogAddressor;
 import org.arbeitspferde.groningen.extractor.open.NullCollectionLogAddressor;
 import org.arbeitspferde.groningen.historydatastore.MemoryHistoryDatastore;
@@ -73,7 +73,8 @@ public class OpenModule extends AbstractModule {
 
     MapBinder<String, Datastore> datastoreBinder = MapBinder.newMapBinder(binder(), String.class,
         Datastore.class);
-    datastoreBinder.addBinding(MemoryDatastore.class.getCanonicalName()).to(MemoryDatastore.class);
+    datastoreBinder.addBinding(InMemoryDatastore.class.getCanonicalName())
+      .to(InMemoryDatastore.class);
 
     MapBinder<String, HistoryDatastore> historyDatastoreBinder = 
         MapBinder.newMapBinder(binder(), String.class, HistoryDatastore.class);

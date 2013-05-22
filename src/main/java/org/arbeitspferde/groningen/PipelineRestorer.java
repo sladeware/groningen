@@ -8,6 +8,7 @@ import org.arbeitspferde.groningen.config.DatastoreConfigManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -33,11 +34,11 @@ public class PipelineRestorer {
 
   public void restorePipelines() {
     List<PipelineId> currentShardIds = new ArrayList<PipelineId>();
-    PipelineId[] allPipelinesIds;
+    List<PipelineId> allPipelinesIds;
     try {
       allPipelinesIds = dataStore.listPipelinesIds();
     } catch (DatastoreException e) {
-      log.severe("can't list pipelines in datastore: " + e.getMessage());
+      log.log(Level.SEVERE, "can't list pipelines in datastore: " + e.getMessage(), e);
       throw new RuntimeException(e);
     }
     
@@ -47,13 +48,13 @@ public class PipelineRestorer {
       }
     }
     log.info(String.format("%d out of %d stored pipelines belong to me (shard %d).",
-        currentShardIds.size(), allPipelinesIds.length, shardIndex));
+        currentShardIds.size(), allPipelinesIds.size(), shardIndex));
     
-    PipelineState[] states;
+    List<PipelineState> states;
     try {
-      states = dataStore.getPipelines(currentShardIds.toArray(new PipelineId[] {}));
+      states = dataStore.getPipelines(currentShardIds);
     } catch (DatastoreException e) {
-      log.severe("can't get pipelines in datastore: " + e.getMessage());
+      log.log(Level.SEVERE, "can't get pipelines in datastore: " + e.getMessage(), e);
       throw new RuntimeException(e);
     }
     
@@ -66,3 +67,4 @@ public class PipelineRestorer {
     log.info("All pipelines belonging to this shard were restored.");
   }
 }
+

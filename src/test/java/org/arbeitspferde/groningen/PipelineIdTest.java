@@ -16,6 +16,8 @@
 package org.arbeitspferde.groningen;
 
 
+import com.google.common.testing.EqualsTester;
+
 import junit.framework.TestCase;
 
 /**
@@ -27,19 +29,10 @@ public class PipelineIdTest extends TestCase {
     PipelineId id1Copy = new PipelineId("id1");
     PipelineId id2 = new PipelineId("id2");
 
-    assertTrue(id1.equals(id1));
-    assertTrue(id1.equals(id1Copy));
-    assertTrue(id1Copy.equals(id1));
-    assertTrue(!id1.equals(id2));
-    assertTrue(!id2.equals(id1));
+    new EqualsTester()
+        .addEqualityGroup(id1, id1, id1Copy)
+        .addEqualityGroup(id2)
+        .testEquals();
   }
-  
-  public void testHashIsConsistent() {
-    PipelineId id1 = new PipelineId("id1");
-    PipelineId id1Copy = new PipelineId("id1");
-    PipelineId id2 = new PipelineId("id2");
-
-    assertTrue(id1.hashCode() == id1Copy.hashCode());
-    assertTrue(id1.hashCode() != id2.hashCode());
-  }  
 }
+

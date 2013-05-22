@@ -1,9 +1,13 @@
 package org.arbeitspferde.groningen.config;
 
+import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.Datastore;
 import org.arbeitspferde.groningen.Datastore.DatastoreException;
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.PipelineState;
+
+import java.util.List;
 
 /**
  * {@link ConfigManager } implementation that gets configuration from {@link Datastore}.
@@ -27,17 +31,17 @@ public class DatastoreConfigManager implements ConfigManager {
 
   @Override
   public GroningenConfig queryConfig() {
-    PipelineState[] states;
+    List<PipelineState> states;
     try {
-      states = dataStore.getPipelines(new PipelineId[] { pipelineId });
+      states = dataStore.getPipelines(Lists.newArrayList(pipelineId));
     } catch (DatastoreException e) {
       throw new RuntimeException(e);
     }
     
-    if (states.length == 0) {
+    if (states.isEmpty()) {
       throw new RuntimeException("No state found.");
     } else {
-      return states[0].config();
+      return states.get(0).config();
     }
   }
 }

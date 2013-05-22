@@ -26,7 +26,7 @@ public class PipelineId implements Comparable<PipelineId> {
   private final String id;
 
   public PipelineId(String id) {
-    Preconditions.checkNotNull(id);
+    Preconditions.checkNotNull(id, "Pipeline id cannot be null.");
     this.id = id;
   }  
     
@@ -58,3 +58,4 @@ public class PipelineId implements Comparable<PipelineId> {
     return id;
   }
 }
+

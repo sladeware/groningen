@@ -22,7 +22,6 @@ import org.arbeitspferde.groningen.utility.PinnedClock;
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -131,7 +130,7 @@ public abstract class HistoryDatastoreTestBase extends TestCase {
     historyDatastore.writeState(createValidHistoryPipelineState(new PipelineId("state1")));
     historyDatastore.writeState(createValidHistoryPipelineState(new PipelineId("state2")));
     
-    List<PipelineId> pipelineIds = Arrays.asList(historyDatastore.listPipelinesIds());
+    List<PipelineId> pipelineIds = historyDatastore.listPipelinesIds();
     Collections.sort(pipelineIds,
         new Comparator<PipelineId>() {
       @Override
@@ -153,59 +152,59 @@ public abstract class HistoryDatastoreTestBase extends TestCase {
     historyDatastore.writeState(state1b);
     historyDatastore.writeState(createValidHistoryPipelineState(new PipelineId("state2")));
     
-    PipelineHistoryState[] states = 
+    List<PipelineHistoryState> states = 
         historyDatastore.getStatesForPipelineId(new PipelineId("state1"));
-    assertEquals(2, states.length);
+    assertEquals(2, states.size());
     
-    assertEquals(state1a.pipelineId(), states[0].pipelineId());
-    assertEquals(state1b.pipelineId(), states[1].pipelineId());
+    assertEquals(state1a.pipelineId(), states.get(0).pipelineId());
+    assertEquals(state1b.pipelineId(), states.get(1).pipelineId());
     
-    assertEquals(state1a.config().getProtoConfig(), states[0].config().getProtoConfig());
-    assertEquals(state1b.config().getProtoConfig(), states[1].config().getProtoConfig());
+    assertEquals(state1a.config().getProtoConfig(), states.get(0).config().getProtoConfig());
+    assertEquals(state1b.config().getProtoConfig(), states.get(1).config().getProtoConfig());
 
-    assertEquals(state1a.endTimestamp(), states[0].endTimestamp());
-    assertEquals(state1b.endTimestamp(), states[1].endTimestamp());
+    assertEquals(state1a.endTimestamp(), states.get(0).endTimestamp());
+    assertEquals(state1b.endTimestamp(), states.get(1).endTimestamp());
 
-    assertEquals(state1a.evaluatedSubjects().length, states[0].evaluatedSubjects().length);
-    assertEquals(state1b.evaluatedSubjects().length, states[1].evaluatedSubjects().length);
+    assertEquals(state1a.evaluatedSubjects().length, states.get(0).evaluatedSubjects().length);
+    assertEquals(state1b.evaluatedSubjects().length, states.get(1).evaluatedSubjects().length);
     
     assertEquals(state1a.evaluatedSubjects()[0].getBridge().getCommandLine(),
-        states[0].evaluatedSubjects()[0].getBridge().getCommandLine());
+        states.get(0).evaluatedSubjects()[0].getBridge().getCommandLine());
     assertEquals(state1b.evaluatedSubjects()[1].getBridge().getCommandLine(),
-        states[1].evaluatedSubjects()[1].getBridge().getCommandLine());
+        states.get(1).evaluatedSubjects()[1].getBridge().getCommandLine());
     
     assertEquals(state1a.evaluatedSubjects()[0].getFitness(), 
-        states[0].evaluatedSubjects()[0].getFitness(), 1e-7);
+        states.get(0).evaluatedSubjects()[0].getFitness(), 1e-7);
     assertEquals(state1b.evaluatedSubjects()[0].getFitness(), 
-        states[1].evaluatedSubjects()[0].getFitness(), 1e-7);
+        states.get(1).evaluatedSubjects()[0].getFitness(), 1e-7);
     assertEquals(state1a.evaluatedSubjects()[1].getFitness(), 
-        states[0].evaluatedSubjects()[1].getFitness(), 1e-7);
+        states.get(0).evaluatedSubjects()[1].getFitness(), 1e-7);
     assertEquals(state1b.evaluatedSubjects()[1].getFitness(), 
-        states[1].evaluatedSubjects()[1].getFitness(), 1e-7);
+        states.get(1).evaluatedSubjects()[1].getFitness(), 1e-7);
     
     assertEquals(state1a.evaluatedSubjects()[0].getClusterName(),
-        states[0].evaluatedSubjects()[0].getClusterName());
+        states.get(0).evaluatedSubjects()[0].getClusterName());
     assertEquals(state1b.evaluatedSubjects()[1].getClusterName(),
-        states[1].evaluatedSubjects()[1].getClusterName());
+        states.get(1).evaluatedSubjects()[1].getClusterName());
 
     assertEquals(state1a.evaluatedSubjects()[0].getSubjectGroupName(),
-        states[0].evaluatedSubjects()[0].getSubjectGroupName());
+        states.get(0).evaluatedSubjects()[0].getSubjectGroupName());
     assertEquals(state1b.evaluatedSubjects()[1].getSubjectGroupName(),
-        states[1].evaluatedSubjects()[1].getSubjectGroupName());
+        states.get(1).evaluatedSubjects()[1].getSubjectGroupName());
 
     assertEquals(state1a.evaluatedSubjects()[0].getUserName(),
-        states[0].evaluatedSubjects()[0].getUserName());
+        states.get(0).evaluatedSubjects()[0].getUserName());
     assertEquals(state1b.evaluatedSubjects()[1].getUserName(),
-        states[1].evaluatedSubjects()[1].getUserName());
+        states.get(1).evaluatedSubjects()[1].getUserName());
     
     assertEquals(state1a.evaluatedSubjects()[0].getSubjectGroupIndex(),
-        states[0].evaluatedSubjects()[0].getSubjectGroupIndex());
+        states.get(0).evaluatedSubjects()[0].getSubjectGroupIndex());
     assertEquals(state1b.evaluatedSubjects()[1].getSubjectGroupIndex(),
-        states[1].evaluatedSubjects()[1].getSubjectGroupIndex());
+        states.get(1).evaluatedSubjects()[1].getSubjectGroupIndex());
 
     assertEquals(state1a.evaluatedSubjects()[0].getTimeStamp(),
-        states[0].evaluatedSubjects()[0].getTimeStamp());
+        states.get(0).evaluatedSubjects()[0].getTimeStamp());
     assertEquals(state1b.evaluatedSubjects()[1].getTimeStamp(),
-        states[1].evaluatedSubjects()[1].getTimeStamp());
+        states.get(1).evaluatedSubjects()[1].getTimeStamp());
 }
 }

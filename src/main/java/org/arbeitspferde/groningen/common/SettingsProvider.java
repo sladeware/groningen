@@ -64,7 +64,7 @@ public class SettingsProvider implements Provider<Settings> {
   @Option(
       name = "--datastore",
       usage = "Datastore class to use.")
-  public String datastore = "org.arbeitspferde.groningen.datastore.MemoryDatastore";
+  public String datastore = "org.arbeitspferde.groningen.datastore.InMemoryDatastore";
   
   @Option(
       name = "--historyDatastore",

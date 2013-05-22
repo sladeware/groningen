@@ -2,10 +2,13 @@ package org.arbeitspferde.groningen;
 
 import org.arbeitspferde.groningen.config.GroningenConfig;
 
+import java.util.List;
+
 /**
  * Interface for Groningen's storage system.
  */
 public interface Datastore {
+  
   /**
    * Base exception class for all Datastore-related exceptions. This exception was intentionally
    * made a checked one, because nearly any datastore operation may fail and usually we have
@@ -48,25 +51,29 @@ public interface Datastore {
    * Exception thrown when pipeline in question conflicts with already existing pipeline.
    */
   class PipelineConflictsWithRunningPipelines extends DatastoreException {
-    private PipelineState[] conflictingPipelines;
+    private List<PipelineState> conflictingPipelines;
     
-    public PipelineConflictsWithRunningPipelines(PipelineState[] conflictingPipelines) {
+    public PipelineConflictsWithRunningPipelines(List<PipelineState> conflictingPipelines) {
       this.conflictingPipelines = conflictingPipelines;
     }
     
-    public PipelineState[] conflictingPipelines() {
+    public List<PipelineState> conflictingPipelines() {
       return conflictingPipelines;
     }
   }
   
-  PipelineId[] listPipelinesIds() throws DatastoreException;
-  PipelineState[] getPipelines(PipelineId[] ids) throws DatastoreException;
+  List<PipelineId> listPipelinesIds() throws DatastoreException;
+  
+  List<PipelineState> getPipelines(List<PipelineId> ids) throws DatastoreException;
   
   void createPipeline(PipelineState pipelineState, boolean checkForConflicts)
     throws PipelineAlreadyExists, PipelineConflictsWithRunningPipelines, DatastoreException;
-  void writePipelines(PipelineState[] pipelinesStates) throws DatastoreException;
-  void deletePipelines(PipelineId[] ids) throws DatastoreException;
   
-  PipelineState[] findConflictingPipelines(GroningenConfig pipelineConfiguration)
+  void writePipelines(List<PipelineState> pipelinesStates) throws DatastoreException;
+  
+  void deletePipelines(List<PipelineId> ids) throws DatastoreException;
+  
+  List<PipelineState> findConflictingPipelines(GroningenConfig pipelineConfiguration)
     throws DatastoreException;
 }
+

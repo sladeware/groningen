@@ -498,7 +498,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
 
   public EvaluatedSubject[] getAllExperimentSubjects() {
     List<EvaluatedSubject> allSubjects = Lists.newArrayList();
-    PipelineHistoryState[] states = new PipelineHistoryState[] {};
+    List<PipelineHistoryState> states = Lists.newArrayList();
     try {
       states = historyDatastore.getStatesForPipelineId(pipelineId);
     } catch (HistoryDatastoreException e) {

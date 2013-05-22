@@ -1,6 +1,7 @@
 package org.arbeitspferde.groningen.datastore;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
 
 import junit.framework.TestCase;
@@ -38,16 +39,16 @@ public abstract class DatastoreTestBase extends TestCase {
       throws InvalidConfigurationException {
     GroningenConfig config = new ProtoBufConfig(
         ProgramConfiguration.newBuilder()
-        .setParamBlock(GroningenParams.newBuilder().setInputLogName(inputLogName).build())
-        .setUser("bigtester")
-        .addCluster(ClusterConfig.newBuilder()
-            .setCluster("xx")
-            .addSubjectGroup(SubjectGroupConfig.newBuilder().
-                setSubjectGroupName("bigTestingGroup").
-                setExpSettingsFilesDir("/some/path").
-                build())
-            .build())
-        .build());
+            .setParamBlock(GroningenParams.newBuilder().setInputLogName(inputLogName).build())
+            .setUser("bigtester")
+            .addCluster(ClusterConfig.newBuilder()
+                .setCluster("xx")
+                .addSubjectGroup(SubjectGroupConfig.newBuilder()
+                    .setSubjectGroupName("bigTestingGroup")
+                    .setExpSettingsFilesDir("/some/path")
+                    .build())
+                .build())
+            .build());
     ExperimentDb experimentDb = new ExperimentDb();
 
     final JvmFlagSet.Builder jvmFlagSetBuilder = JvmFlagSet.builder();
@@ -60,8 +61,7 @@ public abstract class DatastoreTestBase extends TestCase {
     s1.storeCommandLine(jvmFlagSet);
     SubjectStateBridge s2 = experimentDb.makeSubject();
     s2.storeCommandLine(jvmFlagSet);
-    experimentDb.makeExperiment(ImmutableList.of(s1.getIdOfObject(),
-        s2.getIdOfObject()));
+    experimentDb.makeExperiment(ImmutableList.of(s1.getIdOfObject(), s2.getIdOfObject()));
     return new PipelineState(pipelineId, config, experimentDb);    
   }
   
@@ -93,11 +93,11 @@ public abstract class DatastoreTestBase extends TestCase {
   protected abstract void destroyDatastore(Datastore dataStore);
   
   public void testListPipelineIdsWorksCorrectly() throws InvalidConfigurationException,
-    DatastoreException {
+      DatastoreException {
     dataStore.createPipeline(createValidPipelineState(new PipelineId("ah")), false);
     dataStore.createPipeline(createValidPipelineState(new PipelineId("oh")), false);
 
-    List<PipelineId> pipelineIds = Arrays.asList(dataStore.listPipelinesIds());
+    List<PipelineId> pipelineIds = dataStore.listPipelinesIds();
     Collections.sort(pipelineIds,
         new Comparator<PipelineId>() {
       @Override
@@ -111,34 +111,34 @@ public abstract class DatastoreTestBase extends TestCase {
   }
   
   public void testCreatePipelineWorksCorrectly() throws InvalidConfigurationException,
-    DatastoreException {
+      DatastoreException {
     PipelineState state = createValidPipelineState();
     
     dataStore.createPipeline(state, false);
 
-    PipelineId[] ids = dataStore.listPipelinesIds();
-    assertEquals(1, ids.length);
-    assertEquals(state.pipelineId(), ids[0]);
+    List<PipelineId> ids = dataStore.listPipelinesIds();
+    assertEquals(1, ids.size());
+    assertEquals(state.pipelineId(), ids.get(0));
   }
   
   public void testWritePipelinesWorksCorrectly() throws InvalidConfigurationException,
-    DatastoreException {
+      DatastoreException {
     PipelineId id = new PipelineId("some");
     
     dataStore.createPipeline(createValidPipelineState(id, "stdin"), false);    
-    PipelineState[] resultStates1 = dataStore.getPipelines(new PipelineId[] {id});
-    assertEquals(1, resultStates1.length);
-    PipelineState resultState1 = resultStates1[0];
+    List<PipelineState> resultStates1 = dataStore.getPipelines(Lists.newArrayList(id));
+    assertEquals(1, resultStates1.size());
+    PipelineState resultState1 = resultStates1.get(0);
     
-    dataStore.writePipelines(new PipelineState[] { createValidPipelineState(id, "stdin2"), });
-    PipelineState[] resultStates2 = dataStore.getPipelines(new PipelineId[] {id});
-    assertEquals(1, resultStates2.length);
-    PipelineState resultState2 = resultStates2[0];
+    dataStore.writePipelines(Lists.newArrayList(createValidPipelineState(id, "stdin2")));
+    List<PipelineState> resultStates2 = dataStore.getPipelines(Lists.newArrayList(id));
+    assertEquals(1, resultStates2.size());
+    PipelineState resultState2 = resultStates2.get(0);
     
-    dataStore.writePipelines(new PipelineState[] { createValidPipelineState(id, "stdin"), });
-    PipelineState[] resultStates3 = dataStore.getPipelines(new PipelineId[] {id});
-    assertEquals(1, resultStates3.length);
-    PipelineState resultState3 = resultStates3[0];
+    dataStore.writePipelines(Lists.newArrayList(createValidPipelineState(id, "stdin")));
+    List<PipelineState> resultStates3 = dataStore.getPipelines(Lists.newArrayList(id));
+    assertEquals(1, resultStates3.size());
+    PipelineState resultState3 = resultStates3.get(0);
     
     assertEquals(resultState1.pipelineId(), resultState2.pipelineId());
     assertEquals(resultState2.pipelineId(), resultState3.pipelineId());
@@ -149,14 +149,15 @@ public abstract class DatastoreTestBase extends TestCase {
   }
   
   public void testReadPipelinesWorksCorrectly() throws InvalidConfigurationException,
-    DatastoreException {
+      DatastoreException {
     PipelineState state = createValidPipelineState();
     
     dataStore.createPipeline(state, false);
-    PipelineState[] resultStates = dataStore.getPipelines(new PipelineId[] {state.pipelineId()});
-    assertEquals(1, resultStates.length);
+    List<PipelineState> resultStates =
+        dataStore.getPipelines(Lists.newArrayList(state.pipelineId()));
+    assertEquals(1, resultStates.size());
     
-    PipelineState resultState = resultStates[0];
+    PipelineState resultState = resultStates.get(0);
     
     assertEquals(state.pipelineId(), resultState.pipelineId());
     
@@ -174,17 +175,18 @@ public abstract class DatastoreTestBase extends TestCase {
   }
   
   public void testDeletePipelinesWorksCorrectly() throws InvalidConfigurationException,
-    DatastoreException {
+      DatastoreException {
     PipelineState state = createValidPipelineState();    
     dataStore.createPipeline(state, false);
 
-    PipelineId[] ids = dataStore.listPipelinesIds();
-    assertEquals(1, ids.length);
-    assertEquals(state.pipelineId(), ids[0]);
+    List<PipelineId> ids = dataStore.listPipelinesIds();
+    assertEquals(1, ids.size());
+    assertEquals(state.pipelineId(), ids.get(0));
 
-    dataStore.deletePipelines(new PipelineId[] { state.pipelineId() });
+    dataStore.deletePipelines(Lists.newArrayList(state.pipelineId()));
     
     ids = dataStore.listPipelinesIds();
-    assertEquals(0, ids.length);
+    assertTrue(ids.isEmpty());
   }
 }
+

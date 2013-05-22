@@ -15,6 +15,7 @@
 
 package org.arbeitspferde.groningen;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -269,7 +270,7 @@ public class Pipeline {
           notCompleted = iteration.run();
           
           try {
-            datastore.writePipelines(new PipelineState[] { state() });
+            datastore.writePipelines(Lists.newArrayList(state()));
           } catch (DatastoreException e) {
             log.severe("can't write pipeline into datastore: " + e.getMessage());
           }

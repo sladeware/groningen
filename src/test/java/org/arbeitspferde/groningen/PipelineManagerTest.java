@@ -136,22 +136,34 @@ public class PipelineManagerTest extends TestCase {
         .setPipelineSyncType(GroningenParams.PipelineSynchMode.ITERATION_FINALIZATION_ONLY)
         .build();
 
+    final PipelineSynchronizer finalizationSynchronizer = new IterationFinalizationSynchronizer();
+    Provider<PipelineSynchronizer> localSynchronizerProvider =
+        new Provider<PipelineSynchronizer>() {
+      @Override
+      public PipelineSynchronizer get() {
+        return finalizationSynchronizer;
+      }
+    };
+    pipelineSyncProviderMap.put(
+        PipelineSynchMode.ITERATION_FINALIZATION_ONLY, localSynchronizerProvider);
+
     EasyMock.expect(configManager.queryConfig()).andReturn(config).anyTimes();
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
     
     PipelineId referenceId = new PipelineId("pipelineid");
-    
-    BlockScope localPipelineScope = EasyMock.createMock(BlockScope.class);
-    localPipelineScope.enter();
-    localPipelineScope.seed(PipelineSynchronizer.class, defaultPipelineSynchronizer);
-    localPipelineScope.seed(PipelineId.class, referenceId);
-    localPipelineScope.seed(ConfigManager.class, configManager);
-    localPipelineScope.exit();
-    
     EasyMock.expect(
         pipelineIdGeneratorMock.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
           andReturn(referenceId);
-
+    
+    BlockScope localPipelineScope = EasyMock.createMock(BlockScope.class);
+    localPipelineScope.enter();
+    localPipelineScope.seed(PipelineSynchronizer.class, finalizationSynchronizer);
+    localPipelineScope.seed(PipelineId.class, referenceId);
+    localPipelineScope.seed(ConfigManager.class, configManager);
+    localPipelineScope.seed(
+        EasyMock.same(PipelineStageInfo.class), EasyMock.anyObject(PipelineStageInfo.class));
+    localPipelineScope.exit();
+    
     final ReentrantLock lock = new ReentrantLock();
     pipelineMock.run();
     EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
@@ -194,7 +206,6 @@ public class PipelineManagerTest extends TestCase {
 
     EasyMock.expect(configManager.queryConfig()).andReturn(config).anyTimes();
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
-    
     EasyMock.expect(
         pipelineIdGeneratorMock.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
           andReturn(new PipelineId("pipelineId"));

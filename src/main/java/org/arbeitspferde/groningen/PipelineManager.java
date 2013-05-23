@@ -67,6 +67,10 @@ public class PipelineManager {
     // (pipelineConstructionLock) and do not require atomicity. Still it's very handy to just
     // use a reference class that is already in a standard library
     final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
+    
+    // TODO(etheon): add metric exporter for this
+    final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
+    synchronizer.setPipelineStageTracker(pipelineStageInfo);
 
     log.fine("starting thread for pipeline (restoring) " + pipelineId.toString());
     Thread pipelineThread = new Thread("pipeline-restore-" + pipelineId.toString()) {
@@ -78,6 +82,7 @@ public class PipelineManager {
             pipelineScope.seed(PipelineSynchronizer.class, synchronizer);
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
+            pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
 
             Pipeline pipeline;
             pipelineConstructionLock.lock();
@@ -95,11 +100,13 @@ public class PipelineManager {
             
             pipeline.run();
           } finally {
+            pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZATION_INPROGRESS);
             pipelineScope.exit();
             pipelines.remove(pipelineId);
 
             try {
               datastore.deletePipelines(Lists.newArrayList(pipelineId));
+              pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZED);
             } catch (DatastoreException e) {
               log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
                   pipelineId.toString(), e.getMessage()));
@@ -148,6 +155,12 @@ public class PipelineManager {
     // use a reference class that is already in a standard library
     final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
 
+    // Create the pipeline stage tracking object and tie it to the synchronizer before the
+    // pipeline is actually started.
+    // TODO(etheon): add metric exporter for this
+    final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
+    synchronizer.setPipelineStageTracker(pipelineStageInfo);
+
     log.fine("starting thread for pipeline " + pipelineId.toString());
     Thread pipelineThread = new Thread("pipeline-" + pipelineId.toString()) {
       @Override
@@ -158,6 +171,7 @@ public class PipelineManager {
             pipelineScope.seed(PipelineSynchronizer.class, synchronizer);
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
+            pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
 
             Pipeline pipeline;
             pipelineConstructionLock.lock();
@@ -181,11 +195,13 @@ public class PipelineManager {
             log.fine("running pipeline " + pipelineId.toString());
             pipeline.run();            
           } finally {
+            pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZATION_INPROGRESS);
             pipelineScope.exit();
             pipelines.remove(pipelineId);
             
             try {
               datastore.deletePipelines(Lists.newArrayList(pipelineId));
+              pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZED);
             } catch (DatastoreException e) {
               log.severe(String.format("deleting pipeline failed (pipeline id: %s): %s",
                   pipelineId.toString(), e.getMessage()));
@@ -211,7 +227,7 @@ public class PipelineManager {
 
     return pipelineId;
   }
-
+  
   /**
    * @param pipelineId {@link PipelineId} identifying the needed pipeline
    * @return {@link Pipeline} corresponding to current PipelineId or null if such pipeline was

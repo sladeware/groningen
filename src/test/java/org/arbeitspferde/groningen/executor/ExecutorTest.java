@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.executor;
 
 
+import org.arbeitspferde.groningen.PipelineStageInfo;
 import org.arbeitspferde.groningen.PipelineSynchronizer;
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
@@ -78,10 +79,12 @@ public class ExecutorTest extends ClockedExperimentDbTestCaseBase {
         EasyMock.createNiceMock(CollectionLogAddressor.class);
     EasyMock.replay(mockCollectionLogAddressor);
 
+    final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
+    
     executor = new Executor(clock, monitor, experimentDb, mockManipulator, mockHealthQuerier,
         mockSubjectInterrogator, mockPipelineSynchronizer, mockSubjectSettingsFileManager,
         mockMetricExporter, mockFileFactory, new NullServingAddressGenerator(),
-        mockCollectionLogAddressor);
+        mockCollectionLogAddressor, pipelineStageInfo);
   }
 
   /** Check that profiledRun works without exception. */

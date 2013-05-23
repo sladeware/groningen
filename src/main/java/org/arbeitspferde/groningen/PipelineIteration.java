@@ -51,6 +51,7 @@ public class PipelineIteration {
   private final Generator generator;
   private final Hypothesizer hypothesizer;
   private final Validator validator;
+  private final PipelineStageInfo pipelineStageInfo;
 
   /**
    * Track the pipestage we are in. It's fine to have this metrics defined this way as there's only
@@ -67,7 +68,8 @@ public class PipelineIteration {
       final Generator generator,
       final Hypothesizer hypothesizer,
       final Validator validator,
-      final MetricExporter metricExporter) {
+      final MetricExporter metricExporter,
+      final PipelineStageInfo pipelineStageInfo) {
 
     this.config = config;
     this.pipelineSynchronizer = pipelineSynchronizer;
@@ -75,6 +77,7 @@ public class PipelineIteration {
     this.generator = generator;
     this.hypothesizer = hypothesizer;
     this.validator = validator;
+    this.pipelineStageInfo = pipelineStageInfo;
 
     metricExporter.register(
         "current_pipeline_stage",
@@ -84,6 +87,19 @@ public class PipelineIteration {
 
   public int getStage() {
     return currentPipelineStage.get();
+  }
+  
+  /**
+   * Provide the remaining time within the run of the experiment.
+   *
+   * This does not include any restart or wait times and is only valid when the experiment
+   * is running.
+   *
+   * @return time in secs remaining in the experiment, -1 if the request was made outside the
+   *    valid window.
+   */
+  public int getRemainingExperimentalSecs() {
+    return (int) executor.getRemainingDurationSeconds();
   }
 
   public boolean run() {
@@ -97,12 +113,14 @@ public class PipelineIteration {
     // Synchronization within the pipeline iteration - after the config is updated
     pipelineSynchronizer.iterationStartHook();
 
+    pipelineStageInfo.set(PipelineStageState.HYPOTHESIZER);
     hypothesizer.run(config);
     boolean notComplete = hypothesizer.notComplete();
 
     if (notComplete) {
       // Run the Generator and retry until it succeeds
       currentPipelineStage.set(1);
+      pipelineStageInfo.set(PipelineStageState.GENERATOR);
       boolean done;
       do {
         done = true;
@@ -125,10 +143,9 @@ public class PipelineIteration {
       executor.run(config);
 
       currentPipelineStage.set(3);
+      pipelineStageInfo.set(PipelineStageState.SCORING);
       validator.run(config);
     }
-
-    pipelineSynchronizer.finalizeCompleteHook();
 
     return notComplete;
   }

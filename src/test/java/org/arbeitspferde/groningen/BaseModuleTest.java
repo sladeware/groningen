@@ -261,6 +261,8 @@ public class BaseModuleTest extends TestCase {
         EasyMock.createNiceMock(ConfigManager.class);
     final PipelineSynchronizer mockSynchronizer =
         EasyMock.createNiceMock(PipelineSynchronizer.class);
+    final PipelineStageInfo mockPipelineStageInfo =
+        EasyMock.createNiceMock(PipelineStageInfo.class);
     EasyMock.replay(mockConfigManager);
     EasyMock.replay(mockSynchronizer);
 
@@ -269,6 +271,7 @@ public class BaseModuleTest extends TestCase {
       pipelineScope.seed(PipelineId.class, pipelineId);
       pipelineScope.seed(ConfigManager.class, mockConfigManager);
       pipelineScope.seed(PipelineSynchronizer.class, mockSynchronizer);
+      pipelineScope.seed(PipelineStageInfo.class, mockPipelineStageInfo);
 
       assertNotNull(injector.getInstance(Pipeline.class));
     } finally {
@@ -293,5 +296,27 @@ public class BaseModuleTest extends TestCase {
     final String[] args = injector.getInstance(String[].class);
 
     assertNotNull(args);
+  }
+  
+  public void testInjector_ProducePipelineStageInfoInScopes() {
+    PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
+    
+    pipelineScope.enter();
+    try {
+      pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
+      final PipelineStageInfo pipelineScopedInfo = injector.getInstance(PipelineStageInfo.class);
+      
+      pipelineIterationScope.enter();
+      try {
+        final PipelineStageInfo pipelineIterationScopedInfo =
+            injector.getInstance(PipelineStageInfo.class);
+        assertNotNull(pipelineScopedInfo);
+        assertEquals(pipelineScopedInfo, pipelineIterationScopedInfo);
+      } finally {
+        pipelineIterationScope.exit();
+      }
+    } finally {
+      pipelineScope.exit();
+    }
   }
 }

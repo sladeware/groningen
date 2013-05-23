@@ -60,6 +60,14 @@ public interface PipelineSynchronizer {
    * @return true iff all requested SyncPoints are supported by the synchronizer
    */
   public boolean supportsSyncPoints(SyncPoint ... points);
+  
+  /**
+   * Take a reference to the PipelineStageInfo that should be updated as the API enters
+   * and exits wait states.
+   * 
+   * @param pipelineStageInfo the state tracking object
+   */
+  public void setPipelineStageTracker(PipelineStageInfo pipelineStageInfo);
 
   /**
    * Pipeline hook for synchronization at IterationStartSync, before the Hypothesizer is run.

@@ -29,6 +29,9 @@ public class EmptyPipelineSynchronizer implements PipelineSynchronizer {
     return true;
   }
 
+  @Override
+  public void setPipelineStageTracker(PipelineStageInfo pipelineStageInfo) {}
+
   // Pipeline Hooks
   public EmptyPipelineSynchronizer() {}
 

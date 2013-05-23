@@ -89,15 +89,18 @@ public class BaseModule extends AbstractModule {
     // Pipeline-scoped bindings
     bind(Pipeline.class).in(PipelineScoped.class);
     bind(PipelineId.class)
-      .toProvider(SimpleScope.<PipelineId>seededKeyProvider())
-      .in(PipelineScoped.class);
+        .toProvider(SimpleScope.<PipelineId>seededKeyProvider())
+        .in(PipelineScoped.class);
     bind(Displayable.class).to(DisplayMediator.class).in(PipelineScoped.class);
     bind(MonitorGroningen.class).to(DisplayMediator.class).in(PipelineScoped.class);
     bind(Hypothesizer.class).in(PipelineScoped.class);
     bind(ExperimentDb.class).in(PipelineScoped.class);
     bind(ConfigManager.class)
-      .toProvider(SimpleScope.<ConfigManager>seededKeyProvider())
-      .in(PipelineScoped.class);
+        .toProvider(SimpleScope.<ConfigManager>seededKeyProvider())
+        .in(PipelineScoped.class);
+    bind(PipelineStageInfo.class)
+        .toProvider(SimpleScope.<PipelineStageInfo>seededKeyProvider())
+        .in(PipelineScoped.class);
 
     // PipelineIteration-scoped bindings
     bind(Generator.class).in(PipelineIterationScoped.class);

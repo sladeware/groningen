@@ -40,7 +40,6 @@ import org.arbeitspferde.groningen.generator.SubjectShuffler;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Clock;
-import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.joda.time.Instant;
 
@@ -110,6 +109,8 @@ public class Pipeline {
 
   private GroningenConfig currentIterationConfig = null;
 
+  private final PipelineStageInfo pipelineStageInfo;
+  
   private static class PipelineStageDisplayer {
     private PipelineIteration currentIteration;
     private final String[] stages = {"Hypothesizer", "Generator", "Executor", "Validator"};
@@ -143,7 +144,8 @@ public class Pipeline {
     Provider<PipelineIteration> pipelineIterationProvider,
     PipelineId pipelineId,
     final MetricExporter metricExporter,
-    PipelineSynchronizer pipelineSynchronizer) {
+    PipelineSynchronizer pipelineSynchronizer,
+    PipelineStageInfo pipelineStageInfo) {
 
     this.pipelineIterationScope = pipelineIterationScope;
     this.displayable = displayable;
@@ -159,14 +161,10 @@ public class Pipeline {
     this.pipelineSynchronizer = pipelineSynchronizer;
     this.pipelineThread = Thread.currentThread();
     this.experimentDb = experimentDb;
+    this.pipelineStageInfo = pipelineStageInfo;
 
     isKilled = new AtomicBoolean();
     pipelineStageDisplayer = new PipelineStageDisplayer();
-
-    metricExporter.register(
-        "pipeline_iteration_count",
-        "Counts the number of complete Groningen processing pipeline iterations",
-         Metric.make(pipelineIterationCount));
   }
 
   public PipelineId id() {
@@ -249,6 +247,8 @@ public class Pipeline {
 
           pipelineStageDisplayer.setCurrentIteration(iteration);
           monitor.maxIndividuals(subjectsToDisplay.get());
+          
+          pipelineStageInfo.incrementIterationAndSetState(PipelineStageState.ITERATION_START);
 
           if (firstIteration) {
             /*
@@ -269,6 +269,7 @@ public class Pipeline {
 
           notCompleted = iteration.run();
           
+          pipelineStageInfo.set(PipelineStageState.ITERATION_FINALIZATION_INPROGRESS);
           try {
             datastore.writePipelines(Lists.newArrayList(state()));
           } catch (DatastoreException e) {
@@ -284,7 +285,9 @@ public class Pipeline {
         } finally {
           pipelineIterationScope.exit();
         }
-        pipelineIterationCount.incrementAndGet();
+        
+        pipelineSynchronizer.finalizeCompleteHook();
+
       } while (notCompleted  && !isKilled.get());
     } catch (RuntimeException e) {
       log.log(Level.SEVERE, "Fatal error", e);
@@ -298,6 +301,10 @@ public class Pipeline {
 
   public Displayable getDisplayable() {
     return displayable;
+  }
+  
+  public PipelineStageInfo.ImmutablePipelineStageInfo getImmutablePipelineStageInfo() {
+    return pipelineStageInfo.getImmutableValueCopy();
   }
 
   public DisplayMediator getDisplayableInformationProvider() {

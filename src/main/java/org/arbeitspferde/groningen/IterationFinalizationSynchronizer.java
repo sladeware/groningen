@@ -24,11 +24,21 @@ public class IterationFinalizationSynchronizer implements PipelineSynchronizer {
   // IterationFinalizationSync point
   private boolean finalizedSinceIterationBegin = false;
   
+  private PipelineStageInfo pipelineStageInfo = null;
+  
   /** @see PipelineSynchronizer#supportsSyncPoints(SyncPoint[]) */
   @Override
   public boolean supportsSyncPoints(SyncPoint... points) {
     return supportedSyncPoints.supportsSyncPoints(points);
   }
+  
+  /** @see PipelineSynchronizer#setPipelineStageTracker(PipelineStageInfo)
+   */
+  @Override
+  public void setPipelineStageTracker(PipelineStageInfo pipelineStageInfo) {
+    this.pipelineStageInfo = pipelineStageInfo;
+  }
+
 
   /**
    * @see PipelineSynchronizer#iterationStartHook()
@@ -55,6 +65,10 @@ public class IterationFinalizationSynchronizer implements PipelineSynchronizer {
     finalizerLock.lock();
     try {
       if (!finalizedSinceIterationBegin) {
+        if (pipelineStageInfo != null) {
+          pipelineStageInfo.set(PipelineStageState.ITERATION_FINALIZED_WAIT);
+        }
+
         // TODO(etheon): revisit being interrupted, its meaning, how to use it in the restart of
         // an iteration or pausing...
         finalizerCondition.awaitUninterruptibly();

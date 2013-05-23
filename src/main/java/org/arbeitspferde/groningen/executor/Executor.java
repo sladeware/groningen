@@ -17,8 +17,10 @@ package org.arbeitspferde.groningen.executor;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+
+import org.arbeitspferde.groningen.PipelineStageInfo;
+import org.arbeitspferde.groningen.PipelineStageState;
 import org.arbeitspferde.groningen.PipelineSynchronizer;
-import org.arbeitspferde.groningen.common.FatalError;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.ClusterConfig;
@@ -45,7 +47,6 @@ import org.arbeitspferde.groningen.utility.FileFactory;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.PermanentFailure;
-import org.arbeitspferde.groningen.utility.TemporaryFailure;
 import org.joda.time.Period;
 
 import java.util.ArrayList;
@@ -102,6 +103,11 @@ public class Executor extends ProfilingRunnable {
   private int subjectRestartRateLimit =
       GroningenParams.getDefaultInstance().getMaximumInflightSubjectRestartCount();
 
+  @Inject
+  @NamedConfigParam("duration")
+  private int experimentDuration =
+      GroningenParams.getDefaultInstance().getDuration();
+
   /** The Experiment Database */
   private final ExperimentDb experimentDb;
   private final SubjectManipulator manipulator;
@@ -113,6 +119,7 @@ public class Executor extends ProfilingRunnable {
   private final FileFactory fileFactory;
   private final ServingAddressGenerator servingAddressBuilder;
   private final CollectionLogAddressor addressor;
+  private final PipelineStageInfo pipelineStageInfo;
 
   private long whenExperimentStarted;
   private final Clock clock;
@@ -157,7 +164,8 @@ public class Executor extends ProfilingRunnable {
                   final SubjectSettingsFileManager subjectSettingsFileManager,
                   final MetricExporter metricExporter, final FileFactory fileFactory,
                   final ServingAddressGenerator servingAddressBuilder,
-                  final CollectionLogAddressor addressor) {
+                  final CollectionLogAddressor addressor,
+                  final PipelineStageInfo pipelineStageInfo) {
     super(clock, monitor);
 
     this.clock = clock;
@@ -172,6 +180,7 @@ public class Executor extends ProfilingRunnable {
     this.fileFactory = fileFactory;
     this.servingAddressBuilder = servingAddressBuilder;
     this.addressor = addressor;
+    this.pipelineStageInfo = pipelineStageInfo;
   }
 
   /**
@@ -326,6 +335,27 @@ public class Executor extends ProfilingRunnable {
       }
     }
   }
+  
+  /**
+   * Provide the remaining time within the run of the experiment.
+   *
+   * This does not include restart or wait times and is only valid once the experiment has
+   * entered the steady state.
+   *
+   * @return time in secs remaining in the experiment, -1 if the request was made outside the
+   *    valid window.
+   */
+  public long getRemainingDurationSeconds() {
+    // verify we are in a state that can have a duration
+    if (pipelineStageInfo.getImmutableValueCopy().state != PipelineStageState.EXECUTOR_MAIN) {
+      return -1;
+    }
+
+    long remainingMillisecs = whenExperimentStarted + maxWarmup +
+        (1000 * 60 * (long) experimentDuration) - clock.now().getMillis();
+
+    return remainingMillisecs >= 0 ? remainingMillisecs / 1000L : 0L;
+  }
 
   @Override
   public void profiledRun(GroningenConfig config) throws RuntimeException {
@@ -361,6 +391,7 @@ public class Executor extends ProfilingRunnable {
       log.warning("Experiments do not exist. Skipping Executor stage.");
     } else {
       // Restart all of the subjects of all of the group.
+      pipelineStageInfo.set(PipelineStageState.INITIAL_TASK_RESTART);
       restartAllGroups(config);
 
       // Create a list of Subjects we are going to include in the experiment. This may be less than
@@ -418,6 +449,8 @@ public class Executor extends ProfilingRunnable {
       log.warning("Unable to enter steady state because we're uninitialized");
     } else {
       log.info("Executor is entering its steady state");
+      pipelineStageInfo.set(PipelineStageState.EXECUTOR_MAIN);
+
       do {
         currentPopulationSize.set(subjects.size());
         for (SubjectStateBridge subject : subjects) {
@@ -446,10 +479,13 @@ public class Executor extends ProfilingRunnable {
       log.info(String.format("The final population size is %s.", subjects.size()));
 
      // Restart subjects with default JVM settings and run Extractor on them
+      pipelineStageInfo.set(PipelineStageState.REMOVING_EXPERIMENTAL_ARGUMENTS);
       for (SubjectStateBridge subject : subjects) {
         // Clear the JVM settings protobuf to cause subjects to restart with default JVM settings
         subjectSettingsFileManager.delete(subject.getAssociatedSubject().getExpSettingsFile());
       }
+      
+      pipelineStageInfo.set(PipelineStageState.FINAL_TASK_RESTART);    
       restartAllGroups(config);
       for (SubjectStateBridge subject : subjects) {
         log.info(String.format("Running extractor thread on %s.", subject.getHumanIdentifier()));
@@ -510,8 +546,7 @@ public class Executor extends ProfilingRunnable {
     }
 
     now.set(clock.now().getMillis());
-    end.set(whenExperimentStarted + maxWarmup +
-        (1000 * 60 * (long) config.getParamBlock().getDuration()));
+    end.set(whenExperimentStarted + maxWarmup + (1000 * 60 * (long) experimentDuration));
 
     if (now.get() >= end.get()) {
       log.info("Experiment duration expired. Ending experiment.  Time elapsed: "

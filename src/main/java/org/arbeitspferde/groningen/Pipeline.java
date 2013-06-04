@@ -243,7 +243,7 @@ public class Pipeline {
            * should be created per-pipeline
            */
           PipelineIteration iteration = pipelineIterationProvider.get();
-          setCurrentIteration(currentIteration);
+          setCurrentIteration(iteration);
 
           pipelineStageDisplayer.setCurrentIteration(iteration);
           monitor.maxIndividuals(subjectsToDisplay.get());

@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 
 /**
  * A repository of {@link Formatter} implementations.
@@ -42,7 +41,7 @@ class Formatters {
     /**
      * Validate that numeric values are in the acceptable range for {@link Integer}.
      */
-    private final Range<Long> inherentAcceptableValues = Ranges.closed((long) Integer.MIN_VALUE,
+    private final Range<Long> inherentAcceptableValues = Range.closed((long) Integer.MIN_VALUE,
       (long) Integer.MAX_VALUE);
 
     @Override
@@ -87,7 +86,7 @@ class Formatters {
   static final Formatter BOOLEAN_FORMATTER = new Formatter() {
     private final long TRUE_AS_LONG = 1;
 
-    private final Range<Long> inherentAcceptableValues = Ranges.closed(0L, 1L);
+    private final Range<Long> inherentAcceptableValues = Range.closed(0L, 1L);
 
     @Override
     public String asArgumentString(final JvmFlag cla,

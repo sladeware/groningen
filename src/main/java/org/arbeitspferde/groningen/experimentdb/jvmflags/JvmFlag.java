@@ -18,7 +18,6 @@ package org.arbeitspferde.groningen.experimentdb.jvmflags;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 
 /**
  * An enumeration of the JVM flags that Groningen can manage.
@@ -181,7 +180,7 @@ public enum JvmFlag {
     this.stepSize = 1L;
     this.dataSize = DataSize.NONE;
     this.valueSeparator = ValueSeparator.NONE;
-    this.acceptableValueRange = Ranges.closed(0L, 1L);
+    this.acceptableValueRange = Range.closed(0L, 1L);
   }
 
   /**
@@ -213,7 +212,7 @@ public enum JvmFlag {
     this.valueSeparator = valueSeparator;
 
     this.formatter = Formatters.INTEGER_FORMATTER;
-    this.acceptableValueRange = Ranges.closed(minimum, maximum);
+    this.acceptableValueRange = Range.closed(minimum, maximum);
   }
 
 

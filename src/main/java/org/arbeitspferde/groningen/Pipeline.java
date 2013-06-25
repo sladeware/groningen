@@ -199,7 +199,7 @@ public class Pipeline {
         new ArrayList<EvaluatedSubject>();
     for (SubjectStateBridge ssb : experimentDb.getLastExperiment().getSubjects()) {
       evaluatedSubjects.add(new EvaluatedSubject(clock, ssb, FitnessScore.compute(ssb,
-          configManager.queryConfig())));
+          configManager.queryConfig()), experimentDb.getExperimentId()));
     }
     return new PipelineHistoryState(pipelineId,
         configManager.queryConfig(),

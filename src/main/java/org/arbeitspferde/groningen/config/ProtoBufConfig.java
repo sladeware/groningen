@@ -112,7 +112,7 @@ public class ProtoBufConfig implements GroningenConfig {
      */
     validateItem(progConfig.hasParamBlock(), "GroningenParam message omitted in supplied proto");
     validateItem(
-        progConfig.getParamBlock() != null, "GroningenParam message omitted in supplied proto");
+        progConfig.hasParamBlock(), "GroningenParam message omitted in supplied proto");
     validateParamBlock(progConfig);
 
     // pull in the optional search space restriction which can still throw an exception on

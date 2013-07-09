@@ -17,7 +17,10 @@ package org.arbeitspferde.groningen.externalprocess;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
+
+import org.arbeitspferde.groningen.config.NamedConfigParam;
+import org.arbeitspferde.groningen.config.PipelineIterationScoped;
+import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.security.VendorSecurityManager;
 import org.arbeitspferde.groningen.security.VendorSecurityManager.PathPermission;
 import org.arbeitspferde.groningen.utility.Metric;
@@ -29,7 +32,10 @@ import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
-@Singleton
+/**
+ * ProcessInvoker implementation.
+ */
+@PipelineIterationScoped
 public class CmdProcessInvoker implements ProcessInvoker {
   private static final Logger logger = Logger.getLogger(CmdProcessInvoker.class.getName());
   private final AtomicLong subprocessSuccessfulInvocations = new AtomicLong();
@@ -38,6 +44,11 @@ public class CmdProcessInvoker implements ProcessInvoker {
 
   private final VendorSecurityManager securityManager;
 
+  @Inject
+  @NamedConfigParam("additional_exec_paths")
+  private String additionalExecPaths =
+      GroningenParams.getDefaultInstance().getAdditionalExecPaths();
+  
   @Inject
   public CmdProcessInvoker(final MetricExporter metricExporter,
       final VendorSecurityManager securityManager) {
@@ -99,6 +110,10 @@ public class CmdProcessInvoker implements ProcessInvoker {
           PathPermission.EXECUTE_FILESYSTEM_ENTITY, "./-", this.getClass());
       securityManager.applyPermissionToPathForClass(
           PathPermission.EXECUTE_FILESYSTEM_ENTITY, "/bin/bash", this.getClass());
+      for (String p : additionalExecPaths.split(",")) {
+        securityManager.applyPermissionToPathForClass(
+            PathPermission.EXECUTE_FILESYSTEM_ENTITY, p, this.getClass());        
+      }
       Process process = Runtime.getRuntime().exec(cmdArgs);
       return new CmdProcess(process);
     } catch (IOException e) {

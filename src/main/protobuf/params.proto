@@ -171,4 +171,8 @@ message GroningenParams {
   // The number of seconds that may transpire between Groningen event log
   // flushing.
   optional int32 event_log_flush_interval_secs = 35 [default = 60];
+
+  // Additional paths where executable permissions will be set when running
+  // experiments.
+  optional string additional_exec_paths = 36 [default = ""];
 }

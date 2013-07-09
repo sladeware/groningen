@@ -93,9 +93,22 @@ public class BaseModuleTest extends TestCase {
   }
 
   public void testInjector_ProvisionProcessInvoker() {
-    final ProcessInvoker processInvoker = injector.getInstance(ProcessInvoker.class);
+    pipelineScope.enter();
+    try {
+      pipelineScope.seed(PipelineId.class, pipelineId);
 
-    assertNotNull(processInvoker);
+      pipelineIterationScope.enter();
+      GroningenConfigParamsModule.nailConfigToScope(stubConfig, pipelineIterationScope);
+
+      try {
+        final ProcessInvoker processInvoker = injector.getInstance(ProcessInvoker.class);
+        assertNotNull(processInvoker);
+      } finally {
+        pipelineIterationScope.exit();
+      }
+    } finally {
+      pipelineScope.exit();
+    }
   }
 
   public void testInjector_ProvisionDisplayMediator() {

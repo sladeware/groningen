@@ -105,9 +105,9 @@ public class BaseModule extends AbstractModule {
     // PipelineIteration-scoped bindings
     bind(Generator.class).in(PipelineIterationScoped.class);
     bind(Validator.class).in(PipelineIterationScoped.class);
+    bind(ProcessInvoker.class).to(CmdProcessInvoker.class).in(PipelineIterationScoped.class);
 
     // General bindings
-    bind(ProcessInvoker.class).to(CmdProcessInvoker.class);
     bind(SystemAdapter.class).to(SystemAdapterImpl.class);
     bind(Timer.class).toProvider(DaemonTimerProvider.class);
     bind(Settings.class).toProvider(SettingsProvider.class).asEagerSingleton();

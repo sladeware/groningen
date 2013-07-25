@@ -1,4 +1,4 @@
-/* Copyright 2012 Google, Inc.
+/* Copyright 2013 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,18 @@
  * limitations under the License.
  */
 
-package org.arbeitspferde.groningen.subject;
+package org.arbeitspferde.groningen.utility;
+
+import junit.framework.TestCase;
 
 /**
- * This is used to build the proper fully-qualified serving address for a given {@link Subject}
- * given the clustering environment.
+ * Test for {@link Process}.
  */
-public interface ServingAddressGenerator {
-  public String addressFor(final SubjectGroup group, final int index);
+public class ProcessTest extends TestCase {
+
+  public void testRunningProcess() {
+    // The running process has to be alive and it has to contain command line
+    assertTrue(Process.isAlive(Process.myProcessId()));
+    assertTrue(Process.getProcessInfo(Process.myProcessId()).getCommandLine().length() > 0);
+  }
 }

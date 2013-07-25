@@ -48,6 +48,8 @@ import org.arbeitspferde.groningen.experimentdb.jvmflags.ValueSeparatorTest;
 import org.arbeitspferde.groningen.generator.GeneratorTest;
 import org.arbeitspferde.groningen.hypothesizer.HypothesizerTest;
 import org.arbeitspferde.groningen.profiling.ProfilingRunnableTest;
+import org.arbeitspferde.groningen.subject.open.ProcessManipulatorTest;
+import org.arbeitspferde.groningen.utility.ProcessTest;
 import org.arbeitspferde.groningen.validator.ValidatorTest;
 
 public class AllTests extends TestSuite{
@@ -116,6 +118,12 @@ public class AllTests extends TestSuite{
 
     // org.arbeitspferde.groningen.validator tests
     suite.addTestSuite(ValidatorTest.class);
+
+    // org.arbeitspferde.groningen.subject.open tests
+    suite.addTestSuite(ProcessManipulatorTest.class);
+
+    // org.arbeitspferde.groningen.utility tests
+    suite.addTestSuite(ProcessTest.class);
 
     return suite;
   }

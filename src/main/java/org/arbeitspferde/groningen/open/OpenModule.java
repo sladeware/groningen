@@ -39,10 +39,10 @@ import org.arbeitspferde.groningen.subject.HealthQuerier;
 import org.arbeitspferde.groningen.subject.ServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.SubjectInterrogator;
 import org.arbeitspferde.groningen.subject.SubjectManipulator;
-import org.arbeitspferde.groningen.subject.open.NullHealthQuerier;
-import org.arbeitspferde.groningen.subject.open.NullServingAddressGenerator;
+import org.arbeitspferde.groningen.subject.open.ProcessHealthQuerier;
+import org.arbeitspferde.groningen.subject.open.ProcessServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.open.NullSubjectInterrogator;
-import org.arbeitspferde.groningen.subject.open.NullSubjectManipulator;
+import org.arbeitspferde.groningen.subject.open.ProcessManipulator;
 import org.arbeitspferde.groningen.utility.FileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.FileFactory;
 import org.arbeitspferde.groningen.utility.MetricExporter;
@@ -76,7 +76,7 @@ public class OpenModule extends AbstractModule {
     datastoreBinder.addBinding(InMemoryDatastore.class.getCanonicalName())
       .to(InMemoryDatastore.class);
 
-    MapBinder<String, HistoryDatastore> historyDatastoreBinder = 
+    MapBinder<String, HistoryDatastore> historyDatastoreBinder =
         MapBinder.newMapBinder(binder(), String.class, HistoryDatastore.class);
     historyDatastoreBinder.addBinding(
         MemoryHistoryDatastore.class.getCanonicalName()).to(MemoryHistoryDatastore.class);
@@ -88,10 +88,10 @@ public class OpenModule extends AbstractModule {
     bind(FileEventNotifierFactory.class).to(NullFileEventNotifierFactory.class);
     bind(InputLogStreamFactory.class).to(NullInputLogStreamFactory.class);
     bind(OutputLogStreamFactory.class).to(FileOutputLogStreamFactory.class);
-    bind(HealthQuerier.class).to(NullHealthQuerier.class);
-    bind(SubjectManipulator.class).to(NullSubjectManipulator.class);
+    bind(HealthQuerier.class).to(ProcessHealthQuerier.class);
+    bind(SubjectManipulator.class).to(ProcessManipulator.class);
     bind(VendorSecurityManager.class).to(NullSecurityManager.class);
-    bind(ServingAddressGenerator.class).to(NullServingAddressGenerator.class);
+    bind(ServingAddressGenerator.class).to(ProcessServingAddressGenerator.class);
     bind(LegacyProgramConfigurationMediator.class)
         .to(NullLegacyProgramConfigurationMediator.class);
     bind(CollectionLogAddressor.class).to(NullCollectionLogAddressor.class);

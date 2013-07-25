@@ -398,14 +398,16 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
 
     synchronized (targetList) {
       for (int i = 0; i < Math.min(targetList.size(), maxIndv); i++) {
+        EvaluatedSubject subject = targetList.get(i);
         builder.append("<tr>")
-          .append("<td><center>" + formatter.format(targetList.get(i).getFitness() / cumulativeSum)
+          .append("<td><center>" + formatter.format(subject.getFitness() / cumulativeSum)
             + "</center></td>")
           .append("<td> ")
-          .append(targetList.get(i).getBridge().getCommandLine().toArgumentString())
+          .append(subject.isDefault() ? "DEFAULT SETTINGS"
+              : subject.getBridge().getCommandLine().toArgumentString())
           .append(" </td>")
-          .append("<td><center> " + targetList.get(i).getExperimentId() + " </center></td>")
-          .append("<td><center> " + df.format(targetList.get(i).getTimeStamp().getMillis()) +
+          .append("<td><center> " + subject.getExperimentId() + " </center></td>")
+          .append("<td><center> " + df.format(subject.getTimeStamp().getMillis()) +
             " </center></td>")
           .append("</tr>");
       }

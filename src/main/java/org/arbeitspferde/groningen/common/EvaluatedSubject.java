@@ -37,7 +37,7 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
   private final Fitness fitness = new Fitness();
 
   private long experimentId = EXPERIMENT_ID_UNINITIALIZED;
-  
+  private boolean isDefault = false;
   private String clusterName;
   private String subjectGroupName;
   private String userName;
@@ -62,6 +62,7 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
       setSubjectGroupName(bridge.getAssociatedSubject().getSubjectGroup().getSubjectGroupName());
       setUserName(bridge.getAssociatedSubject().getSubjectGroup().getUserName());
       setSubjectGroupIndex(bridge.getAssociatedSubject().getSubjectIndex());
+      setDefault(bridge.getAssociatedSubject().isDefault());
     }
   }
   
@@ -136,6 +137,14 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
   @Override
   public int compareTo(EvaluatedSubject evaluatedSubject) {
     return Double.compare(fitness.getFitness(), evaluatedSubject.getFitness());
+  }
+
+  public boolean isDefault() {
+    return isDefault;
+  }
+
+  public void setDefault(boolean trueOrFalse) {
+    isDefault = trueOrFalse;
   }
 
   /**

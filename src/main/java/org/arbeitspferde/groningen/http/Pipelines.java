@@ -102,7 +102,8 @@ public class Pipelines {
     for (EvaluatedSubject subject : subjects) {
       experimentScores.add(new ExperimentInfo(
           subject.getExperimentId(), count,
-          subject.getBridge().getCommandLine().toArgumentString(),
+          subject.isDefault() ? "DEFAULT SETTINGS" :
+            subject.getBridge().getCommandLine().toArgumentString(),
           df.format(subject.getTimeStamp().getMillis())));
       if (count++ >= NUM_EXPERIMENT_SCORES) {
         break;
@@ -142,7 +143,8 @@ public class Pipelines {
         for (EvaluatedSubject subject : allSubjects) {
           historyData.add(new HistoricalData(
               subject.getExperimentId(), subject.getFitness(),
-              subject.getBridge().getCommandLine().toArgumentString()));
+              subject.isDefault() ? "DEFAULT SETTINGS" :
+                subject.getBridge().getCommandLine().toArgumentString()));
         }
         pipelineInfo.history = historyData.toArray(new HistoricalData[0]);
         pipelines.add(pipelineInfo);
@@ -166,21 +168,21 @@ public class Pipelines {
       GroningenParamsOrBuilder params = pipeline.getConfig().getParamBlock();
       for (EvaluatedSubject subject : allSubjects) {
         SubjectStateBridge subjectBridge = subject.getBridge();
-        Subject baseSubject = subjectBridge.getAssociatedSubject();
         sb.append('"')
             .append(df.format(subject.getTimeStamp().getMillis()))            // Timestamp
             .append('"')
             .append(',')
-            .append(baseSubject.getSubjectIndex())                            // TaskID
+            .append(subject.getSubjectGroupIndex())                           // TaskID
             .append(',')
-            .append(baseSubject.getSubjectGroup().getSubjectGroupName())      // Job
+            .append(subject.getSubjectGroupName())                            // Job
             .append(',')
-            .append(baseSubject.getSubjectGroup().getUserName())              // User
+            .append(subject.getUserName())                                    // User
             .append(',')
             .append(subject.getExperimentId())                                // ExperimentIteration
             .append(',')
             .append('"')
-            .append(subject.getBridge().getCommandLine().toArgumentString())  // JVMParamString
+            .append(subject.isDefault() ? "DEFAULT SETTINGS" :
+                subjectBridge.getCommandLine().toArgumentString())            // JVMParamString
             .append('"')
             .append(',')
             .append(subject.getFitness())                                     // FitnessScore

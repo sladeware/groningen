@@ -73,12 +73,18 @@ public class SubjectGroup {
     if ((config.getNumberOfSubjects() > 0) && (config.getNumberOfSubjects() < subjectCount)) {
       subjectCount = config.getNumberOfSubjects();
     }
-    for (int index = 0; index < subjectCount; index++) {
-      Subject subject =
-          new Subject(this, getSubjectConfiguration(index), index, servingAddressbuilder);
+    int index;
+    for (index = 0; index < subjectCount - config.getNumberOfDefaultSubjects();
+         index++) {
+      Subject subject = new Subject(this, getSubjectConfiguration(index), index,
+                                    servingAddressbuilder);
       subjects.add(subject);
     }
-
+    for (; index < subjectCount; index++) {
+      Subject subject = new Subject(this, getSubjectConfiguration(index), index,
+                                    servingAddressbuilder, true);
+      subjects.add(subject);
+    }
     if (origSubjectList != null) {
       origSubjectList.addAll(subjects);
       return origSubjectList;

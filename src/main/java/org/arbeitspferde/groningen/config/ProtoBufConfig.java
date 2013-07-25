@@ -352,11 +352,22 @@ public class ProtoBufConfig implements GroningenConfig {
           ? protoClusterConfig.getSubjectWarmupTimeout() :
             parent.retrieveFirstSubjectWarmupTimeout();
     }
+
+    /**
+     * Retrieve the first definition of the {@link #numberOfDefaultSubjects} in the configuration
+     * tree starting at the cluster level and looking upward.
+     *
+     * @return the first number of subjects with default settings entry found in the hierarchy
+     */
+    @Nullable
+    @VisibleForTesting
+    int retrieveFirstNumberOfDefaultSubjects() {
+      return protoClusterConfig.getNumberOfDefaultSubjects();
+    }
   }
 
   /**
-   * The job to be experimented upon, some parts of which can be described on a per subject
-   * basis.
+   * The job to be experimented upon, some parts of which can be described on a per subject basis.
    */
   @VisibleForTesting
   static class ProtoSubjectGroupConfig implements SubjectGroupConfig {
@@ -380,6 +391,9 @@ public class ProtoBufConfig implements GroningenConfig {
 
     // max seconds a subject is allowed to be unhealthy
     private final int subjectWarmupTimeout;
+
+    // Number of subjects within total number of subjects that will keep default settings
+    private final int numberOfDefaultSubjects;
 
     /**
      * Construct and validate a subject group level (and lower) configuration.
@@ -418,6 +432,12 @@ public class ProtoBufConfig implements GroningenConfig {
       subjectWarmupTimeout = retrieveFirstSubjectWarmupTimeout();
       validateItem(subjectWarmupTimeout >= 1,
           "subjectWarmupTimeout must be positive. The vaule is in seconds.");
+
+      numberOfDefaultSubjects = retrieveFirstNumberOfDefaultSubjects();
+      validateItem(numberOfDefaultSubjects >= 0 &&
+          (numberOfSubjects > 0 ? numberOfDefaultSubjects < numberOfSubjects : true),
+          "numberOfDefaultSubjects must be non-negative and be " +
+          "less than numberOfSubjects. 0 means no subjects with default settings.");
 
       // lastly make up any special subject configs verifying as we go - nothing here makes use of
       // the ProtoBufSubjectConfig so we can safely store as a list of {@code SubjectConfig}
@@ -509,6 +529,16 @@ public class ProtoBufConfig implements GroningenConfig {
       return protoSubjectGroupConfig.getRestartCommandList().toArray(new String[0]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * will not return null.
+     */
+    @Override
+    public int getNumberOfDefaultSubjects() {
+      return numberOfDefaultSubjects;
+    }
+
     @VisibleForTesting
     ProgramConfiguration.ClusterConfig.SubjectGroupConfig getProtoSubjectGroupConfig() {
       return protoSubjectGroupConfig;
@@ -556,6 +586,21 @@ public class ProtoBufConfig implements GroningenConfig {
       return protoSubjectGroupConfig.hasSubjectWarmupTimeout()
           ? protoSubjectGroupConfig.getSubjectWarmupTimeout() :
             parentCluster.retrieveFirstSubjectWarmupTimeout();
+    }
+
+    /**
+     * Retrieve the first definition of the {@link numberOfDefaultSubjects} in the
+     * configuration tree starting at the subject group level and looking upward.
+     *
+     * @return the first {@code numberOfSubjects} entry found even if this value is {@code null},
+     *         {@code null} if no {@code numberOfSubjects} fields were found in the hierarchy.
+     */
+    @Nullable
+    @VisibleForTesting
+    int retrieveFirstNumberOfDefaultSubjects() {
+      return protoSubjectGroupConfig.hasNumberOfDefaultSubjects()
+          ? protoSubjectGroupConfig.getNumberOfDefaultSubjects()
+          : parentCluster.retrieveFirstNumberOfDefaultSubjects();
     }
   }
 

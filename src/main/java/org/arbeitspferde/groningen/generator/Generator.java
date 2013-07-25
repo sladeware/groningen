@@ -99,13 +99,18 @@ public class Generator extends ProfilingRunnable {
           if (subjectIterator.hasNext()) {
             Subject subject = subjectIterator.next();
             bridge.setAssociatedSubject(subject);
+            // Do not build and write experiment args for default subjects. Delete the settings
+            // file, so injector won't be able to read the new settings.
+            if (subject.isDefault()) {
+              subjectSettingsFileManager.delete(subject.getExpSettingsFile());
+              continue;
+            }
             final ExperimentArgs experimentArgs = ExperimentArgs.newBuilder()
                 .setArgs(bridge.getCommandLine().toArgumentString())
                 .setMasterServingAddress(servingAddress)
                 .addAllTunedArg(CommandLine.getManagedArgs())
                 .build();
-            subjectSettingsFileManager.write(
-                experimentArgs, bridge.getAssociatedSubject().getExpSettingsFile());
+            subjectSettingsFileManager.write(experimentArgs, subject.getExpSettingsFile());
           }
         }
       } catch (final Exception e) {

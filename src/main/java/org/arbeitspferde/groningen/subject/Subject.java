@@ -29,6 +29,9 @@ public class Subject {
   /** The population (i.e., {@link SubjectGroup}) identification index of the {@link Subject}. */
   private final int subjectIndex;
 
+  /** Indicates whether or not this is a default subject. */
+  private final boolean isDefault;
+
   /**
    * The name of the experiment settings file to relay settings to this subject when it is
    * restarted by the {@link Executor}.
@@ -39,6 +42,11 @@ public class Subject {
 
   public Subject(final SubjectGroup group, final String expSettingsFile, final int subjectIndex,
       final ServingAddressGenerator servingAddressBuilder) {
+    this(group, expSettingsFile, subjectIndex, servingAddressBuilder, false);
+  }
+
+  public Subject(final SubjectGroup group, final String expSettingsFile, final int subjectIndex,
+      final ServingAddressGenerator servingAddressBuilder, boolean isDefault) {
     Preconditions.checkNotNull(group);
     Preconditions.checkArgument(subjectIndex >= 0, "Subject index must be non-negative");
     Preconditions.checkArgument(!Strings.isNullOrEmpty(expSettingsFile),
@@ -48,6 +56,7 @@ public class Subject {
     this.subjectIndex = subjectIndex;
     this.expSettingsFile = expSettingsFile;
     this.servingAddress = servingAddressBuilder.addressFor(group, subjectIndex);
+    this.isDefault = isDefault;
   }
 
   @Override
@@ -81,5 +90,9 @@ public class Subject {
   /** Returns the number of seconds a subject is permitted to fail health checking. */
   public long getWarmupTimeout() {
     return subjectGroup.getSubjectGroupConfig().getSubjectWarmupTimeout();
+  }
+
+  public boolean isDefault() {
+    return isDefault;
   }
 }

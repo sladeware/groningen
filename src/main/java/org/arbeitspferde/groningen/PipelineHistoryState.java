@@ -177,7 +177,7 @@ public class PipelineHistoryState {
       evaluatedSubject.setSubjectGroupIndex((int) esProto.getSubject().getSubjectGroupIndex());
       evaluatedSubject.setSubjectGroupName(esProto.getSubject().getSubjectGroupName());
       evaluatedSubject.setUserName(esProto.getSubject().getUserName());
-      
+      evaluatedSubject.setDefault(esProto.getSubject().getIsDefault());
       evaluatedSubjectsList.add(evaluatedSubject);
     }
     
@@ -203,7 +203,7 @@ public class PipelineHistoryState {
       spBuilder.setSubjectGroupIndex(es.getSubjectGroupIndex());
       spBuilder.setSubjectGroupName(es.getSubjectGroupName());
       spBuilder.setUserName(es.getUserName());
-      
+      spBuilder.setIsDefault(es.isDefault());
       spBuilder.setId(es.getBridge().getIdOfObject());
       
       // Copy the command line

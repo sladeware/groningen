@@ -173,6 +173,17 @@ message ProgramConfiguration {
                                     // The command that should be used to
                                     // restart this subject group.  Overrides the default
                                     // cluster implementation command.
+      optional int32 number_of_default_subjects = 22 [default = 0];
+                                   // The number of subjects with default settings. These default
+                                   // subjects are scored concurrently with modified subjects in the
+                                   // experiment, but are otherwise untouched by tuning pipeline
+                                   // stages such as the Hypothesizer, Generator and
+                                   // Validator. Using default subjects reduces the number of
+                                   // subjects available for experimentation, however using default
+                                   // subjects provides a way to directly compare the performance of
+                                   // modified settings with unmodified settings. The number of
+                                   // default subjects should not exceed the total number of
+                                   // subjects in the experiment.
     }
 
     repeated SubjectGroupConfig subject_group = 1;
@@ -195,6 +206,17 @@ message ProgramConfiguration {
                                     // the beginning of an experiment following
                                     // the point when all of the subjects are
                                     // restarted in the Executor stage.
+    optional int32 number_of_default_subjects = 21 [default = 0];
+                                   // The number of subjects with default settings. These default
+                                   // subjects are scored concurrently with modified subjects in the
+                                   // experiment, but are otherwise untouched by tuning pipeline
+                                   // stages such as the Hypothesizer, Generator and
+                                   // Validator. Using default subjects reduces the number of
+                                   // subjects available for experimentation, however using default
+                                   // subjects provides a way to directly compare the performance of
+                                   // modified settings with unmodified settings. The number of
+                                   // default subjects should not exceed the total number of
+                                   // subjects in the experiment.
   }
 
   repeated ClusterConfig cluster = 1;  // list of cluster config - must not be

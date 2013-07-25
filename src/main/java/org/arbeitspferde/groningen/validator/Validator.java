@@ -177,8 +177,18 @@ public class Validator extends ProfilingRunnable {
     }
   }
 
-  /** Returns true iff the subject is invalid */
+  /**
+   * Returns true iff the subject is invalid.
+   *
+   * Note, default subject cannot be invalid. Always returns {@code false}.
+   */
   private boolean invalidSubject(final SubjectStateBridge bridge) {
+    Preconditions.checkNotNull(bridge.getAssociatedSubject());
+
+    if (bridge.getAssociatedSubject().isDefault()) {
+      return false;
+    }
+
     boolean invalid = false;
 
     final SubjectRestart subjectRestart = bridge.getSubjectRestart();

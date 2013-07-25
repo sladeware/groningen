@@ -40,6 +40,7 @@ public class ProtoBufConfigTest extends TestCase {
   static final String DHT_CLUSTER = "zz";
   static final int SUBJECT_COUNT = 0;
   static final int SUBJECT_WARMUP_TIMEOUT = 60;
+  static final int SUBJECT_COUNT_WITH_DEFAULT_SETTINGS = 0;
 
   ProtoBufConfig.ProtoBufConfigConstructorFactory mockFactory;
 
@@ -197,6 +198,7 @@ public class ProtoBufConfigTest extends TestCase {
             .setUser(USER)
             .setNumberOfSubjects(SUBJECT_COUNT)
             .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+            .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
             .addSubjectGroup(ProgramConfiguration.ClusterConfig.SubjectGroupConfig.newBuilder()
                 .setSubjectGroupName(group1Name)
                 .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
@@ -231,6 +233,7 @@ public class ProtoBufConfigTest extends TestCase {
             .setUser(USER)
             .setNumberOfSubjects(SUBJECT_COUNT)
             .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+            .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
             .addSubjectGroup(ProgramConfiguration.ClusterConfig.SubjectGroupConfig.newBuilder()
                 .setSubjectGroupName(group1Name)
                 .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
@@ -276,6 +279,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setUser(USER)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .addSubjectGroup(ProgramConfiguration.ClusterConfig.SubjectGroupConfig.newBuilder()
             .setSubjectGroupName(group1Name)
             .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
@@ -319,6 +323,7 @@ public class ProtoBufConfigTest extends TestCase {
             .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
             .setNumberOfSubjects(SUBJECT_COUNT)
             .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+            .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
             .build())
         .build();
     EasyMock.replay(mockFactory);
@@ -343,6 +348,7 @@ public class ProtoBufConfigTest extends TestCase {
             .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
             .setNumberOfSubjects(SUBJECT_COUNT)
             .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+            .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
             .build())
         .build();
     EasyMock.replay(mockTopLevel);
@@ -366,6 +372,7 @@ public class ProtoBufConfigTest extends TestCase {
             .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
             .setNumberOfSubjects(SUBJECT_COUNT)
             .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+            .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
             .build())
         .build();
     EasyMock.replay(mockTopLevel);
@@ -392,6 +399,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
     EasyMock.replay(mockCluster);
 
@@ -407,6 +415,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
 
     EasyMock.expect(mockCluster.retrieveFirstUser()).andReturn(USER).atLeastOnce();
@@ -425,6 +434,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
     EasyMock.expect(mockCluster.retrieveFirstUser()).andReturn(USER).anyTimes();
     EasyMock.replay(mockCluster);
@@ -454,6 +464,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .addSubjectConfig(
             ProgramConfiguration.ClusterConfig.SubjectGroupConfig.ExtendedSubjectConfig
             .newBuilder()
@@ -519,6 +530,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
     EasyMock.expect(mockCluster.retrieveFirstUser()).andReturn(null).atLeastOnce();
     EasyMock.replay(mockTopLevel);
@@ -571,6 +583,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setUser(USER)
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
     EasyMock.expect(mockCluster.retrieveFirstSubjectWarmupTimeout()).andReturn(0).atLeastOnce();
     EasyMock.replay(mockTopLevel);
@@ -643,6 +656,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .addSubjectConfig(
             ProgramConfiguration.ClusterConfig.SubjectGroupConfig.ExtendedSubjectConfig
             .newBuilder()
@@ -760,6 +774,7 @@ public class ProtoBufConfigTest extends TestCase {
         .setExpSettingsFilesDir(EXP_SETTINGS_FILES_DIR_1)
         .setNumberOfSubjects(SUBJECT_COUNT)
         .setSubjectWarmupTimeout(SUBJECT_WARMUP_TIMEOUT)
+        .setNumberOfDefaultSubjects(SUBJECT_COUNT_WITH_DEFAULT_SETTINGS)
         .build();
   }
 

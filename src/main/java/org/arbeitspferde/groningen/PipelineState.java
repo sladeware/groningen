@@ -190,7 +190,7 @@ public class PipelineState {
         final ExperimentDbProtos.Subject.Builder subjectBuilder =
             ExperimentDbProtos.Subject.newBuilder();
         subjectBuilder.setId(subject.getIdOfObject());
-
+        subjectBuilder.setIsDefault(subject.getAssociatedSubject().isDefault());
         // Copy the command line
         final CommandLine commandLine = subject.getCommandLine();
         final ExperimentDbProtos.CommandLine.Builder commandLineBuilder =

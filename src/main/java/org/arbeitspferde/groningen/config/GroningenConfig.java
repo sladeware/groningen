@@ -220,10 +220,16 @@ public interface GroningenConfig {
      * Returns the custom restart command if one is specified.
      */
     public String[] getRestartCommand();
+
+    /**
+     * Returns the number of subjects with default settings. These subjects won't be touched by
+     * hypothesizer. This number should be less than total number of subjects in experiment.
+     */
+    public int getNumberOfDefaultSubjects();
   }
 
   /**
-   * A {@code SubjectConfig} represents the GroningenConfiguration data about a single
+   * A {@code SubjectConfig} represents the {@link GroningenConfiguration} data about a single
    * subject in a Groningen experiment.
    */
   public interface SubjectConfig {

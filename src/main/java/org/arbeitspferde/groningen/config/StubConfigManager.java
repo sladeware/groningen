@@ -196,6 +196,7 @@ public class StubConfigManager implements ConfigManager {
     protected List<SubjectConfig> specialSubjectConfigs = Lists.newArrayList();
     protected int numberOfSubjects = 0;
     protected int subjectWarmupTimeout = 0;
+    protected int numberOfDefaultSubjects = 0;
 
     /**
      * @see SubjectGroupConfig#getName()
@@ -232,6 +233,11 @@ public class StubConfigManager implements ConfigManager {
     @Override
     public int getNumberOfSubjects() {
       return numberOfSubjects;
+    }
+
+    @Override
+    public int getNumberOfDefaultSubjects() {
+      return numberOfDefaultSubjects;
     }
 
     @Override
@@ -318,7 +324,7 @@ public class StubConfigManager implements ConfigManager {
 
     /**
      * Retrieve a specific CommandLineArgument from the current searchSpaces
-     * array. You will want to set that array before using this method
+     * array. You will want to set that array before using this method.
      */
     @Override
     public SearchSpaceEntry getSearchSpace(JvmFlag arg) {

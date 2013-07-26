@@ -17,6 +17,7 @@ package org.arbeitspferde.groningen.subject.open;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.inject.Singleton;
 
 import org.arbeitspferde.groningen.subject.ServingAddressGenerator;
@@ -61,7 +62,7 @@ public class ProcessServingAddressGenerator implements ServingAddressGenerator {
 
   public static ProcessServingAddressInfo parseAddress(final String address) {
     int processId;
-    String[] addressParts = Splitter.on("/").splitToList(address).toArray(new String[0]);
+    String[] addressParts = Iterables.toArray(Splitter.on("/").split(address), String.class);
     try {
       processId = Integer.parseInt(addressParts[addressParts.length - 1]);
     } catch (NumberFormatException e) {

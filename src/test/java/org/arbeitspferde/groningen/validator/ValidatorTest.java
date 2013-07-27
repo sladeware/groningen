@@ -123,6 +123,8 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
         .andReturn(10D);
     EasyMock.expect(mockSubjectA.getAssociatedSubject()).andReturn(mockSubjectAAssociatedSubject)
         .atLeastOnce();
+    EasyMock.expect(mockSubjectAAssociatedSubject.isDefault()).andReturn(false)
+        .atLeastOnce();
     EasyMock.expect(mockSubjectAAssociatedSubject.getServingAddress()).andReturn("/path/to/foo")
         .atLeastOnce();
     EasyMock.expect(experimentDb.getExperimentId()).andReturn(3L);
@@ -155,6 +157,8 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expect(mockSubjectBResourceMetric.computeScore(ResourceMetric.ScoreType.MEMORY))
         .andReturn(20D);
     EasyMock.expect(mockSubjectB.getAssociatedSubject()).andReturn(mockSubjectBAssociatedSubject)
+        .atLeastOnce();
+    EasyMock.expect(mockSubjectBAssociatedSubject.isDefault()).andReturn(false)
         .atLeastOnce();
     EasyMock.expect(mockSubjectBAssociatedSubject.getServingAddress()).andReturn("/path/to/bar")
         .atLeastOnce();

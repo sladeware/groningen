@@ -9,12 +9,22 @@ By default /usr/bin/protoc will be used.
 
 Next, get the sources and build it:
 
+$ mvn package
 $ mvn assembly:assembly
 $ mvn assembly:single
 
 = RUNNING
 
 $ java -jar target/groningen-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+= RELEASE ENGINEERING
+== SNAPSHOT
+$ mvn clean deploy -DperformRelease=true
+
+== RELEASE
+$ mvn release:clean -DperformRelease=true
+$ mvn release:prepare -DperformRelease=true
+$ mvn release:perform -DperformRelease=true
 
 = USING ECLIPSE
 Be sure to export »M2_REPO« to »${HOME}/.m2/repository« before invoking

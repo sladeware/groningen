@@ -40,12 +40,17 @@ import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
 import org.arbeitspferde.groningen.display.GroningenServlet;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
+import org.arbeitspferde.groningen.eventlog.SubjectEventLogger;
+import org.arbeitspferde.groningen.eventlog.SubjectEventProtoLogger;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.externalprocess.CmdProcessInvoker;
 import org.arbeitspferde.groningen.externalprocess.ProcessInvoker;
 import org.arbeitspferde.groningen.generator.Generator;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
+import org.arbeitspferde.groningen.scorer.SubjectScorer;
+import org.arbeitspferde.groningen.scorer.IterationScorer;
+import org.arbeitspferde.groningen.scorer.LinearCombinationScorer;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.SystemClock;
 import org.arbeitspferde.groningen.validator.Validator;
@@ -105,12 +110,15 @@ public class BaseModule extends AbstractModule {
     // PipelineIteration-scoped bindings
     bind(Generator.class).in(PipelineIterationScoped.class);
     bind(Validator.class).in(PipelineIterationScoped.class);
+    bind(IterationScorer.class).in(PipelineIterationScoped.class);
     bind(ProcessInvoker.class).to(CmdProcessInvoker.class).in(PipelineIterationScoped.class);
 
     // General bindings
     bind(SystemAdapter.class).to(SystemAdapterImpl.class);
     bind(Timer.class).toProvider(DaemonTimerProvider.class);
     bind(Settings.class).toProvider(SettingsProvider.class).asEagerSingleton();
+    bind(SubjectEventLogger.class).to(SubjectEventProtoLogger.class);
+    bind(SubjectScorer.class).to(LinearCombinationScorer.class);
 
     install(new FactoryModuleBuilder()
         .implement(ConfigManager.class, ProtoBufConfigManager.class)

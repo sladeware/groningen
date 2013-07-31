@@ -29,6 +29,7 @@ import org.arbeitspferde.groningen.display.GroningenServletTest;
 import org.arbeitspferde.groningen.eventlog.EventLoggerServiceTest;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerFactoryTest;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerTest;
+import org.arbeitspferde.groningen.eventlog.SubjectEventProtoLoggerTest;
 import org.arbeitspferde.groningen.executor.ExecutorTest;
 import org.arbeitspferde.groningen.experimentdb.CommandLineTest;
 import org.arbeitspferde.groningen.experimentdb.ComputeScoreTest;
@@ -48,6 +49,7 @@ import org.arbeitspferde.groningen.experimentdb.jvmflags.ValueSeparatorTest;
 import org.arbeitspferde.groningen.generator.GeneratorTest;
 import org.arbeitspferde.groningen.hypothesizer.HypothesizerTest;
 import org.arbeitspferde.groningen.profiling.ProfilingRunnableTest;
+import org.arbeitspferde.groningen.scorer.IterationScorerTest;
 import org.arbeitspferde.groningen.subject.open.ProcessManipulatorTest;
 import org.arbeitspferde.groningen.utility.ProcessTest;
 import org.arbeitspferde.groningen.validator.ValidatorTest;
@@ -84,6 +86,7 @@ public class AllTests extends TestSuite{
     suite.addTestSuite(EventLoggerServiceTest.class);
     suite.addTestSuite(SafeProtoLoggerFactoryTest.class);
     suite.addTestSuite(SafeProtoLoggerTest.class);
+    suite.addTestSuite(SubjectEventProtoLoggerTest.class);
 
     // org.arbeitspferde.groningen.executor tests
     suite.addTestSuite(ExecutorTest.class);
@@ -115,6 +118,9 @@ public class AllTests extends TestSuite{
 
     // org.arbeitspferde.groningen.profiling tests
     suite.addTestSuite(ProfilingRunnableTest.class);
+
+    // org.arbeitspferde.groningen.scorer tests
+    suite.addTestSuite(IterationScorerTest.class);
 
     // org.arbeitspferde.groningen.validator tests
     suite.addTestSuite(ValidatorTest.class);

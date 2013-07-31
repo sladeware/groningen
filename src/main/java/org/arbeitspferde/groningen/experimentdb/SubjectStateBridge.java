@@ -20,6 +20,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 import org.arbeitspferde.groningen.proto.ExperimentDbProtos;
 import org.arbeitspferde.groningen.subject.Subject;
@@ -78,6 +80,12 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   /** Command line of this subject's subject */
   @Nullable private CommandLine commandLine = null;
 
+  /** Whether subject was invalidated - use null to mark that this has not been set */
+  @Nullable private Boolean invalidated = null;
+  
+  /** Evaluated version of the subject - null means the subject has not been evaluated */
+  @Nullable private EvaluatedSubject evaluatedCopy = null;
+  
   /** Pause time metrics for this subject */
   private final PauseTime pauseTime = new PauseTime();
 
@@ -137,6 +145,27 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
     this.state = state;
   }
 
+  /** Mark the subject as invalid within the experiment. */
+  public void markInvalid() {
+    invalidated = Boolean.TRUE;
+  }
+  
+  /** Mark the subject as valid within the experiment. */
+  public void markValid() {
+    invalidated = Boolean.FALSE;    
+  }
+  
+  /**
+   * Whether the subject has been removed from the experiment.
+   * 
+   * @return TRUE if the subject has been marked invalid, FALSE if it has been marked valid, null
+   *    if no determination of the subjects validity has yet been made.
+   */
+  @Nullable
+  public Boolean isInvalid() {
+    return invalidated;
+  }
+
   /** Returns command-line strings used in this subject */
   public List<String> getCommandLineStrings() {
     return Lists.newArrayList(commandLineStrings);
@@ -145,6 +174,20 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   /** Return command line of this subject */
   public CommandLine getCommandLine() {
     return commandLine;
+  }
+  
+  /** Store the evaluated version of this subject */
+  public void setEvaluatedCopy(EvaluatedSubject evaluatedCopy) {
+    this.evaluatedCopy = evaluatedCopy;
+  }
+  
+  /** 
+   * Getter for the stored {@link EvaluatedSubject} associated with this subject.
+   * 
+   * @returns the evaluated subject iff the subject has been scored and null if not.
+   */
+  public EvaluatedSubject getEvaluatedCopy() {
+    return evaluatedCopy;
   }
 
   /** Return pause time metrics for this subject */

@@ -22,6 +22,7 @@ import org.arbeitspferde.groningen.executor.Executor;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.generator.Generator;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
+import org.arbeitspferde.groningen.scorer.IterationScorer;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.validator.Validator;
@@ -51,6 +52,7 @@ public class PipelineIteration {
   private final Generator generator;
   private final Hypothesizer hypothesizer;
   private final Validator validator;
+  private final IterationScorer scorer;
   private final PipelineStageInfo pipelineStageInfo;
 
   /**
@@ -68,6 +70,7 @@ public class PipelineIteration {
       final Generator generator,
       final Hypothesizer hypothesizer,
       final Validator validator,
+      final IterationScorer scorer,
       final MetricExporter metricExporter,
       final PipelineStageInfo pipelineStageInfo) {
 
@@ -77,11 +80,12 @@ public class PipelineIteration {
     this.generator = generator;
     this.hypothesizer = hypothesizer;
     this.validator = validator;
+    this.scorer = scorer;
     this.pipelineStageInfo = pipelineStageInfo;
 
     metricExporter.register(
         "current_pipeline_stage",
-        "Current stage: 0=Hypothesizer, 1=Generator, 2=Executor, 3=Validator",
+        "Current stage: 0=Hypothesizer, 1=Generator, 2=Executor, 3=Validator 4=Scorer",
         Metric.make(currentPipelineStage));
   }
 
@@ -107,6 +111,7 @@ public class PipelineIteration {
     generator.startUp();
     hypothesizer.startUp();
     validator.startUp();
+    scorer.startUp();
 
     currentPipelineStage.set(0);
 
@@ -145,6 +150,8 @@ public class PipelineIteration {
       currentPipelineStage.set(3);
       pipelineStageInfo.set(PipelineStageState.SCORING);
       validator.run(config);
+      currentPipelineStage.set(4);
+      scorer.run(config);
     }
 
     return notComplete;

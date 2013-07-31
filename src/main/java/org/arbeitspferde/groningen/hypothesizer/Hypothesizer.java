@@ -31,7 +31,6 @@ import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.CommandLine;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
-import org.arbeitspferde.groningen.experimentdb.FitnessScore;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
@@ -71,10 +70,6 @@ import java.util.logging.Logger;
  */
 @PipelineScoped
 public class Hypothesizer extends ProfilingRunnable {
-
-  public interface FitnessScorer {
-    public double compute(SubjectStateBridge subject);
-  }
 
   /** Contains all non-GC mode arguments */
   @VisibleForTesting
@@ -123,8 +118,6 @@ public class Hypothesizer extends ProfilingRunnable {
 
   private boolean notComplete = true;
 
-  private FitnessScorer scorer;
-
   @Inject
   public Hypothesizer(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
       final MetricExporter metricExporter) {
@@ -149,15 +142,6 @@ public class Hypothesizer extends ProfilingRunnable {
   public void setPopulationSize(final int size) {
     Preconditions.checkArgument(size > 0, "population must be greater than 0");
     populationSize.set(size);
-  }
-
-  /**
-   * Sets the given implementation to compute fitness scores. Used only for
-   * testing
-   */
-  @VisibleForTesting
-  void setFitnessScorer(FitnessScorer scorer) {
-    this.scorer = scorer;
   }
 
   @Override
@@ -542,10 +526,9 @@ public class Hypothesizer extends ProfilingRunnable {
    */
   private class ListFitnessEvaluator implements FitnessEvaluator<List<Integer>> {
 
-    private final List<EvaluatedSubject> evaluatedSubjects;
 
     ListFitnessEvaluator(int populationSize) {
-      evaluatedSubjects = Lists.newArrayListWithCapacity(populationSize);
+      // Nothing to do
     }
 
     @Override
@@ -563,25 +546,20 @@ public class Hypothesizer extends ProfilingRunnable {
       // Get the candidate's subject from the last experiment.
       long subjectId = lastExperiment.getSubjectIds().get(index);
       SubjectStateBridge subject = experimentDb.lookupSubject(subjectId);
-
-      // Compute the candidate's fitness.
-      double fitness;
-      if (scorer == null) {
-        fitness = FitnessScore.compute(subject, config);
-      } else {
-        fitness = scorer.compute(subject);
+      EvaluatedSubject evaluatedSubject = subject.getEvaluatedCopy();
+      if (evaluatedSubject == null) {
+        String cmdlineStr = subject.getCommandLine().toArgumentString();
+        logger.log(
+            Level.SEVERE, "subject returned marker for not evaluated. Subject: %s", cmdlineStr);
+        throw new IllegalStateException(
+            "subject returned marker for not evaluated. Subject: " + cmdlineStr);
       }
-
-      // Store the subjects and their fitness scores to print them at the end.
-      EvaluatedSubject evaluatedSubject = new EvaluatedSubject(clock, subject, fitness);
-      evaluatedSubjects.add(evaluatedSubject);
-      monitor.addIndividual(evaluatedSubject);
-      if (evaluatedSubjects.size() == population.size()) {
-        printEvaluatedSubjects();
-        // allow the monitor to process this generation
-        monitor.processGeneration();
-        evaluatedSubjects.clear();
-      }
+      
+      // TODO(team): Consider whether/how to handle updates to weights or scorer between
+      //    iterations. Should scores for choosing best performers be different from gene
+      //    choosing? The main concern here is user expectation on when the (very
+      //    infrequently used functionality) weight and scorer changes will be picked up.
+      double fitness = evaluatedSubject.getFitness();
 
       // Add it to the population's total fitness. This is used for MONITORING PURPOSES.
       // NB: There's no way to increment this without overwriting the tmp variable.
@@ -597,28 +575,6 @@ public class Hypothesizer extends ProfilingRunnable {
     @Override
     public boolean isNatural() {
       return true;
-    }
-
-    /**
-     * Sorts the evaluated subjects by their fitness scores, and prints their
-     * command-line string to the log.
-     */
-    private void printEvaluatedSubjects() {
-      if (isNatural()) { // Descending fitness
-        Collections.sort(evaluatedSubjects, Collections.reverseOrder());
-      } else { // Ascending fitness
-        Collections.sort(evaluatedSubjects);
-      }
-
-      logger.info("***************************************************************");
-      logger.info("Command-line strings and their fitness from the last experiment");
-      for (EvaluatedSubject evaluatedSubject : evaluatedSubjects) {
-        logger.info(String.format("Subject %s with command line »%s« had fitness %s.",
-            evaluatedSubject.getBridge().getHumanIdentifier(),
-            evaluatedSubject.getBridge().getCommandLine().toArgumentString(),
-            evaluatedSubject.getFitness()));
-      }
-      logger.info("***************************************************************");
     }
   }
 

@@ -17,12 +17,9 @@ package org.arbeitspferde.groningen.validator;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
-import org.arbeitspferde.groningen.eventlog.EventLoggerService;
-import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.experimentdb.CommandLine;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
@@ -31,19 +28,12 @@ import org.arbeitspferde.groningen.experimentdb.ResourceMetric;
 import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.profiling.ProfilingRunnable;
-import org.arbeitspferde.groningen.proto.Event;
-import org.arbeitspferde.groningen.proto.Event.EventEntry;
-import org.arbeitspferde.groningen.proto.Event.EventEntry.Builder;
-import org.arbeitspferde.groningen.proto.Event.EventEntry.FitnessScore;
-import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -59,10 +49,7 @@ public class Validator extends ProfilingRunnable {
 
   /** The Experimental Database */
   private final ExperimentDb experimentDb;
-  private final EventLoggerService eventLoggerService;
-  private final String servingAddress;
   private GroningenConfig config;
-  private final long startTime;
   private final MetricExporter metricExporter;
 
   private AtomicLong invalidDueToRestartThresholdCrossed = new AtomicLong(0);
@@ -73,16 +60,11 @@ public class Validator extends ProfilingRunnable {
   @Inject
   public Validator(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
       final GroningenConfig config,
-      final EventLoggerService eventLoggerService,
-      @Named("servingAddress") final String servingAddress,
-      @Named("startTime") final Long startTime, final MetricExporter metricExporter) {
+      final MetricExporter metricExporter) {
     super(clock, monitor);
 
     experimentDb = e;
     this.config = config;
-    this.eventLoggerService = eventLoggerService;
-    this.servingAddress = servingAddress;
-    this.startTime = startTime;
     this.metricExporter = metricExporter;
   }
 
@@ -96,82 +78,13 @@ public class Validator extends ProfilingRunnable {
       for (final SubjectStateBridge subject : lastExperiment.getSubjects()) {
         final PauseTime pauseTime = subject.getPauseTime();
         final ResourceMetric resourceMetric = subject.getResourceMetric();
-        final boolean subjectInvalid = invalidSubject(subject);
 
-        if (subjectInvalid) {
+        if (invalidSubject(subject)) {
+          subject.markInvalid();
           pauseTime.invalidate();
           resourceMetric.invalidate();
-        }
-
-        final GroningenParamsOrBuilder operatingParameters = config.getParamBlock();
-
-        final double latencyWeight = operatingParameters.getLatencyWeight();
-        final double throughputWeight = operatingParameters.getThroughputWeight();
-        final double memoryWeight = operatingParameters.getMemoryWeight();
-
-        final double latencyScore = pauseTime.computeScore(PauseTime.ScoreType.LATENCY);
-        final double throughputScore = pauseTime.computeScore(PauseTime.ScoreType.THROUGHPUT);
-        final double memoryScore = resourceMetric.computeScore(ResourceMetric.ScoreType.MEMORY);
-
-        final String servingAddress = subject.getAssociatedSubject().getServingAddress();
-
-        final long experimentId = experimentDb.getExperimentId();
-
-        // TODO(team): This is a gross, over-broad categorization.
-
-        final Event.EventEntry.Type result =
-            subjectInvalid ? Event.EventEntry.Type.UNEXPECTED_DEATH :
-            Event.EventEntry.Type.EXPERIMENT_END;
-
-        final Builder eventBuilder = Event.EventEntry.newBuilder()
-          .setSubjectServingAddress(servingAddress)
-          .setGroningenServingAddress(servingAddress)
-          .setExperimentId(experimentId)
-          .setType(result)
-          // We may want to get this from the state machine directly instead of deriving here.
-          .setTime(clock.now().getMillis())
-          .setGroningenStartTime(startTime);
-
-        // TODO(team): Re-evaluate protocol buffer, and just fundamental data types to avoid casts.
-        final FitnessScore latencyScoreType = FitnessScore.newBuilder()
-            .setName("LATENCY")
-            .setCoefficient((float) latencyWeight)
-            .setScore((float) latencyScore)
-            .build();
-        eventBuilder.addScore(latencyScoreType);
-
-        final FitnessScore throughputScoreType = FitnessScore.newBuilder()
-            .setName("THROUGHPUT")
-            .setCoefficient((float) throughputWeight)
-            .setScore((float) throughputScore)
-            .build();
-        eventBuilder.addScore(throughputScoreType);
-
-        final FitnessScore memoryScoreType = FitnessScore.newBuilder()
-            .setName("MEMORY")
-            .setCoefficient((float) memoryWeight)
-            .setScore((float) memoryScore)
-            .build();
-        eventBuilder.addScore(memoryScoreType);
-
-        // TODO(team): Handle command line arguments.
-
-        eventBuilder.setGroningenConfiguration(config.getProtoConfig());
-
-        for (final double pauseTimeDuration : subject.getPauseTime().getPauseDurations()) {
-          eventBuilder.addPauseEventBuilder().setDurationInSeconds(pauseTimeDuration).build();
-        }
-
-        final SafeProtoLogger<EventEntry> safeProtoLogger = eventLoggerService.getLogger();
-
-        Preconditions.checkNotNull(safeProtoLogger, "safeProtoLogger == null");
-
-        try {
-          safeProtoLogger.logProtoEntry(eventBuilder.build());
-        } catch (final IOException e) {
-          logger.log(Level.SEVERE, "Could not log event.", e);
-        } catch (final IllegalArgumentException e) {
-          logger.log(Level.SEVERE, "Error encoding the event emission.", e);
+        } else {
+          subject.markValid();
         }
       }
     }

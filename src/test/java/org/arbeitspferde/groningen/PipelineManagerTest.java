@@ -162,10 +162,10 @@ public class PipelineManagerTest extends TestCase {
     localPipelineScope.seed(ConfigManager.class, configManager);
     localPipelineScope.seed(
         EasyMock.same(PipelineStageInfo.class), EasyMock.anyObject(PipelineStageInfo.class));
-    localPipelineScope.exit();
     
     final ReentrantLock lock = new ReentrantLock();
     pipelineMock.run();
+    localPipelineScope.exit();
     EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
       @Override
       public Void answer() throws Throwable {

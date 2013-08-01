@@ -47,26 +47,23 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
   public List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId) {
     List<PipelineHistoryState> states = data.get(pipelineId);
     if (states == null) {
-      return null;
-    } else {
-      return states;
+      states = new ArrayList<PipelineHistoryState>();
     }
+    return states;
   }
 
   @Override
   public List<PipelineHistoryState> getStatesForPipelineId(
       PipelineId pipelineId, Instant afterTimestamp) {
     List<PipelineHistoryState> states = data.get(pipelineId);
-    if (states == null) {
-      return null;
-    } else {
-      List<PipelineHistoryState> results = new ArrayList<PipelineHistoryState>();
+    List<PipelineHistoryState> results = new ArrayList<PipelineHistoryState>();
+    if (states != null) {
       for (PipelineHistoryState s : states) {
         if (s.endTimestamp().isAfter(afterTimestamp)) {
           results.add(s);
         }
       }
-      return results;
     }
+    return results;
   }
 }

@@ -42,7 +42,6 @@ public class GroningenResourceServlet extends HttpServlet {
     InputStream istream = getClass().getResourceAsStream(completePath);
     if (istream == null) {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      response.setHeader("X-Google-Requested-Path", completePath);
       return;
     }
     response.setHeader("Content-Type", getContentType(requestedPath));

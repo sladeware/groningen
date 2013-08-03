@@ -14,7 +14,10 @@
  */
 
 package org.arbeitspferde.groningen;
+
+import org.arbeitspferde.groningen.http.GroningenServletModule;
 import org.arbeitspferde.groningen.open.OpenModule;
+import org.arbeitspferde.groningen.open.OpenServicesModule;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,8 +36,10 @@ public class OpenMain {
       final WorkhorseFactory workhorseFactory = new WorkhorseFactory();
       final GroningenWorkhorse groningenWorkhorse = workhorseFactory.workhorseFor(
           new OpenModule(),
+          new OpenServicesModule(),
           new BaseModule(args),
           new ServicesModule(),
+          new GroningenServletModule(),
           new GroningenConfigParamsModule());
 
       groningenWorkhorse.run();

@@ -53,6 +53,7 @@ import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.LocalFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullFileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.open.NullMetricExporter;
+import org.eclipse.jetty.server.Server;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -139,5 +140,11 @@ public class OpenModule extends AbstractModule {
   @Singleton
   public HashFunction getHashFunction() {
     return Hashing.md5();
+  }
+
+  @Provides
+  @Singleton
+  public Server getJettyServer() {
+    return new Server(8080);
   }
 }

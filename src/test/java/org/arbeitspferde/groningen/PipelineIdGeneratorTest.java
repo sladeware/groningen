@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
+import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
@@ -45,16 +46,24 @@ public class PipelineIdGeneratorTest extends TestCase {
   public void testGeneratesPipelineId() {
     Instant now = Instant.now();
     EasyMock.expect(mockClock.now()).andReturn(now);
-
     EasyMock.replay(mockClock);
-
     assertNotNull(pipelineIdGenerator.generatePipelineId(stubConfig));
+  }
+
+  public void testGenerateRequestedPipelineId() {
+    GroningenConfig configMock = EasyMock.createNiceMock(GroningenConfig.class);
+    GroningenParams paramBlock = GroningenParams.newBuilder()
+        .setRequestedPipelineId("fakeId")
+        .build();
+    EasyMock.expect(configMock.getParamBlock()).andReturn(paramBlock).anyTimes();
+    EasyMock.replay(configMock);
+    PipelineId id = pipelineIdGenerator.generatePipelineId(configMock);
+    assertEquals(new PipelineId("fakeId"), id);
   }
 
   public void testPipelineIdDependsOnCurrentTime() {
     Instant now = Instant.now();
     Instant nowPlusOne = now.plus(1);
-
     EasyMock.expect(mockClock.now()).andReturn(now);
     EasyMock.expect(mockClock.now()).andReturn(nowPlusOne);
     EasyMock.replay(mockClock);

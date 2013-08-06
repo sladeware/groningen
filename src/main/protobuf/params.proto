@@ -175,4 +175,7 @@ message GroningenParams {
   // Additional paths where executable permissions will be set when running
   // experiments.
   optional string additional_exec_paths = 36 [default = ""];
+
+  // Request specific pipeline ID, otherwise it will be auto generated.
+  optional string requested_pipeline_id = 37;
 }

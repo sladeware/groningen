@@ -47,13 +47,17 @@ public class PipelineIdGenerator {
   }
 
   /**
-   * Generates unique pipeline id based on the given config, subject serving address and current
-   * time.
+   * Generates pipeline id based on the given config. Returns requested id or generates unique id
+   * based on subject serving address and current time.
    *
    * @param config {@link GroningenConfig} used for hashing
    * @return generated {@link PipelineId}
    */
   public PipelineId generatePipelineId(GroningenConfig config) {
+    // TODO(team): verify whether we have an existing pipeline of the same name.
+    if (config.getParamBlock() != null && config.getParamBlock().hasRequestedPipelineId()) {
+      return new PipelineId(config.getParamBlock().getRequestedPipelineId());
+    }
     StringBuilder sb = new StringBuilder(servingAddress);
     sb.append("_");
     sb.append(clock.now().getMillis());
@@ -61,10 +65,9 @@ public class PipelineIdGenerator {
     sb.append(config.getProtoConfig().toString());
     return new PipelineId(hashFunction.hashString(sb).toString());
   }
-  
+
   public int shardIndexForPipelineId(PipelineId id) {
     /* TODO(mbushkov): implement proper sharding support */
     return shardIndex;
   }
 }
-

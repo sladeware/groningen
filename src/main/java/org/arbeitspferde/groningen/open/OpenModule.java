@@ -25,6 +25,7 @@ import com.google.inject.name.Named;
 
 import org.arbeitspferde.groningen.Datastore;
 import org.arbeitspferde.groningen.HistoryDatastore;
+import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.common.SupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.common.open.NullSupplementalSettingsProcessor;
 import org.arbeitspferde.groningen.config.LegacyProgramConfigurationMediator;
@@ -144,7 +145,7 @@ public class OpenModule extends AbstractModule {
 
   @Provides
   @Singleton
-  public Server getJettyServer() {
-    return new Server(8080);
+  public Server getJettyServer(Settings settings) {
+    return new Server(settings.getPort());
   }
 }

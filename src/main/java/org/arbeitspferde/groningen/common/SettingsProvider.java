@@ -75,7 +75,7 @@ public class SettingsProvider implements Provider<Settings> {
   @Option(
       name = "--port",
       usage = "The port on which to service HTTP requests.")
-  public Integer port = 80;
+  public Integer port = 8080;
 
   @Option(
       name = "--startupSubservicesDeadlineSeconds",

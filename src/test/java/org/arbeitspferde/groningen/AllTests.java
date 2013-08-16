@@ -25,7 +25,6 @@ import org.arbeitspferde.groningen.config.ProtoBufConfigManagerTest;
 import org.arbeitspferde.groningen.config.ProtoBufConfigTest;
 import org.arbeitspferde.groningen.config.ProtoBufSearchSpaceBundleTest;
 import org.arbeitspferde.groningen.display.DisplayMediatorTest;
-import org.arbeitspferde.groningen.display.GroningenServletTest;
 import org.arbeitspferde.groningen.eventlog.EventLoggerServiceTest;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerFactoryTest;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerTest;
@@ -80,7 +79,6 @@ public class AllTests extends TestSuite{
 
     // org.arbeitspferde.groningen.display tests
     suite.addTestSuite(DisplayMediatorTest.class);
-    suite.addTestSuite(GroningenServletTest.class);
 
     // org.arbeitspferde.groningen.eventlog tests
     suite.addTestSuite(EventLoggerServiceTest.class);

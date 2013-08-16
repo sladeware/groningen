@@ -38,7 +38,6 @@ import org.arbeitspferde.groningen.config.ProtoBufConfigManager;
 import org.arbeitspferde.groningen.config.ProtoBufConfigManagerFactory;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
-import org.arbeitspferde.groningen.display.GroningenServlet;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.eventlog.SubjectEventLogger;
 import org.arbeitspferde.groningen.eventlog.SubjectEventProtoLogger;
@@ -86,7 +85,6 @@ public class BaseModule extends AbstractModule {
       .toInstance(pipelineIterationScope);
 
     // Singleton bindings
-    bind(GroningenServlet.class).in(Singleton.class);
     bind(Clock.class).to(SystemClock.class);
     bind(PipelineIdGenerator.class).in(Singleton.class);
     bind(Gson.class).in(Singleton.class);

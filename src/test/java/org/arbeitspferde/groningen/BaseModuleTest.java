@@ -30,7 +30,6 @@ import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.Displayable;
-import org.arbeitspferde.groningen.display.GroningenServlet;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLoggerFactory;
@@ -194,12 +193,6 @@ public class BaseModuleTest extends TestCase {
     } finally {
       pipelineScope.exit();
     }
-  }
-
-  public void testInjector_ProvisionMonitorServlet() {
-    final GroningenServlet monitorServlet = injector.getInstance(GroningenServlet.class);
-
-    assertNotNull(monitorServlet);
   }
 
   public void testInjector_ProvisionSubjectInterrogator() {

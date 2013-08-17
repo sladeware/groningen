@@ -67,7 +67,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   @VisibleForTesting final List<DisplayableObject> monitoredObjects =
     Collections.synchronizedList(new ArrayList<DisplayableObject>());
 
-  /** Provides back links from monitored objects to their {@link Displayable}
+  /** Provides back links from monitored objects to their {@link DisplayableObject}
    * wrapper so we can remove an object */
   private final Hashtable<Object, DisplayableObject> objectToDisplayable =
     new Hashtable<Object, DisplayableObject>();
@@ -293,7 +293,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   /**
-   * Wraps the object to be monitored in a {@link Displayable} and add to list
+   * Wraps the object to be monitored in a {@link DisplayableObject} and add to list
    * of monitored objects. The objects should be thread safe.
    *
    * @param obj
@@ -328,6 +328,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
    *
    * @return a concatenated html string
    */
+  @Deprecated
   @Override
   public String toHtml() {
     // TODO(sanragsood): Remove this method entirely once the cleanup is complete.

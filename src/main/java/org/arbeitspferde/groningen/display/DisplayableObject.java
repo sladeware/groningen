@@ -19,7 +19,7 @@ package org.arbeitspferde.groningen.display;
  * Displays an object using its user-provided information string and by calling
  * the object's toString
  */
-public class DisplayableObject implements Displayable {
+public class DisplayableObject {
   protected final Object object;
   protected final String infoString;
 
@@ -33,16 +33,6 @@ public class DisplayableObject implements Displayable {
   public DisplayableObject (Object object, String infoString) {
     this.object = object;
     this.infoString = infoString;
-  }
-
-  /**
-   * Displays the number and its <code>infoString</code>
-   *
-   * @return An HTML string
-   */
-  @Override
-  public String toHtml() {
-    return infoString + ": " + object.toString() + "<br>";
   }
 
   public Object getObject() {

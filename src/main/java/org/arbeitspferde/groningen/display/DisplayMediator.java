@@ -64,13 +64,13 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   private final PipelineManager pipelineManager;
 
   /** List of objects to be monitored */
-  @VisibleForTesting final List<Displayable> monitoredObjects =
-    Collections.synchronizedList(new ArrayList<Displayable>());
+  @VisibleForTesting final List<DisplayableObject> monitoredObjects =
+    Collections.synchronizedList(new ArrayList<DisplayableObject>());
 
   /** Provides back links from monitored objects to their {@link Displayable}
    * wrapper so we can remove an object */
-  private final Hashtable<Object, Displayable> objectToDisplayable =
-    new Hashtable<Object, Displayable>();
+  private final Hashtable<Object, DisplayableObject> objectToDisplayable =
+    new Hashtable<Object, DisplayableObject>();
 
   /** The separator for printing the monitored objects */
   String separator = "";
@@ -406,7 +406,6 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   public DisplayableObject[] getMonitoredObjects() {
-    // TODO(sanragsood): Downcasting. Fix it.
     return monitoredObjects.toArray(new DisplayableObject[0]);
   }
 }

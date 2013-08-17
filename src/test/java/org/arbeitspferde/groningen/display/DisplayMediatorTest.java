@@ -217,45 +217,4 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
     assertEquals(1, mediator.monitoredObjects.size());
   }
 
-  /* Tests the toHtml method with monitored objects */
-  public void testMonitorToHtml() {
-    createObjects();
-    mediator.monitorObject(obj1, displayString1);
-    mediator.monitorObject(obj2, displayString2);
-    Displayable displayable1 = new DisplayableObject(obj1, displayString1);
-    Displayable displayable2 = new DisplayableObject(obj2, displayString2);
-    CharSequence expectedString = displayable1.toHtml() + displayable2.toHtml();
-    assertTrue(mediator.toHtml().contains(expectedString));
-  }
-
-  /* Tests toHtml with individuals */
-  public void testListToHtml() {
-    createIndividuals();
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 27));
-    assertTrue(mediator.toHtml().contains("List not populated yet"));
-    mediator.processGeneration();
-    assertTrue(mediator.toHtml().contains("-XX:CMSExpAvgFactor=33"));
-    assertTrue(mediator.toHtml().contains("27"));
-
-    // second pass
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 24));
-    mediator.processGeneration();
-    String currentHtml = mediator.toHtml();
-    // current generation list
-    assertTrue(currentHtml.contains("24"));
-    assertTrue(currentHtml.contains("-XX:CMSExpAvgFactor=3"));
-    // all time list
-    assertTrue(currentHtml.contains("-XX:CMSExpAvgFactor=33"));
-    assertTrue(currentHtml.contains("23")); // (21 + 24 * 2) / 3
-    assertTrue(currentHtml.contains("9")); // (27 + 0 * 2) / 3
-  }
-
-  /* Tests the decimal format */
-  public void testDecimalFormat() {
-    createIndividuals();
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21.12355));
-    mediator.processGeneration();
-    assertTrue(mediator.toHtml().contains("21.1236"));
-  }
 }

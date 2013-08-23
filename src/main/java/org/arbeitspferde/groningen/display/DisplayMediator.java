@@ -64,13 +64,13 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   private final PipelineManager pipelineManager;
 
   /** List of objects to be monitored */
-  @VisibleForTesting final List<Displayable> monitoredObjects =
-    Collections.synchronizedList(new ArrayList<Displayable>());
+  @VisibleForTesting final List<DisplayableObject> monitoredObjects =
+    Collections.synchronizedList(new ArrayList<DisplayableObject>());
 
-  /** Provides back links from monitored objects to their {@link Displayable}
+  /** Provides back links from monitored objects to their {@link DisplayableObject}
    * wrapper so we can remove an object */
-  private final Hashtable<Object, Displayable> objectToDisplayable =
-    new Hashtable<Object, Displayable>();
+  private final Hashtable<Object, DisplayableObject> objectToDisplayable =
+    new Hashtable<Object, DisplayableObject>();
 
   /** The separator for printing the monitored objects */
   String separator = "";
@@ -293,7 +293,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   /**
-   * Wraps the object to be monitored in a {@link Displayable} and add to list
+   * Wraps the object to be monitored in a {@link DisplayableObject} and add to list
    * of monitored objects. The objects should be thread safe.
    *
    * @param obj
@@ -328,123 +328,11 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
    *
    * @return a concatenated html string
    */
+  @Deprecated
   @Override
   public String toHtml() {
-    StringBuilder builder = new StringBuilder();
-
-    builder.append("<p><H2>Pipeline " + pipelineId.toString() + "</H2></p>");
-
-    // display warnings
-    if (!warnings.isEmpty()) {
-      builder.append("<p><H2>WARNINGS!</H2></p>");
-      synchronized (warnings) {
-        for (String warning : warnings) {
-          builder.append("<p><H3>" + warning + "</H3></p>");
-        }
-      }
-      builder.append("<br>");
-    }
-
-    // display monitored objects
-    builder.append("<p><H2>Monitored values:</H2></p>");
-    synchronized (monitoredObjects) {
-      for (Displayable item : monitoredObjects){
-        builder.append(item.toHtml());
-      }
-      builder.append("<br>");
-    }
-
-    // display best individuals
-    builder.append("<p><H2>Best individuals:</H2></p>");
-    builder.append("<p><H3>Last evaluated experiment:</H3></p>");
-    builder.append(listToHtmlTable(currentEvaluatedSubjects, 1));
-    builder.append("<p><H3>All time:</H3></p>");
-    builder.append(listToHtmlTable(alltimeEvaluatedSubjects, cummulativeExperimentIdSum));
-    builder.append("<br>");
-
-    // display score explanation
-    builder.append("<p><H2>Scoring explanation:</H2></p>");
-    builder.append(explanations());
-    builder.append("<br>");
-
-    final String emission = builder.toString();
-    return emission;
-  }
-
-  /**
-   * Iterate through a {@code List<EvaluatedSubject>} and generate html
-   *
-   * @param targetList the list to display
-   * @param cumulativeSum divide each list item score by this number, in order
-   *        to display a weighted average
-   * @return an html string
-   */
-  private String listToHtmlTable(List<EvaluatedSubject> targetList, long cumulativeSum) {
-    if (targetList.size() == 0){
-      return "<p>List not populated yet</p>";
-    }
-
-    StringBuilder builder = new StringBuilder();
-    DecimalFormat formatter = new DecimalFormat("#.####");
-
-    // column titles
-    builder.append("<table border=\"1\">")
-      .append("<tr>")
-      .append("<th>Score</th>")
-      .append("<th>Unique subjects command line</th>")
-      .append("<th>In experiment ID</th>")
-      .append("<th>Time stamp</th>")
-      .append("</tr>");
-
-    synchronized (targetList) {
-      for (int i = 0; i < Math.min(targetList.size(), maxIndv); i++) {
-        EvaluatedSubject subject = targetList.get(i);
-        builder.append("<tr>")
-          .append("<td><center>" + formatter.format(subject.getFitness() / cumulativeSum)
-            + "</center></td>")
-          .append("<td> ")
-          .append(subject.isDefault() ? "DEFAULT SETTINGS"
-              : subject.getBridge().getCommandLine().toArgumentString())
-          .append(" </td>")
-          .append("<td><center> " + subject.getExperimentId() + " </center></td>")
-          .append("<td><center> " + df.format(subject.getTimeStamp().getMillis()) +
-            " </center></td>")
-          .append("</tr>");
-      }
-    }
-    builder.append("</table>");
-    return builder.toString();
-  }
-
-  /**
-   * Text explaining how the scores were computed
-   *
-   * @return a concatenated html string
-   */
-  private String explanations() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("<p>")
-           .append("If the last experiment contains multiple instances of the same subject, ")
-           .append("we report its average score. For example, if subject X occurred 3 times, ")
-           .append("in experiment ID 1, with scores 19, 20 and 24, we display the average of 21.")
-           .append("</p>");
-    builder.append("<p>")
-           .append("All time scores are computed as a weighted average of all experiments. ")
-           .append("We weigh each experiment by its \"experiment ID.\". If subject X occurs ")
-           .append("twice in experiment no. 2 (scores 22 and 23) and doesn't occur in experiment ")
-           .append("ID 3, its all-time score would be :")
-           .append("(21 * 1 + 22.5 * 2 + 0 * 3) / (1 + 2 + 3) = 11.")
-           .append("</p>");
-    builder.append("<p>")
-           .append("Note that, unless you assume equal system load and configuration, the scores ")
-           .append("are not comparable between tables and experiments.")
-           .append("</p>");
-    builder.append("<p>")
-           .append("Timestamps are computed when experiments are evaluated, or when duplicate ")
-           .append("last experiment scores are averaged. This happens AFTER all experiments are ")
-           .append("done.")
-           .append("</p>");
-    return builder.toString();
+    // TODO(sanragsood): Remove this method entirely once the cleanup is complete.
+    return "Deprecated";
   }
 
   private class DisplayClusters {
@@ -519,7 +407,6 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   public DisplayableObject[] getMonitoredObjects() {
-    // TODO(sanragsood): Downcasting. Fix it.
     return monitoredObjects.toArray(new DisplayableObject[0]);
   }
 }

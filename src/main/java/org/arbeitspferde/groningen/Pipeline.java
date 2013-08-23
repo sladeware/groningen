@@ -299,10 +299,6 @@ public class Pipeline {
     return pipelineSynchronizer;
   }
 
-  public Displayable getDisplayable() {
-    return displayable;
-  }
-  
   public PipelineStageInfo.ImmutablePipelineStageInfo getImmutablePipelineStageInfo() {
     return pipelineStageInfo.getImmutableValueCopy();
   }

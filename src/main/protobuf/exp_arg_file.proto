@@ -33,4 +33,5 @@ message ExperimentArgs {
    // be used to produce of list of args in the default set that Groningen is
    // not tuning
   repeated string tuned_arg = 3;
+  optional string pipeline_id = 4;
 }

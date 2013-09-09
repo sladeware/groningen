@@ -34,7 +34,6 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
   private Experiment mockExperiment;
   private SubjectShuffler mockShuffler;
   private SubjectSettingsFileManager mockSubjectSettingsFileManager;
-  private PipelineId mockPipelineId;
 
   @Override
   protected void setUp() throws Exception {
@@ -46,9 +45,8 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
     mockExperiment = EasyMock.createMock(Experiment.class);
     mockShuffler = EasyMock.createMock(SubjectShuffler.class);
     mockSubjectSettingsFileManager = EasyMock.createMock(SubjectSettingsFileManager.class);
-    mockPipelineId = EasyMock.createMock(PipelineId.class);
 
-    mockGenerator = new Generator(mockPipelineId, clock, monitor, experimentDb,
+    mockGenerator = new Generator(new PipelineId(""), clock, monitor, experimentDb,
       "myservingaddress:31337", mockShuffler, mockSubjectSettingsFileManager,
       metricExporter);
   }

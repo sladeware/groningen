@@ -75,7 +75,7 @@ public class Generator extends ProfilingRunnable {
   }
 
   @Inject
-  public Generator(PipelineId pipelineId,
+  public Generator(final PipelineId pipelineId,
       final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
       @Named("servingAddress") final String servingAddress, final SubjectShuffler subjectShuffler,
       final SubjectSettingsFileManager subjectSettingsFileManager,

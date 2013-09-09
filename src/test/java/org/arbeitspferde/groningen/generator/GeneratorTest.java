@@ -15,7 +15,7 @@
 
 package org.arbeitspferde.groningen.generator;
 
-
+import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
@@ -34,6 +34,7 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
   private Experiment mockExperiment;
   private SubjectShuffler mockShuffler;
   private SubjectSettingsFileManager mockSubjectSettingsFileManager;
+  private PipelineId mockPipelineId;
 
   @Override
   protected void setUp() throws Exception {
@@ -45,8 +46,9 @@ public class GeneratorTest extends ClockedExperimentDbTestCaseBase {
     mockExperiment = EasyMock.createMock(Experiment.class);
     mockShuffler = EasyMock.createMock(SubjectShuffler.class);
     mockSubjectSettingsFileManager = EasyMock.createMock(SubjectSettingsFileManager.class);
+    mockPipelineId = EasyMock.createMock(PipelineId.class);
 
-    mockGenerator = new Generator(clock, monitor, experimentDb,
+    mockGenerator = new Generator(mockPipelineId, clock, monitor, experimentDb,
       "myservingaddress:31337", mockShuffler, mockSubjectSettingsFileManager,
       metricExporter);
   }

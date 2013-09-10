@@ -17,6 +17,7 @@ package org.arbeitspferde.groningen.generator;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.common.SubjectSettingsFileManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
@@ -62,6 +63,8 @@ public class Generator extends ProfilingRunnable {
   /** Counts the number of times the generator failed to update the subject file */
   private static final AtomicLong generatorFailures = new AtomicLong(0);
 
+  private final PipelineId pipelineId;
+
   /**
    * Reset the JVM settings for a given subject to default values.
    * This method is called by Executor.
@@ -72,7 +75,8 @@ public class Generator extends ProfilingRunnable {
   }
 
   @Inject
-  public Generator(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
+  public Generator(final PipelineId pipelineId,
+      final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
       @Named("servingAddress") final String servingAddress, final SubjectShuffler subjectShuffler,
       final SubjectSettingsFileManager subjectSettingsFileManager,
       final MetricExporter metricExporter) {
@@ -83,6 +87,7 @@ public class Generator extends ProfilingRunnable {
     this.subjectShuffler = subjectShuffler;
     this.subjectSettingsFileManager = subjectSettingsFileManager;
     this.metricExporter = metricExporter;
+    this.pipelineId = pipelineId;
   }
 
   @Override
@@ -109,6 +114,7 @@ public class Generator extends ProfilingRunnable {
                 .setArgs(bridge.getCommandLine().toArgumentString())
                 .setMasterServingAddress(servingAddress)
                 .addAllTunedArg(CommandLine.getManagedArgs())
+                .setPipelineId(pipelineId.id())
                 .build();
             subjectSettingsFileManager.write(experimentArgs, subject.getExpSettingsFile());
           }

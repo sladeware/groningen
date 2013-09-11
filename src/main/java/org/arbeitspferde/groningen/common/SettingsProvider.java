@@ -15,11 +15,13 @@
 
 package org.arbeitspferde.groningen.common;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.ProvisionException;
 import com.google.inject.Singleton;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -65,13 +67,13 @@ public class SettingsProvider implements Provider<Settings> {
       name = "--datastore",
       usage = "Datastore class to use.")
   public String datastore = "org.arbeitspferde.groningen.datastore.InMemoryDatastore";
-  
+
   @Option(
       name = "--historyDatastore",
       usage = "Datastore class to use for history storage.")
   public String historyDatastore =
     "org.arbeitspferde.groningen.historydatastore.MemoryHistoryDatastore";
-  
+
   @Option(
       name = "--port",
       usage = "The port on which to service HTTP requests.")
@@ -158,7 +160,11 @@ public class SettingsProvider implements Provider<Settings> {
 
       @Override
       public String[] getConfigFileNames() {
-        return configFileNames.split(",");
+        if (Strings.isNullOrEmpty(configFileNames)) {
+          return new String[0];
+        } else {
+          return configFileNames.split(",");
+        }
       }
 
       @Override
@@ -190,7 +196,7 @@ public class SettingsProvider implements Provider<Settings> {
       public String getDatastore() {
         return datastore;
       }
-      
+
       @Override
       public String getHistoryDatastore() {
         return historyDatastore;

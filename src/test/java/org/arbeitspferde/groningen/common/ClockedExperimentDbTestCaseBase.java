@@ -24,6 +24,7 @@ import org.arbeitspferde.groningen.PipelineManager;
 import org.arbeitspferde.groningen.display.DisplayMediator;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
+import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 import org.arbeitspferde.groningen.utility.PinnedClock;
@@ -34,7 +35,7 @@ import org.easymock.EasyMock;
  */
 //TODO(mbushkov) renaming needed - Clock is no longer used.
 public class ClockedExperimentDbTestCaseBase extends TestCase {
-  /** Contants used for mocked clock source */
+  /** Constants used for mocked clock source */
   protected static final long DEFAULT_TIME_MS = 1000000000L;
   protected static final long INCREMENT_MS = 1234L;
 
@@ -51,6 +52,7 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
   
   protected HistoryDatastore historyDataStoreMock;
   protected PipelineManager pipelineManagerMock;
+  protected HistoricalBestPerformerScorer mockBestPerformerScorer;
 
   @Override
   protected void setUp() throws Exception {
@@ -58,10 +60,11 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
 
     historyDataStoreMock = EasyMock.createNiceMock(HistoryDatastore.class);
     pipelineManagerMock = EasyMock.createNiceMock(PipelineManager.class);
+    mockBestPerformerScorer = EasyMock.createNiceMock(HistoricalBestPerformerScorer.class);
 
     experimentDb = new ExperimentDb();
-    monitor = new DisplayMediator(clock, experimentDb, historyDataStoreMock, pipelineManagerMock,
-        new PipelineId("pipeline_id"));
+    monitor = new DisplayMediator(experimentDb, historyDataStoreMock, pipelineManagerMock,
+        new PipelineId("pipeline_id"), mockBestPerformerScorer);
     metricExporter = new MetricExporter() {
       @Override
       public void register(String name, String description, MetricListener<?> metric) {}

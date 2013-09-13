@@ -30,8 +30,7 @@ import org.arbeitspferde.groningen.PipelineManager;
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
-import org.arbeitspferde.groningen.utility.Clock;
-import org.joda.time.Instant;
+import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -51,13 +50,12 @@ import java.util.logging.Logger;
 @PipelineScoped
 public class DisplayMediator implements Displayable, MonitorGroningen {
   private static final Logger log = Logger.getLogger(DisplayMediator.class.getCanonicalName());
-  
+
   private static final Joiner commaJoiner = Joiner.on(",");
 
   /** Time keeping */
   private final DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z");
 
-  private final Clock clock;
   private final ExperimentDb experimentDb;
   private final PipelineId pipelineId;
   private final HistoryDatastore historyDatastore;
@@ -89,137 +87,34 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   @VisibleForTesting final List<EvaluatedSubject> tempEvaluatedSubjects =
     Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
 
-  /** stores the current unique and merged evaluated subjects */
+  /**
+   * stores the current unique and merged evaluated subjects.
+   *
+   * we synchronize access to the list (and combine clearing and re-adding elements in
+   * steps that should be atomic) so the list itself does not need internal locking.
+   */
   @VisibleForTesting final List<EvaluatedSubject> currentEvaluatedSubjects =
-    Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
-
-  /** stores the all-time unique and merged evaluated subjects */
-  @VisibleForTesting final List<EvaluatedSubject> alltimeEvaluatedSubjects =
-    Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
+      new ArrayList<EvaluatedSubject>();
 
   /** stores a list of warnings for display to the user */
   @VisibleForTesting final List<String> warnings =
       Collections.synchronizedList(new ArrayList<String>());
 
+  /** best performer scorer and store */
+  final HistoricalBestPerformerScorer bestPerformerScorer;
+
   private DisplayClusters displayableClusters;
 
+  // TODO(team): remove reference to clock
   @Inject
-  public DisplayMediator (final Clock clock, final ExperimentDb experimentDb,
+  public DisplayMediator(final ExperimentDb experimentDb,
       final HistoryDatastore historyDatastore, final PipelineManager pipelineManager,
-      final PipelineId pipelineId) {
-    this.clock = clock;
+      final PipelineId pipelineId, final HistoricalBestPerformerScorer bestPerformerScorer) {
     this.experimentDb = experimentDb;
     this.pipelineId = pipelineId;
     this.historyDatastore = historyDatastore;
     this.pipelineManager = pipelineManager;
-  }
-
-  /**
-   * Given a {@link List} of {@link EvaluatedSubject}, it detects duplicates
-   * and returns a Hashtable of unique subjects. By unique, we mean ones which
-   * have different {@link CommandLine#toArgumentString()}.
-   *
-   * @param targetList the {@link List} containing duplicates
-   * @return a hash table of lists. Keys are the {@link CommandLine#toArgumentString()},
-   *         pointing to a list of duplicated {@link EvaluatedSubject}.
-   */
-  private Hashtable<String, List<EvaluatedSubject>> detectDuplicates
-    (List<EvaluatedSubject> targetList) {
-    // Note that Hashtable is synchronized
-    Hashtable<String, List<EvaluatedSubject>> uniqueSubjects =
-      new Hashtable<String, List<EvaluatedSubject>>();
-    // put each subject commandline in hashtable
-    synchronized (targetList) {
-      for (EvaluatedSubject evaluatedSubject : targetList) {
-        // TODO(team): Fix Law of Demeter violations here.
-        String commandLine = evaluatedSubject.getBridge().getCommandLine().toArgumentString();
-          if (uniqueSubjects.containsKey(commandLine)) { // duplicate
-            uniqueSubjects.get(commandLine).add(evaluatedSubject);
-          } else { // first occurrence
-            List<EvaluatedSubject> firstOccurrence =
-              Collections.synchronizedList(new ArrayList<EvaluatedSubject>());
-            firstOccurrence.add(evaluatedSubject);
-            uniqueSubjects.put(commandLine, firstOccurrence);
-          }
-      }
-    }
-    return uniqueSubjects;
-  }
-
-  /**
-   * Merges the unique items of the current run together. It merges duplicates
-   * by taking their average score. For example, three instances of the same
-   * subject scoring 21, 23 and 29 on the most recent run, will have value:
-   * (21 + 23 + 29) / 3.
-   *
-   * @param targetList the current run {@link List} to be merged
-   */
-  private void cleanRecentRun(List<EvaluatedSubject> targetList) {
-    Hashtable<String, List<EvaluatedSubject>> uniqueSubjects =
-      detectDuplicates(targetList);
-
-    synchronized (targetList) {
-      targetList.clear(); //reset and repopulate
-      final long experimentId = getExperimentId();
-      for (List<EvaluatedSubject> duplicates : uniqueSubjects.values()) {
-        if (duplicates.size() > 1) {
-          double fitness = 0;
-          for (EvaluatedSubject duplicate : duplicates) {
-            fitness += duplicate.getFitness();
-          }
-          fitness /= duplicates.size();
-          targetList.add(new EvaluatedSubject(clock, duplicates.get(0).getBridge(),
-            fitness, experimentId));
-        } else { // if just one subject
-          targetList.add(duplicates.get(0));
-        }
-      }
-    }
-  }
-
-  /**
-   * Merges the unique items of the current run with the unique items of older
-   * runs. It removes any duplicates. It weighs each score by its generation
-   * number, and updates all scores. For example, a subject scoring 21 on run 1,
-   * didn't appear in run 2, and 19 on run 3, will have value: 21 * 1 + 19 * 3.
-   *
-   * @param oldUniqueItemsList a {@link List} of all previous unique items.
-   * @param newUniqueItemsList a {@link List} of current run unique items
-   */
-  private void mergeWeightedSumFitness(List<EvaluatedSubject> oldUniqueItemsList,
-                                       List<EvaluatedSubject> newUniqueItemsList) {
-    // list is already unique, put it in hash
-    Hashtable<String, List<EvaluatedSubject>> uniqueNewSubjects =
-       detectDuplicates(newUniqueItemsList);
-
-    synchronized (oldUniqueItemsList) {
-      double currentScore;
-      final long experimentId = getExperimentId();
-
-      Preconditions.checkState(experimentId > 0, "experimentId (%s) <= 0; data loss ensues.",
-          experimentId);
-
-      for (EvaluatedSubject evaluatedSubject : oldUniqueItemsList) {
-        currentScore = 0;
-        final String key = evaluatedSubject.getBridge().getCommandLine().toArgumentString();
-        // if old subject occurs in current experiment
-        if (uniqueNewSubjects.containsKey(key)) {
-          currentScore = uniqueNewSubjects.get(key).get(0).getFitness();
-          uniqueNewSubjects.remove(key);
-          // update the experiment the evaluated subject is associated with.
-          evaluatedSubject.setExperimentId(experimentId);
-        }
-        evaluatedSubject.setFitness(evaluatedSubject.getFitness() +
-          currentScore * experimentId);
-      }
-      // add remaining new entries
-      for (List<EvaluatedSubject> newItem : uniqueNewSubjects.values()) {
-        synchronized (newItem) {
-          oldUniqueItemsList.add(new EvaluatedSubject(clock, newItem.get(0).getBridge(),
-            newItem.get(0).getFitness() * experimentId, experimentId));
-        }
-      }
-    }
+    this.bestPerformerScorer = bestPerformerScorer;
   }
 
   /**
@@ -235,20 +130,17 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
     this.monitorObject(displayableClusters, "Clusters used in the last experiment");
 
     Pipeline pipeline = pipelineManager.findPipelineById(pipelineId);
+    // TODO(team): propagate error up more gracefully than via an assert.
     assert(pipeline != null);
-    
-    /* First detect and remove duplicates in the temp list
-     * Take the average of duplicates in the most recent run */
-    cleanRecentRun(tempEvaluatedSubjects);
 
-    /* Populate the current subject list */
-    currentEvaluatedSubjects.clear();
-    currentEvaluatedSubjects.addAll(tempEvaluatedSubjects);
-    Collections.sort(currentEvaluatedSubjects, Collections.reverseOrder());
-
-    /* Merge, detect and remove duplicates in the alltime list */
-    mergeWeightedSumFitness(alltimeEvaluatedSubjects, tempEvaluatedSubjects);
-    Collections.sort(alltimeEvaluatedSubjects, Collections.reverseOrder());
+    List<EvaluatedSubject> cleanedCurGeneration =
+        bestPerformerScorer.addGeneration(tempEvaluatedSubjects);
+    synchronized (currentEvaluatedSubjects) {
+      currentEvaluatedSubjects.clear();
+      if (cleanedCurGeneration != null) {
+        currentEvaluatedSubjects.addAll(cleanedCurGeneration);
+      }
+    }
 
     /* Reset temporary list */
     tempEvaluatedSubjects.clear();
@@ -262,12 +154,6 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   @Override
   public void addIndividual(final EvaluatedSubject evaluatedSubject) {
     Preconditions.checkNotNull(evaluatedSubject, "evaluatedSubject may not be null.");
-
-    /*
-     * TODO(team): Please give special attention to this, as I think the old code could be
-     * predicated on a dangerous assumption.
-     */
-    evaluatedSubject.setExperimentId(getExperimentId());
     tempEvaluatedSubjects.add(evaluatedSubject);
   }
 
@@ -401,9 +287,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   }
 
   public EvaluatedSubject[] getAlltimeExperimentSubjects() {
-    synchronized (alltimeEvaluatedSubjects) {
-      return alltimeEvaluatedSubjects.toArray(new EvaluatedSubject[0]);
-    }
+      return bestPerformerScorer.getBestPerformers().toArray(new EvaluatedSubject[0]);
   }
 
   public DisplayableObject[] getMonitoredObjects() {

@@ -24,6 +24,7 @@ import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams.PipelineSynchMode;
+import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
@@ -45,6 +46,8 @@ public class PipelineManagerTest extends TestCase {
   private Map<PipelineSynchMode, Provider<PipelineSynchronizer>> pipelineSyncProviderMap;
   private PipelineSynchronizer defaultPipelineSynchronizer;
   private PipelineManager pipelineManager;
+  private HistoricalBestPerformerScorer bestPerformerScorer;
+  private Provider<HistoricalBestPerformerScorer> bestPerformerScorerProvider;
 
   @Override
   protected void setUp() throws Exception {
@@ -56,7 +59,8 @@ public class PipelineManagerTest extends TestCase {
     pipelineScope = new SimpleScope();
     pipelineSyncProviderMap = new HashMap<PipelineSynchMode, Provider<PipelineSynchronizer>>();
     defaultPipelineSynchronizer = new EmptyPipelineSynchronizer();
-    
+    bestPerformerScorer = EasyMock.createNiceMock(HistoricalBestPerformerScorer.class);
+
     Provider<PipelineSynchronizer> emptySynchronizerProvider =
         new Provider<PipelineSynchronizer>() {
       @Override
@@ -71,10 +75,18 @@ public class PipelineManagerTest extends TestCase {
       public Pipeline get() {
         return pipelineMock;
       }
+
+    };
+
+    bestPerformerScorerProvider = new Provider<HistoricalBestPerformerScorer>() {
+      @Override
+      public HistoricalBestPerformerScorer get() {
+        return bestPerformerScorer;
+      }
     };
 
     pipelineManager = new PipelineManager(pipelineIdGeneratorMock, pipelineScope,
-        pipelineProvider, dataStoreMock, pipelineSyncProviderMap);
+        pipelineProvider, dataStoreMock, pipelineSyncProviderMap, bestPerformerScorerProvider);
   }
 
   public void testGetRequestedPipelineSynchronizerWithDefaultParamBlock() {
@@ -83,7 +95,7 @@ public class PipelineManagerTest extends TestCase {
 
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
     EasyMock.replay(config);
-    
+
     PipelineSynchronizer synchronizer = pipelineManager.getRequestedPipelineSynchronizer(config);
     assertEquals(pipelineSyncProviderMap.get(PipelineSynchMode.NONE).get(), synchronizer);
   }
@@ -107,10 +119,10 @@ public class PipelineManagerTest extends TestCase {
 
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
     EasyMock.replay(config);
-    
+
     PipelineSynchronizer synchronizer = pipelineManager.getRequestedPipelineSynchronizer(config);
     assertEquals(finalizationSynchronizer, synchronizer);
-  }  
+  }
 
   public void testGetRequestedPipelineSynchronizerWithNonexistantSynchronizer() {
     GroningenConfig config = EasyMock.createNiceMock(GroningenConfig.class);
@@ -120,10 +132,10 @@ public class PipelineManagerTest extends TestCase {
 
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
     EasyMock.replay(config);
-    
+
     PipelineSynchronizer synchronizer = pipelineManager.getRequestedPipelineSynchronizer(config);
     assertEquals(defaultPipelineSynchronizer, synchronizer);
-  }  
+  }
 
   /**
    * Test that when Pipeline is created in non-blocking mode, it eventually gets executed
@@ -149,12 +161,12 @@ public class PipelineManagerTest extends TestCase {
 
     EasyMock.expect(configManager.queryConfig()).andReturn(config).anyTimes();
     EasyMock.expect(config.getParamBlock()).andReturn(paramBlock);
-    
+
     PipelineId referenceId = new PipelineId("pipelineid");
     EasyMock.expect(
         pipelineIdGeneratorMock.generatePipelineId(EasyMock.anyObject(GroningenConfig.class))).
           andReturn(referenceId);
-    
+
     BlockScope localPipelineScope = EasyMock.createMock(BlockScope.class);
     localPipelineScope.enter();
     localPipelineScope.seed(PipelineSynchronizer.class, finalizationSynchronizer);
@@ -162,7 +174,8 @@ public class PipelineManagerTest extends TestCase {
     localPipelineScope.seed(ConfigManager.class, configManager);
     localPipelineScope.seed(
         EasyMock.same(PipelineStageInfo.class), EasyMock.anyObject(PipelineStageInfo.class));
-    
+    localPipelineScope.seed(HistoricalBestPerformerScorer.class, bestPerformerScorer);
+
     final ReentrantLock lock = new ReentrantLock();
     pipelineMock.run();
     localPipelineScope.exit();
@@ -176,10 +189,10 @@ public class PipelineManagerTest extends TestCase {
       }});
 
     EasyMock.replay(configManager, config, pipelineMock, pipelineIdGeneratorMock,
-        localPipelineScope);
+        localPipelineScope, bestPerformerScorer);
 
     pipelineManager = new PipelineManager(pipelineIdGeneratorMock, localPipelineScope,
-        pipelineProvider, dataStoreMock, pipelineSyncProviderMap);
+        pipelineProvider, dataStoreMock, pipelineSyncProviderMap, bestPerformerScorerProvider);
 
     lock.lock();
     try {

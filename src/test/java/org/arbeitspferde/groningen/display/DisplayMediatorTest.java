@@ -23,8 +23,12 @@ import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -33,7 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   private DisplayMediator mediator;
   private Pipeline pipelineMock;
-  
+
   Object obj1, obj2;
   String displayString1, displayString2;
   SubjectStateBridge subject1, subject2;
@@ -41,17 +45,17 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    
+
     pipelineMock = EasyMock.createNiceMock(Pipeline.class);
     EasyMock.expect(pipelineMock.id()).andReturn(new PipelineId("pipeline_id")).anyTimes();
     EasyMock.expect(
         pipelineManagerMock.findPipelineById(new PipelineId("pipeline_id")))
         .andReturn(pipelineMock).anyTimes();
-    
+
     EasyMock.replay(pipelineMock, pipelineManagerMock, historyDataStoreMock);
-    
-    mediator = new DisplayMediator(clock, experimentDb, historyDataStoreMock,
-        pipelineManagerMock, new PipelineId("pipeline_id"));
+
+    mediator = new DisplayMediator(experimentDb, historyDataStoreMock,
+        pipelineManagerMock, new PipelineId("pipeline_id"), mockBestPerformerScorer);
     experimentDb.nextExperimentId();
   }
 
@@ -124,74 +128,56 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
   /* Tests the processGeneration method */
   public void testProcessGeneration() {
     createIndividuals();
+    EvaluatedSubject evaledSubject1Pass1 = new EvaluatedSubject(clock, subject1, 21.0, 1);
+    EvaluatedSubject evaledSubject2Pass1 = new EvaluatedSubject(clock, subject1, 21.0, 1);
+    EvaluatedSubject evaledSubject1Pass2 = new EvaluatedSubject(clock, subject1, 21.0, 2);
+    EvaluatedSubject evaledSubject2Pass2 = new EvaluatedSubject(clock, subject2, 24.0, 2);
+    EvaluatedSubject evaledSubjectReturnPass1 = new EvaluatedSubject(clock, subject1, 21.0, 1);
+
+    Capture<List<EvaluatedSubject>> captureGenList1 = new Capture<List<EvaluatedSubject>>();
+    Capture<List<EvaluatedSubject>> captureGenList2 = new Capture<List<EvaluatedSubject>>();
+    List<EvaluatedSubject> addGenReturnListPass1 = new ArrayList<EvaluatedSubject>();
+    addGenReturnListPass1.add(evaledSubjectReturnPass1);
+    List<EvaluatedSubject> addGenReturnListPass2 = new ArrayList<EvaluatedSubject>();
+    addGenReturnListPass2.add(evaledSubject2Pass2);
+    addGenReturnListPass2.add(evaledSubject1Pass2);
+    EasyMock.expect(
+        mockBestPerformerScorer.addGeneration(EasyMock.capture(captureGenList1)))
+        .andReturn(addGenReturnListPass1);
+    EasyMock.expect(
+        mockBestPerformerScorer.addGeneration(EasyMock.capture(captureGenList2)))
+        .andReturn(addGenReturnListPass2);
+    EasyMock.replay(mockBestPerformerScorer);
+
     // first pass
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21));
+    mediator.addIndividual(evaledSubject1Pass1);
+    mediator.addIndividual(evaledSubject2Pass1);
     mediator.processGeneration();
     assertEquals(0, mediator.tempEvaluatedSubjects.size());
     assertEquals(1, mediator.currentEvaluatedSubjects.size());
-    assertEquals(1, mediator.alltimeEvaluatedSubjects.size());
-    assertEquals(21.0, mediator.currentEvaluatedSubjects.get(0).getFitness());
-    assertEquals(21.0, mediator.alltimeEvaluatedSubjects.get(0).getFitness());
+    assertTrue(captureGenList1.hasCaptured());
 
     // second pass
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 24));
-    experimentDb.nextExperimentId();
+    mediator.addIndividual(evaledSubject1Pass2);
+    mediator.addIndividual(evaledSubject2Pass2);
     mediator.processGeneration();
     assertEquals(0, mediator.tempEvaluatedSubjects.size());
     assertEquals(2, mediator.currentEvaluatedSubjects.size());
-    assertEquals(2, mediator.alltimeEvaluatedSubjects.size());
-    assertEquals(24.0, mediator.currentEvaluatedSubjects.get(0).getFitness());
-    assertEquals(21.0 * 3, mediator.alltimeEvaluatedSubjects.get(0).getFitness());
-    assertEquals(24.0 * 2, mediator.alltimeEvaluatedSubjects.get(1).getFitness());
-  }
-
-  /* Tests that individuals are updating their iteration number. An individual
-   * should store the last iteration count it occurred in. */
-  public void testSubjectIteration() {
-    createIndividuals();
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 22));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 3));
-    mediator.processGeneration();
-    assertEquals(1, mediator.alltimeEvaluatedSubjects.get(0).getExperimentId());
-
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 23));
-    experimentDb.nextExperimentId();
-    mediator.processGeneration();
-    assertEquals(2, mediator.alltimeEvaluatedSubjects.get(0).getExperimentId());
-    assertEquals(1, mediator.alltimeEvaluatedSubjects.get(1).getExperimentId());
-  }
-
-  /* Duplicates with different values, tests merging fitness */
-  public void testMergingFitness() {
-    createIndividuals();
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 22));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 23));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 21));
-    assertEquals(3, mediator.tempEvaluatedSubjects.size());
-
-    mediator.processGeneration();
-    assertEquals(22.5, mediator.currentEvaluatedSubjects.get(0).getFitness());
-    assertEquals(22.5, mediator.alltimeEvaluatedSubjects.get(0).getFitness());
-
-    mediator.addIndividual(new EvaluatedSubject(clock, subject1, 29));
-    mediator.addIndividual(new EvaluatedSubject(clock, subject2, 20));
-    experimentDb.nextExperimentId();
-    mediator.processGeneration();
-    assertEquals(21.0 + 29 * 2, mediator.alltimeEvaluatedSubjects.get(0).getFitness());
-    assertEquals(22.5 + 20 * 2, mediator.alltimeEvaluatedSubjects.get(1).getFitness());
-    assertEquals(29.0, mediator.currentEvaluatedSubjects.get(0).getFitness());
-    assertEquals(20.0, mediator.currentEvaluatedSubjects.get(1).getFitness());
   }
 
   /* Invoke processGeneration without adding individuals */
   public void testEmptyProcessGeneration() {
+    Capture<List<EvaluatedSubject>> captureGenList = new Capture<List<EvaluatedSubject>>();
+    List<EvaluatedSubject> emptySubjectList = new ArrayList<EvaluatedSubject>();
+    EasyMock.expect(
+        mockBestPerformerScorer.addGeneration(EasyMock.capture(captureGenList)))
+        .andReturn(emptySubjectList);
+    EasyMock.replay(mockBestPerformerScorer);
+
     //do not add any individual
     mediator.processGeneration();
     assertEquals(0, mediator.tempEvaluatedSubjects.size());
     assertEquals(0, mediator.currentEvaluatedSubjects.size());
-    assertEquals(0, mediator.alltimeEvaluatedSubjects.size());
   }
 
   /* Tests the monitorObject method */
@@ -216,5 +202,4 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
     assertTrue(mediator.stopMonitoringObject(obj1));
     assertEquals(1, mediator.monitoredObjects.size());
   }
-
 }

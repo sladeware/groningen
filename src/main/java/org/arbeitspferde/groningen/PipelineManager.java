@@ -12,6 +12,7 @@ import org.arbeitspferde.groningen.config.ConfigManager;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineScoped;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams.PipelineSynchMode;
+import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class PipelineManager {
   private final Provider<Pipeline> pipelineProvider;
   private final Datastore datastore;
   private final Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap;
+  private final Provider<HistoricalBestPerformerScorer> bestPerformerScorerProvider;
 
   private ConcurrentMap<PipelineId, Pipeline> pipelines;
 
@@ -46,13 +48,15 @@ public class PipelineManager {
       @Named(PipelineScoped.SCOPE_NAME) BlockScope pipelineScope,
       Provider<Pipeline> pipelineProvider,
       Datastore datastore,
-      Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap) {
+      Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap,
+      Provider<HistoricalBestPerformerScorer> bestPerformerScorerProvider) {
     this.pipelineIdGenerator = pipelineIdGenerator;
     this.pipelineScope = pipelineScope;
     this.pipelineProvider = pipelineProvider;
     this.datastore = datastore;
     this.synchronizerProviderMap = synchronizerProviderMap;
     this.pipelines = new ConcurrentHashMap<PipelineId, Pipeline>();
+    this.bestPerformerScorerProvider = bestPerformerScorerProvider;
   }
 
   public PipelineId restorePipeline(final PipelineState pipelineState,
@@ -67,10 +71,12 @@ public class PipelineManager {
     // (pipelineConstructionLock) and do not require atomicity. Still it's very handy to just
     // use a reference class that is already in a standard library
     final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
-    
+
     // TODO(etheon): add metric exporter for this
     final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
     synchronizer.setPipelineStageTracker(pipelineStageInfo);
+
+    final HistoricalBestPerformerScorer bestPerformerScorer = bestPerformerScorerProvider.get();
 
     log.fine("starting thread for pipeline (restoring) " + pipelineId.toString());
     Thread pipelineThread = new Thread("pipeline-restore-" + pipelineId.toString()) {
@@ -83,6 +89,7 @@ public class PipelineManager {
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
             pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
+            pipelineScope.seed(HistoricalBestPerformerScorer.class, bestPerformerScorer);
 
             Pipeline pipeline;
             pipelineConstructionLock.lock();
@@ -97,7 +104,7 @@ public class PipelineManager {
 
             log.fine("running pipeline " + pipelineId.toString());
             pipeline.restoreState(pipelineState);
-            
+
             pipeline.run();
           } finally {
             pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZATION_INPROGRESS);
@@ -130,9 +137,9 @@ public class PipelineManager {
       }
     }
 
-    return pipelineId;    
+    return pipelineId;
   }
-  
+
   /**
    * Start new Pipeline with a given {@link ConfigManager}
    *
@@ -161,6 +168,8 @@ public class PipelineManager {
     final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
     synchronizer.setPipelineStageTracker(pipelineStageInfo);
 
+    final HistoricalBestPerformerScorer bestPerformerScorer = bestPerformerScorerProvider.get();
+
     log.fine("starting thread for pipeline " + pipelineId.toString());
     Thread pipelineThread = new Thread("pipeline-" + pipelineId.toString()) {
       @Override
@@ -172,6 +181,7 @@ public class PipelineManager {
             pipelineScope.seed(PipelineId.class, pipelineId);
             pipelineScope.seed(ConfigManager.class, configManager);
             pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
+            pipelineScope.seed(HistoricalBestPerformerScorer.class, bestPerformerScorer);
 
             Pipeline pipeline;
             pipelineConstructionLock.lock();
@@ -191,14 +201,14 @@ public class PipelineManager {
               log.severe(String.format("writing to datastore failed (pipeline id: %s): %s",
                   pipelineId.toString(), e.getMessage()));
             }
-            
+
             log.fine("running pipeline " + pipelineId.toString());
-            pipeline.run();            
+            pipeline.run();
           } finally {
             pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZATION_INPROGRESS);
             pipelineScope.exit();
             pipelines.remove(pipelineId);
-            
+
             try {
               datastore.deletePipelines(Lists.newArrayList(pipelineId));
               pipelineStageInfo.set(PipelineStageState.PIPELINE_FINALIZED);
@@ -227,7 +237,7 @@ public class PipelineManager {
 
     return pipelineId;
   }
-  
+
   /**
    * @param pipelineId {@link PipelineId} identifying the needed pipeline
    * @return {@link Pipeline} corresponding to current PipelineId or null if such pipeline was
@@ -245,11 +255,11 @@ public class PipelineManager {
   public Map<PipelineId, Pipeline> getAllPipelines() {
     return new HashMap<PipelineId, Pipeline>(pipelines);
   }
-  
+
   /**
    * Map a requested mode of synchronizer the pipeline to a {@link PipelineSynchronizer} that
    * performs that type of synchronization.
-   * 
+   *
    * @param config the {@link GroningenConfig} specifying the requested experiment
    * @return the type of PipelineSynchronizer that implements the requested type of
    *         synchronization, null if both there exists no direct mapping AND there is

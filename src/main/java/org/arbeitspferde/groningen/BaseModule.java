@@ -47,6 +47,8 @@ import org.arbeitspferde.groningen.externalprocess.ProcessInvoker;
 import org.arbeitspferde.groningen.generator.Generator;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
+import org.arbeitspferde.groningen.scorer.GenerationNumberWeightedBestPerformerScorer;
+import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 import org.arbeitspferde.groningen.scorer.SubjectScorer;
 import org.arbeitspferde.groningen.scorer.IterationScorer;
 import org.arbeitspferde.groningen.scorer.LinearCombinationScorer;
@@ -117,6 +119,8 @@ public class BaseModule extends AbstractModule {
     bind(Settings.class).toProvider(SettingsProvider.class).asEagerSingleton();
     bind(SubjectEventLogger.class).to(SubjectEventProtoLogger.class);
     bind(SubjectScorer.class).to(LinearCombinationScorer.class);
+    bind(HistoricalBestPerformerScorer.class)
+        .to(GenerationNumberWeightedBestPerformerScorer.class);
 
     install(new FactoryModuleBuilder()
         .implement(ConfigManager.class, ProtoBufConfigManager.class)

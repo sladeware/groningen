@@ -21,7 +21,7 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
 
   private Map<PipelineId, List<PipelineHistoryState>> data =
       new HashMap<PipelineId, List<PipelineHistoryState>>();
-  
+
   @Override
   public void writeState(PipelineHistoryState state) {
     List<PipelineHistoryState> states = data.get(state.pipelineId());
@@ -43,8 +43,7 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
     return Lists.newArrayList(data.keySet());
   }
 
-  @Override
-  public List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId) {
+  private List<PipelineHistoryState> readStates(PipelineId pipelineId) {
     List<PipelineHistoryState> states = data.get(pipelineId);
     if (states == null) {
       states = new ArrayList<PipelineHistoryState>();
@@ -53,17 +52,19 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
   }
 
   @Override
+  public List<PipelineHistoryState> getStatesForPipelineId(PipelineId pipelineId) {
+    return Collections.unmodifiableList(readStates(pipelineId));
+  }
+
+  @Override
   public List<PipelineHistoryState> getStatesForPipelineId(
       PipelineId pipelineId, Instant afterTimestamp) {
-    List<PipelineHistoryState> states = data.get(pipelineId);
     List<PipelineHistoryState> results = new ArrayList<PipelineHistoryState>();
-    if (states != null) {
-      for (PipelineHistoryState s : states) {
-        if (s.endTimestamp().isAfter(afterTimestamp)) {
-          results.add(s);
-        }
+    for (PipelineHistoryState state : readStates(pipelineId)) {
+      if (state.endTimestamp().isAfter(afterTimestamp)) {
+        results.add(state);
       }
     }
-    return results;
+    return Collections.unmodifiableList(results);
   }
 }

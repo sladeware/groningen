@@ -21,6 +21,8 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Named;
+
+import org.arbeitspferde.groningen.common.GroningenService;
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.eventlog.SafeProtoLogger;
 import org.arbeitspferde.groningen.proto.Event;
@@ -44,6 +46,7 @@ public class ServicesModule extends AbstractModule {
 
     serviceBinder.addBinding().to(EventLoggerService.class);
     serviceBinder.addBinding().to(MetricsService.class);
+    serviceBinder.addBinding().to(GroningenService.class);
   }
 
   @Provides

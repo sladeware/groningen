@@ -43,9 +43,6 @@ import java.util.logging.Logger;
 public class PipelineIteration {
   private static final Logger log = Logger.getLogger(PipelineIteration.class.getCanonicalName());
 
-  /** The delay period in millis betwen retries of failing Generator runs */
-  private static final long RUN_GENERATOR_RETRY_DELAY = 60000L;
-
   private final GroningenConfig config;
   private final PipelineSynchronizer pipelineSynchronizer;
   private final Executor executor;
@@ -92,7 +89,7 @@ public class PipelineIteration {
   public int getStage() {
     return currentPipelineStage.get();
   }
-  
+
   /**
    * Provide the remaining time within the run of the experiment.
    *
@@ -123,24 +120,9 @@ public class PipelineIteration {
     boolean notComplete = hypothesizer.notComplete();
 
     if (notComplete) {
-      // Run the Generator and retry until it succeeds
       currentPipelineStage.set(1);
       pipelineStageInfo.set(PipelineStageState.GENERATOR);
-      boolean done;
-      do {
-        done = true;
-        try {
-          generator.run(config);
-        } catch (final RuntimeException re) {
-          done = false;
-          log.log(Level.WARNING, "Problems running the Generator. Retrying in 1 minute.", re);
-          try {
-            Thread.sleep(RUN_GENERATOR_RETRY_DELAY);
-          } catch (final InterruptedException ie) {
-            log.log(Level.WARNING, "Problems sleeping while retrying the Generator.", ie);
-          }
-        }
-      } while (!done);
+      generator.run(config);
 
       // This stage returns only when all experiments are complete
       currentPipelineStage.set(2);
@@ -150,6 +132,7 @@ public class PipelineIteration {
       currentPipelineStage.set(3);
       pipelineStageInfo.set(PipelineStageState.SCORING);
       validator.run(config);
+
       currentPipelineStage.set(4);
       scorer.run(config);
     }

@@ -65,6 +65,9 @@ public class Generator extends ProfilingRunnable {
 
   private final PipelineId pipelineId;
 
+  /** The delay period in millis betwen retries of failing Generator runs */
+  private static final long RUN_GENERATOR_RETRY_DELAY = 60000L;
+
   /**
    * Reset the JVM settings for a given subject to default values.
    * This method is called by Executor.
@@ -125,6 +128,24 @@ public class Generator extends ProfilingRunnable {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  @Override
+  public void run(GroningenConfig config) {
+    boolean done = false;
+    do {
+      try {
+        super.run(config);
+        done = true;
+      } catch (final RuntimeException re) {
+        log.log(Level.WARNING, "Problems running the Generator. Retrying in 1 minute.", re);
+        try {
+          Thread.sleep(RUN_GENERATOR_RETRY_DELAY);
+        } catch (final InterruptedException ie) {
+          log.log(Level.WARNING, "Problems sleeping while retrying the Generator.", ie);
+        }
+      }
+    } while (!done);
   }
 
   @Override

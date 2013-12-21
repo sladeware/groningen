@@ -13,12 +13,12 @@
         settings outcome can be reached with the least amount of human effort and time
         while maximizing safety.
     </description>
-    <url>http://code.google.com/p/groningen</url>
+    <url>https://github.com/sladeware/groningen</url>
 
     <scm>
-        <connection>scm:git:https://code.google.com/p/groningen/</connection>
-        <developerConnection>scm:git:https://code.google.com/p/groningen/</developerConnection>
-        <url>http://code.google.com/p/groningen/source/browse</url>
+        <connection>scm:git:git://github.com/sladeware/groningen.git</connection>
+        <developerConnection>scm:git:git@github.com:sladeware/groningen.git</developerConnection>
+        <url>https://github.com/sladeware/groningen</url>
     </scm>
 
     <parent>
@@ -121,7 +121,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>14.0</version>
+            <version>15.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.javascript</groupId>

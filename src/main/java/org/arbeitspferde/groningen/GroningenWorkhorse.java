@@ -122,20 +122,6 @@ public class GroningenWorkhorse implements Runnable {
     }
   }
 
-  private static class InfiniteLoop implements Runnable {
-
-    @Override
-    public void run() {
-      while (true) {
-        try {
-          Thread.sleep(3600000);  // 1hr
-        } catch (InterruptedException e) {
-        }
-      }
-    }
-
-  }
-
   /**
    * Prepare for and then run the processing loop
    */
@@ -156,19 +142,6 @@ public class GroningenWorkhorse implements Runnable {
         }
       }
 
-      for (Pipeline pipeline : pipelineManager.getAllPipelines().values()) {
-        try {
-          pipeline.joinPipeline();
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
-
-      Thread t = new Thread(new InfiniteLoop());
-      t.start();
-      t.join();
-
-      systemAdapter.exit(0);
     } catch (RuntimeException e) {
       log.log(Level.SEVERE, "Aborted.", e);
       try {
@@ -178,8 +151,6 @@ public class GroningenWorkhorse implements Runnable {
             "Could not shutdown subservices in a timely fashion.", stopSubservicesError);
       }
       systemAdapter.exit(1);
-    } catch (InterruptedException e) {
-      systemAdapter.exit(2);
     }
   }
 }

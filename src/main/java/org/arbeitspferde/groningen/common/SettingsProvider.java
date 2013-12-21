@@ -91,7 +91,7 @@ public class SettingsProvider implements Provider<Settings> {
 
   @Option(
       name = "--configFileNames",
-      aliases = {"--f", "--configFileName" /* TOTO(mbushkov): depreacated, remove soon */},
+      aliases = {"--f", "--configFileName" /* TOTO(mbushkov): deprecated, remove soon */},
       usage = "Comma-separated list of fully-qualified paths to the configuration files (one " +
           "per pipeline).")
   public String configFileNames;

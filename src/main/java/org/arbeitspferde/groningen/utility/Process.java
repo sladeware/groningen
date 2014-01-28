@@ -15,13 +15,13 @@
 
 package org.arbeitspferde.groningen.utility;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -145,7 +145,7 @@ public class Process {
       Matcher matcher = STAT_FILE_FORMAT.matcher(line);
       if (matcher.find()) {
         String commandLine = Files.toString(new File("/proc/" + Integer.toString(processId) +
-                "/cmdline"), Charsets.UTF_8);
+                "/cmdline"), StandardCharsets.UTF_8);
         // TODO(drk): read the start time from the stat file.
         info = new ProcessInfo(processId, Integer.parseInt(matcher.group(4)),
             statStream.lastModified() / 1000, commandLine);

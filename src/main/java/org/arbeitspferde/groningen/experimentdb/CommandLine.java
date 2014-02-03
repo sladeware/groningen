@@ -82,8 +82,8 @@ public class CommandLine {
       .add(JvmFlag.USE_PARALLEL_GC.asRegularExpressionString())
       .add(JvmFlag.USE_PARALLEL_OLD_GC.asRegularExpressionString())
       .add(JvmFlag.USE_SERIAL_GC.asRegularExpressionString())
-      .add("-Xms\\d+[bBkKmMgG]")
-      .add("-Xmx\\d+[bBkKmMgG]")
+      .add("-Xms\\d+[bBkKmMgG]?")
+      .add("-Xmx\\d+[bBkKmMgG]?")
       .build();
 
   /**

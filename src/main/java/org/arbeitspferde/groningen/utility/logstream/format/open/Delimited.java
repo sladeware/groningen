@@ -9,24 +9,24 @@ import java.io.OutputStream;
 
 @NotThreadSafe
 class Delimited implements OutputLogStream {
-    private final OutputStream proxied;
+  private final OutputStream proxied;
 
-    Delimited(final OutputStream proxied) {
-        this.proxied = proxied;
-    }
+  Delimited(final OutputStream proxied) {
+    this.proxied = proxied;
+  }
 
-    @Override
-    public void write(final Message message) throws IOException {
-        message.writeDelimitedTo(proxied);
-    }
+  @Override
+  public void write(final Message message) throws IOException {
+    message.writeDelimitedTo(proxied);
+  }
 
-    @Override
-    public void close() throws IOException {
-        proxied.close();
-    }
+  @Override
+  public void close() throws IOException {
+    proxied.close();
+  }
 
-    @Override
-    public void flush() throws IOException {
-        proxied.flush();
-    }
+  @Override
+  public void flush() throws IOException {
+    proxied.flush();
+  }
 }

@@ -1,5 +1,8 @@
 .classpath
+.idea
 .project
-.settings/*
+.settings
+
 src/main/java/org/arbeitspferde/groningen/Build.java
+
 target

@@ -209,7 +209,7 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_ms() {
-    assertMatchesNever("-Xms1");
+    assertMatchesOnce("-Xms1");
 
     assertMatchesOnce("-Xms1k");
     assertMatchesOnce("-Xms1m");
@@ -226,7 +226,7 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_mx() {
-    assertMatchesNever("-Xmx1");
+    assertMatchesOnce("-Xmx1");
 
     assertMatchesOnce("-Xmx1k");
     assertMatchesOnce("-Xmx1m");

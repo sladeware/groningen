@@ -1,6 +1,9 @@
 language: java
+
 jdk:
-  - openjdk6
+  - openjdk7
+  - oraclejdk7
+
 before_install:
   - travis_retry wget -c https://protobuf.googlecode.com/files/protobuf-2.5.0.tar.bz2
   - tar -xjf protobuf-2.5.0.tar.bz2
@@ -9,6 +12,7 @@ before_install:
   - make
   - sudo make install
   - cd ..
+
 install:
   - mvn package
   - mvn assembly:assembly

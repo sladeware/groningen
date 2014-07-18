@@ -145,7 +145,7 @@ message GroningenParams {
   optional int32 subject_manipulation_deadline_ms = 27 [default = 30000];
 
   // File that contains the last experiment.
-  optional string checkpoint_file = 28 [default = "" ];
+  optional string deprecated_field_a = 28 [default = "" ];
 
   // The maximum TTL in seconds for objects in the memory-sensitive caches.
   optional int32 default_in_memory_cache_ttl = 29 [default = 600000];

@@ -202,6 +202,9 @@ public class Hypothesizer extends ProfilingRunnable {
                 + "as the supplied population size. Please verify that correct population "
                 + "size has been set before starting Groningen.");
       }
+    } else {
+      logger.info("Hypothesizer could not load previous experiment from "
+          + "checkpoint; starting from scratch ...");
     }
 
     initializeSupportedGcModes();

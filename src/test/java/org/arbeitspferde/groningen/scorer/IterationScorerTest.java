@@ -93,7 +93,7 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
      * completely brittle. Set up to mock out the real stuff but don't bother checking
      */
     EasyMock.expect(mockSubjectGroup.getClusterName()).andReturn("xx").anyTimes();
-    EasyMock.expect(mockSubjectGroup.getSubjectGroupName()).andReturn("testjob").anyTimes();
+    EasyMock.expect(mockSubjectGroup.getName()).andReturn("testjob").anyTimes();
     EasyMock.expect(mockSubjectGroup.getUserName()).andReturn("testuser").anyTimes();
 
     /* 
@@ -103,17 +103,17 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
      */
     EasyMock.expect(mockSubjectA.getAssociatedSubject()).andReturn(mockSubjectAAssociatedSubject)
         .anyTimes();
-    EasyMock.expect(mockSubjectAAssociatedSubject.getSubjectGroup())
+    EasyMock.expect(mockSubjectAAssociatedSubject.getGroup())
         .andReturn(mockSubjectGroup).anyTimes();
-    EasyMock.expect(mockSubjectAAssociatedSubject.getSubjectIndex())
+    EasyMock.expect(mockSubjectAAssociatedSubject.getIndex())
         .andReturn(subjectAIndex).anyTimes();
     EasyMock.expect(mockSubjectAAssociatedSubject.isDefault())
         .andReturn(false).anyTimes();
     EasyMock.expect(mockSubjectB.getAssociatedSubject()).andReturn(mockSubjectBAssociatedSubject)
         .anyTimes();
-    EasyMock.expect(mockSubjectBAssociatedSubject.getSubjectGroup())
+    EasyMock.expect(mockSubjectBAssociatedSubject.getGroup())
         .andReturn(mockSubjectGroup).anyTimes();
-    EasyMock.expect(mockSubjectBAssociatedSubject.getSubjectIndex())
+    EasyMock.expect(mockSubjectBAssociatedSubject.getIndex())
         .andReturn(subjectBIndex).anyTimes();
     EasyMock.expect(mockSubjectBAssociatedSubject.isDefault())
         .andReturn(false).anyTimes();

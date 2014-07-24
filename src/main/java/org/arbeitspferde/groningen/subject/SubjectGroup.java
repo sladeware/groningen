@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.subject;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
@@ -39,17 +40,17 @@ public class SubjectGroup {
       GroningenParams.getDefaultInstance().getSubjectManipulationDeadlineMs();
 
   private final String clusterName;
-  private final String subjectGroupName;
+  private final String name;
   private final String userName;
   private final SubjectGroupConfig config;
   private final List<Subject> subjects;
   private final ServingAddressGenerator servingAddressbuilder;
 
-  public SubjectGroup(final String clusterName, final String subjectGroupName,
+  public SubjectGroup(final String clusterName, final String name,
       final String userName, final SubjectGroupConfig groupConfig,
       final ServingAddressGenerator servingAddressBuilder) {
     this.clusterName = clusterName;
-    this.subjectGroupName = subjectGroupName;
+    this.name = name;
     this.userName = userName;
     this.config = groupConfig;
     this.subjects = Lists.newArrayList();
@@ -110,41 +111,21 @@ public class SubjectGroup {
     return clusterName;
   }
 
-  public String getSubjectGroupName() {
-    return subjectGroupName;
+  public String getName() {
+    return name;
   }
 
   public String getUserName() {
     return userName;
   }
 
-  /** Get a concatenated list of subjects indices
-   *
-   * Returns a comma separated string of subject numbers under our control or an empty string if
-   * there are none.
-   */
-  public String getSubjectIndicesConcated() {
-    if (getSubjectCount() == 0) {
-      return "";
-    }
-
-    String subjectIndices = null;
-    for (Subject subject : subjects) {
-      subjectIndices = commaJoiner.skipNulls().join(subjectIndices,
-          Integer.toString(subject.getSubjectIndex()));
-    }
-
-    return subjectIndices;
-  }
-
-  /** Get the number of subjects in the subject group we are allowed to control */
-  public int getSubjectCount() {
-    return subjects.size();
-  }
-
   @Override
   public String toString() {
-    return String.format("[Subject Group %s/%s in %s]", subjectGroupName, userName, clusterName);
+    return Objects.toStringHelper(SubjectGroup.class)
+        .add("name", name)
+        .add("userName", userName)
+        .add("clusterName", clusterName)
+        .toString();
   }
 
   public SubjectGroupConfig getSubjectGroupConfig() {

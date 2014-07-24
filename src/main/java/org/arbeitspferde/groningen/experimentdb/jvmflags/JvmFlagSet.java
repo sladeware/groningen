@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -42,9 +43,8 @@ public class JvmFlagSet {
    * Non-instantiatiable; please use {@link Builder}.
    */
   private JvmFlagSet(final Map<JvmFlag, Long> values) {
-    Preconditions.checkNotNull(values, "values may not be null.");
-
-    this.finalValues = values;
+    finalValues = new TreeMap<JvmFlag, Long>(Preconditions.checkNotNull(
+        values, "values may not be null."));
   }
 
   /**
@@ -63,22 +63,9 @@ public class JvmFlagSet {
 
   @Override
   public String toString() {
-    final StringBuilder emission = new StringBuilder();
-
-    emission.append("<JvmFlagSet");
-
-    final List<JvmFlag> keys = Lists.newArrayList(finalValues.keySet());
-    Collections.sort(keys);
-
-    for (final JvmFlag flag : keys) {
-      emission.append("\n\t");
-      emission.append(flag);
-      emission.append("=");
-      emission.append(finalValues.get(flag));
-    }
-    emission.append(">");
-
-    return emission.toString();
+    return Objects.toStringHelper(JvmFlagSet.class)
+        .addValue(finalValues)
+        .toString();
   }
 
   /**

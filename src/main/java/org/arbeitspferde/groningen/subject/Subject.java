@@ -15,6 +15,7 @@
 
 package org.arbeitspferde.groningen.subject;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -24,10 +25,10 @@ import com.google.common.base.Strings;
 public class Subject {
 
   /** The {@link SubjectGroup} that this is part of */
-  private final SubjectGroup subjectGroup;
+  private final SubjectGroup group;
 
   /** The population (i.e., {@link SubjectGroup}) identification index of the {@link Subject}. */
-  private final int subjectIndex;
+  private final int index;
 
   /** Indicates whether or not this is a default subject. */
   private final boolean isDefault;
@@ -40,28 +41,31 @@ public class Subject {
 
   private final String servingAddress;
 
-  public Subject(final SubjectGroup group, final String expSettingsFile, final int subjectIndex,
+  public Subject(final SubjectGroup group, final String expSettingsFile, final int index,
       final ServingAddressGenerator servingAddressBuilder) {
-    this(group, expSettingsFile, subjectIndex, servingAddressBuilder, false);
+    this(group, expSettingsFile, index, servingAddressBuilder, false);
   }
 
-  public Subject(final SubjectGroup group, final String expSettingsFile, final int subjectIndex,
+  public Subject(final SubjectGroup group, final String expSettingsFile, final int index,
       final ServingAddressGenerator servingAddressBuilder, boolean isDefault) {
     Preconditions.checkNotNull(group);
-    Preconditions.checkArgument(subjectIndex >= 0, "Subject index must be non-negative");
+    Preconditions.checkArgument(index >= 0, "Subject index must be non-negative");
     Preconditions.checkArgument(!Strings.isNullOrEmpty(expSettingsFile),
         "experiment settings file path cannot be null or empty");
 
-    this.subjectGroup = group;
-    this.subjectIndex = subjectIndex;
+    this.group = group;
+    this.index = index;
     this.expSettingsFile = expSettingsFile;
-    this.servingAddress = servingAddressBuilder.addressFor(group, subjectIndex);
+    this.servingAddress = servingAddressBuilder.addressFor(group, index);
     this.isDefault = isDefault;
   }
 
   @Override
   public String toString() {
-    return String.format("[Subject index %s of group %s]", subjectIndex, subjectGroup);
+    return Objects.toStringHelper(Subject.class)
+        .add("index", index)
+        .add("group", group)
+        .toString();
   }
 
   public String getServingAddress() {
@@ -76,20 +80,20 @@ public class Subject {
     return expSettingsFile;
   }
 
-  public int getSubjectIndex() {
-    return subjectIndex;
+  public int getIndex() {
+    return index;
   }
 
   /**
    * @return The subject group this subject belongs to.
    */
-  public SubjectGroup getSubjectGroup() {
-    return subjectGroup;
+  public SubjectGroup getGroup() {
+    return group;
   }
 
   /** Returns the number of seconds a subject is permitted to fail health checking. */
   public long getWarmupTimeout() {
-    return subjectGroup.getSubjectGroupConfig().getSubjectWarmupTimeout();
+    return group.getSubjectGroupConfig().getSubjectWarmupTimeout();
   }
 
   public boolean isDefault() {

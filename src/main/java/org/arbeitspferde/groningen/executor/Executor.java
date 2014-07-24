@@ -48,6 +48,7 @@ import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.PermanentFailure;
 import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -704,16 +705,16 @@ public class Executor extends ProfilingRunnable {
       final long end = endTime.get();
 
       if (start == end) {
-        return "Experiment didn't start yet, still preprocessing.";
+        return "Experiment didn't start yet.  Still preprocessing ...";
       }
       if (start > end) {
-        return "Experiment is done, currently postprocessing.";
+        return "Experiment is done.  Currently postprocessing ...";
       }
 
       final Period p = new Period(start, end);
 
-      return String.format("Approximately %s days, %s hours and %s minutes remain.",
-          p.getDays(), p.getHours(), p.getMinutes());
+      return String.format("Experiment running.  Approximately %s remains.",
+          PeriodFormat.getDefault().print(p));
     }
   }
 

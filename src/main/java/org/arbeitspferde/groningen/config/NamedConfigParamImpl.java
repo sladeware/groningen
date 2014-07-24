@@ -15,6 +15,8 @@
 
 package org.arbeitspferde.groningen.config;
 
+import com.google.common.base.Objects;
+
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
@@ -55,7 +57,9 @@ public class NamedConfigParamImpl implements NamedConfigParam, Serializable {
 
   @Override
   public String toString() {
-    return "@" + NamedConfigParam.class.getName() + "(value=" + value + ")";
+    return Objects.toStringHelper(NamedConfigParamImpl.class)
+        .add("value", value)
+        .toString();
   }
 
   @Override

@@ -58,10 +58,10 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
     setTimeStamp(this.clock.now());
     
     if (bridge.getAssociatedSubject() != null) {
-      setClusterName(bridge.getAssociatedSubject().getSubjectGroup().getClusterName());
-      setSubjectGroupName(bridge.getAssociatedSubject().getSubjectGroup().getSubjectGroupName());
-      setUserName(bridge.getAssociatedSubject().getSubjectGroup().getUserName());
-      setSubjectGroupIndex(bridge.getAssociatedSubject().getSubjectIndex());
+      setClusterName(bridge.getAssociatedSubject().getGroup().getClusterName());
+      setSubjectGroupName(bridge.getAssociatedSubject().getGroup().getName());
+      setUserName(bridge.getAssociatedSubject().getGroup().getUserName());
+      setSubjectGroupIndex(bridge.getAssociatedSubject().getIndex());
       setDefault(bridge.getAssociatedSubject().isDefault());
     }
   }

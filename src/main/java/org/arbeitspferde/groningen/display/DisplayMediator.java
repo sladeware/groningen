@@ -33,7 +33,6 @@ import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -233,7 +232,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
             continue;
           }
           clusters.add(
-              individual.getBridge().getAssociatedSubject().getSubjectGroup().getClusterName());
+              individual.getBridge().getAssociatedSubject().getGroup().getClusterName());
         }
       }
       toDisplay = commaJoiner.join(clusters);

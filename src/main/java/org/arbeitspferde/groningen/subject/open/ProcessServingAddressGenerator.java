@@ -83,12 +83,12 @@ public class ProcessServingAddressGenerator implements ServingAddressGenerator {
   public String addressFor(final SubjectGroup group, final int index) {
     List<Integer> processIds = null;
     try {
-      int processGroupId = Integer.parseInt(group.getSubjectGroupName());
+      int processGroupId = Integer.parseInt(group.getName());
       processIds = Process.getProcessIdsOf(processGroupId);
     } catch (NumberFormatException e) {
       throw new RuntimeException("Named process groups are not supported yet.");
     }
     return slashJoiner.join("/", group.getClusterName(), group.getUserName(),
-        group.getSubjectGroupName(), processIds.get(index).toString());
+        group.getName(), processIds.get(index).toString());
   }
 }

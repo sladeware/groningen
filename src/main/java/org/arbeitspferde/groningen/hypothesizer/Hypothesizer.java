@@ -371,7 +371,7 @@ public class Hypothesizer extends ProfilingRunnable {
           builder.withValue(JvmFlag.USE_PARALLEL_GC, 1L);
           break;
         case USE_PARALLEL_OLD_GC:
-          builder.withValue(JvmFlag.USE_PARALLEL_GC, 1L);
+          builder.withValue(JvmFlag.USE_PARALLEL_OLD_GC, 1L);
           break;
         case USE_SERIAL_GC:
           builder.withValue(JvmFlag.USE_SERIAL_GC, 1L);

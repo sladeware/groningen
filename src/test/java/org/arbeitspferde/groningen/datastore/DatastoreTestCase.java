@@ -32,7 +32,7 @@ import java.util.List;
  * particular Datastore, this class must be subclassed and createDatastore/destroyDatastore
  * methods must be implemented.
  */
-public abstract class DatastoreTestBase extends TestCase {
+public abstract class DatastoreTestCase extends TestCase {
   private Datastore dataStore;
 
   private PipelineState createValidPipelineState(PipelineId pipelineId, String inputLogName) 

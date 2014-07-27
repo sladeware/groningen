@@ -40,7 +40,7 @@ public class PauseTime extends BaseComputeScore {
 
   /** The list of pause time values for this subject */
   private final List<Double> pauseTimeDurations =
-      new Vector<Double>(EXPECTED_NUMBER_OF_PAUSETIME_EVENTS_PER_SUBJECT_PER_EXPERIMENT);
+      new Vector<>(EXPECTED_NUMBER_OF_PAUSETIME_EVENTS_PER_SUBJECT_PER_EXPERIMENT);
 
   /** The total Java GC pause time for this subject */
   private double pauseTimeDurationTotal;

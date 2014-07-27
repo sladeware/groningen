@@ -72,7 +72,7 @@ public class SimpleScope implements BlockScope {
         }
       };
 
-  private final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<Map<Key<?>, Object>>();
+  private final ThreadLocal<Map<Key<?>, Object>> values = new ThreadLocal<>();
 
   static Map<SimpleScope, SimpleScope.Memento> captureActiveSimpleScopes() {
     Map<SimpleScope, SimpleScope.Memento> simpleScopeMap = Maps.newHashMap();

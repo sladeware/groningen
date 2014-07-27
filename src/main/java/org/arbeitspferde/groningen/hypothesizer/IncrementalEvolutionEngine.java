@@ -51,7 +51,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class IncrementalEvolutionEngine<T> extends GenerationalEvolutionEngine<T> {
 
   private final Set<EvolutionObserver<T>> observers =
-      new CopyOnWriteArraySet<EvolutionObserver<T>>();
+      new CopyOnWriteArraySet<>();
 
   private final CandidateFactory<T> candidateFactory;
   private final EvolutionaryOperator<T> evolutionScheme;

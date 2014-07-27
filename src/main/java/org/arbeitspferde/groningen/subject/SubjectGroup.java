@@ -36,7 +36,7 @@ public class SubjectGroup {
 
   @Inject
   @NamedConfigParam("subject_manipulation_deadline_ms")
-  private int populationCensusCollectionDeadline =
+  private final int populationCensusCollectionDeadline =
       GroningenParams.getDefaultInstance().getSubjectManipulationDeadlineMs();
 
   private final String clusterName;

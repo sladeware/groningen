@@ -73,6 +73,7 @@ public class SafeProtoLogger<T extends GeneratedMessage> implements Flushable {
   @Override
   protected void finalize() throws Throwable {
     flush();
+    super.finalize();
   }
 
   @Override

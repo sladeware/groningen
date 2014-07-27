@@ -93,8 +93,8 @@ public class StubConfigManager implements ConfigManager {
   public static class StubConfig implements GroningenConfig {
 
     // Instance vars map to the getters in GroningenConfig
-    protected Map<String, ClusterConfig> clusterConfigs = Maps.newHashMap();
-    protected SearchSpaceBundle searchSpaceBundle = null;
+    protected final Map<String, ClusterConfig> clusterConfigs = Maps.newHashMap();
+    protected final SearchSpaceBundle searchSpaceBundle = null;
     protected GroningenParams paramBlock = null;
 
     /**
@@ -144,9 +144,9 @@ public class StubConfigManager implements ConfigManager {
    */
   public static class StubClusterConfig implements ClusterConfig {
     @Nullable
-    protected GroningenConfig parentConfig = null;
-    protected Map<String, SubjectGroupConfig> groupConfigs = Maps.newHashMap();
-    protected String name = null;
+    protected final GroningenConfig parentConfig = null;
+    protected final Map<String, SubjectGroupConfig> groupConfigs = Maps.newHashMap();
+    protected final String name = null;
 
     /**
      * @see GroningenConfig.ClusterConfig#getSubjectGroupConfig(String)
@@ -188,15 +188,15 @@ public class StubConfigManager implements ConfigManager {
    *
    */
   public static class StubGroupConfig implements SubjectGroupConfig {
-    protected ClusterConfig parentCluster = null;
-    protected String expSettingsFilesDir = null;
-    protected String name = null;
-    protected String user = null;
+    protected final ClusterConfig parentCluster = null;
+    protected final String expSettingsFilesDir = null;
+    protected final String name = null;
+    protected final String user = null;
     protected List<String> restartCommand = Lists.newArrayList();
-    protected List<SubjectConfig> specialSubjectConfigs = Lists.newArrayList();
-    protected int numberOfSubjects = 0;
-    protected int subjectWarmupTimeout = 0;
-    protected int numberOfDefaultSubjects = 0;
+    protected final List<SubjectConfig> specialSubjectConfigs = Lists.newArrayList();
+    protected final int numberOfSubjects = 0;
+    protected final int subjectWarmupTimeout = 0;
+    protected final int numberOfDefaultSubjects = 0;
 
     /**
      * @see SubjectGroupConfig#getName()
@@ -275,9 +275,9 @@ public class StubConfigManager implements ConfigManager {
    *
    */
   public static class StubSubjectConfig implements SubjectConfig {
-    protected SubjectGroupConfig parentGroup = null;
-    protected SearchSpaceBundle jvmSearchSpaceDefinition = null;
-    protected int subjectIndex = -1;
+    protected final SubjectGroupConfig parentGroup = null;
+    protected final SearchSpaceBundle jvmSearchSpaceDefinition = null;
+    protected final int subjectIndex = -1;
 
     /**
      * @see SubjectConfig#getJvmSearchSpaceDefinition()
@@ -320,7 +320,7 @@ public class StubConfigManager implements ConfigManager {
    */
   public static class StubSearchSpaceBundle implements SearchSpaceBundle {
 
-    protected SearchSpaceEntry[] searchSpaces = new SearchSpaceEntry[JvmFlag.values().length];
+    protected final SearchSpaceEntry[] searchSpaces = new SearchSpaceEntry[JvmFlag.values().length];
 
     /**
      * Retrieve a specific CommandLineArgument from the current searchSpaces

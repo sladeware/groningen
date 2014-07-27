@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 public class PipelineRestorer {
   private static final Logger log = Logger.getLogger(PipelineRestorer.class.getCanonicalName());
 
-  private Integer shardIndex;
-  private Datastore dataStore;
-  private PipelineManager pipelineManager;
-  private PipelineIdGenerator pipelineIdGenerator;
+  private final Integer shardIndex;
+  private final Datastore dataStore;
+  private final PipelineManager pipelineManager;
+  private final PipelineIdGenerator pipelineIdGenerator;
 
   @Inject
   public PipelineRestorer(@Named("shardIndex") Integer shardIndex, Datastore dataStore,
@@ -33,7 +33,7 @@ public class PipelineRestorer {
   }
 
   public void restorePipelines() {
-    List<PipelineId> currentShardIds = new ArrayList<PipelineId>();
+    List<PipelineId> currentShardIds = new ArrayList<>();
     List<PipelineId> allPipelinesIds;
     try {
       allPipelinesIds = dataStore.listPipelinesIds();

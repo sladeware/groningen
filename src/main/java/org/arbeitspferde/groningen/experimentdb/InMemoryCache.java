@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 abstract class InMemoryCache<T extends InMemoryCache.Value<T>> {
   @Inject
   @NamedConfigParam("default_in_memory_cache_ttl")
-  private int defaultInMemoryCacheTtl = 600000;
+  private final int defaultInMemoryCacheTtl = 600000;
 
   private final AtomicLong insertionCount = new AtomicLong(0);
   private final AtomicLong hitCount = new AtomicLong(0);

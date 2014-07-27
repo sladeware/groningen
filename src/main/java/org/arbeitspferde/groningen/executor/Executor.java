@@ -86,27 +86,27 @@ public class Executor extends ProfilingRunnable {
 
   @Inject
   @NamedConfigParam("executor_wait_for_one_subject_restart_ms")
-  private int executorWaitForOneSubjectRestartMs =
+  private final int executorWaitForOneSubjectRestartMs =
       GroningenParams.getDefaultInstance().getExecutorWaitForOneSubjectRestartMs();
 
   @Inject
   @NamedConfigParam("executor_sleep_btwn_polling_metrics_ms")
-  private int executorSleepBtwnPollingMetricsMs =
+  private final int executorSleepBtwnPollingMetricsMs =
       GroningenParams.getDefaultInstance().getExecutorSleepBtwnPollingMetricsMs();
 
   @Inject
   @NamedConfigParam("extractor_number_of_extractor_threads")
-  private int extractorNumberOfExtractorThreads =
+  private final int extractorNumberOfExtractorThreads =
       GroningenParams.getDefaultInstance().getExtractorNumberOfExtractorThreads();
 
   @Inject
   @NamedConfigParam("maximum_inflight_subject_restart_count")
-  private int subjectRestartRateLimit =
+  private final int subjectRestartRateLimit =
       GroningenParams.getDefaultInstance().getMaximumInflightSubjectRestartCount();
 
   @Inject
   @NamedConfigParam("duration")
-  private int experimentDuration =
+  private final int experimentDuration =
       GroningenParams.getDefaultInstance().getDuration();
 
   /** The Experiment Database */
@@ -131,19 +131,19 @@ public class Executor extends ProfilingRunnable {
   private Boolean steadyState = false;
 
   /** Counts the number of subjects removed from Experiments for exceptional reasons */
-  private AtomicLong removeSubjectFromExperimentCount = new AtomicLong(0);
+  private final AtomicLong removeSubjectFromExperimentCount = new AtomicLong(0);
 
   /** Counts the number of subjects missing associated UNIX processes */
-  private AtomicLong subjectMissingAssociatedProcess = new AtomicLong(0);
+  private final AtomicLong subjectMissingAssociatedProcess = new AtomicLong(0);
 
   /** Counts the number of successfully executed subjects */
-  private AtomicLong successfullyExecutedSubjects = new AtomicLong(0);
+  private final AtomicLong successfullyExecutedSubjects = new AtomicLong(0);
 
   /** Counts the number of times subjects have restarted across all experiments */
-  private AtomicLong restartedSubjectCount = new AtomicLong(0);
+  private final AtomicLong restartedSubjectCount = new AtomicLong(0);
 
   /** The current population size of actively running subjects in the experiment */
-  private AtomicLong currentPopulationSize = new AtomicLong(0);
+  private final AtomicLong currentPopulationSize = new AtomicLong(0);
 
   private Experiment lastExperiment = null;
 
@@ -151,11 +151,11 @@ public class Executor extends ProfilingRunnable {
   private long maxWarmup = 0;
 
   /** Stores current and end times of experiment */
-  private AtomicLong now = new AtomicLong();
-  private AtomicLong end = new AtomicLong();
+  private final AtomicLong now = new AtomicLong();
+  private final AtomicLong end = new AtomicLong();
 
   /** Stores the time left until end of current experiment */
-  private TimeLeft timeLeft = new TimeLeft(now, end);
+  private final TimeLeft timeLeft = new TimeLeft(now, end);
 
   @Inject
   public Executor(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
@@ -327,7 +327,7 @@ public class Executor extends ProfilingRunnable {
     String warning;
 
     if (commandLine != null) {
-      if (commandLine.indexOf("-XX:+PrintGCApplicationStoppedTime") < 0) {
+      if (!commandLine.contains("-XX:+PrintGCApplicationStoppedTime")) {
         warning = "Groningen requires that you set the JVM flag " +
             "-XX:+PrintGCApplicationStoppedTime on your experimental " +
             "subjects so that it can determine the subject's pause times";
@@ -691,8 +691,8 @@ public class Executor extends ProfilingRunnable {
 
   /** A class to handle storage and display of time left */
   private class TimeLeft {
-    private AtomicLong startTime;
-    private AtomicLong endTime;
+    private final AtomicLong startTime;
+    private final AtomicLong endTime;
 
     TimeLeft (AtomicLong startTime, AtomicLong endTime) {
       this.startTime = startTime;

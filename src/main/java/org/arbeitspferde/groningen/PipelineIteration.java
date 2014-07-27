@@ -19,7 +19,6 @@ import com.google.inject.Inject;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.executor.Executor;
-import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.generator.Generator;
 import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.scorer.IterationScorer;
@@ -28,7 +27,6 @@ import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.validator.Validator;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -58,7 +56,7 @@ public class PipelineIteration {
    *
    * TODO(team): fix when we have multiple pipelines
    **/
-  private static AtomicInteger currentPipelineStage = new AtomicInteger();
+  private static final AtomicInteger currentPipelineStage = new AtomicInteger();
 
   @Inject
   public PipelineIteration(final GroningenConfig config,

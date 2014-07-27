@@ -46,14 +46,14 @@ public class Process {
    * This class encapsulates process information.
    */
   public static class ProcessInfo {
-    private Integer processId;
-    private Integer processGroupId;
-    private long startTime;
-    private String commandLine;
+    private final Integer processId;
+    private final Integer processGroupId;
+    private final long startTime;
+    private final String commandLine;
 
     public ProcessInfo(int processId, int processGroupId, long startTime, String commandLine) {
-      this.processId = Integer.valueOf(processId);
-      this.processGroupId = Integer.valueOf(processGroupId);
+      this.processId = processId;
+      this.processGroupId = processGroupId;
       this.startTime = startTime;
       this.commandLine = commandLine;
     }

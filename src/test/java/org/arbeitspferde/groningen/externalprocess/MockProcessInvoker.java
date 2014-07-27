@@ -26,8 +26,8 @@ import java.util.Map;
 
 public class MockProcessInvoker implements ProcessInvoker {
 
-  public List<String> receivedCommands = new LinkedList<String>();
-  public Map<String, String> mockResponses = new HashMap<String, String>(10);
+  public final List<String> receivedCommands = new LinkedList<>();
+  public final Map<String, String> mockResponses = new HashMap<>(10);
 
   public ExternalProcess invoke(String[] cmdArgs) throws CommandExecutionException {
     receivedCommands.add(Joiner.on(' ').join(cmdArgs));

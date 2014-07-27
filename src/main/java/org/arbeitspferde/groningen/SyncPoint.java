@@ -17,7 +17,7 @@ public enum SyncPoint {
   SIGNAL_ITERATION_FINALIZATION(1 << 8);
 
   // allow ComposedSyncPoints access to the bit value of the SyncPoint
-  protected int value;
+  protected final int value;
   SyncPoint(int v) { value = v; }
 
   /**

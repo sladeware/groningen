@@ -58,7 +58,7 @@ public class StatisticsTest extends TestCase {
 
   /** Returns a 0.0 to ceil incremental ArrayList */
   private ArrayList<Double> makeIncrementalList(double ceil) {
-    ArrayList<Double> values = new ArrayList<Double>();
+    ArrayList<Double> values = new ArrayList<>();
     for (double i = 0.0; i < ceil; i += 1.0) {
       values.add(i);
     }

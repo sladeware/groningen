@@ -150,7 +150,7 @@ public class GroningenConfigParamsModuleTest extends TestCase {
   public void testCorrectlyInjectsDifferentValuesForDifferentThreads()
     throws InterruptedException {
 
-    final ArrayList<Exception> threadExceptions = new ArrayList<Exception>();
+    final ArrayList<Exception> threadExceptions = new ArrayList<>();
     final Thread thread1 = new Thread() {
       @Override
       public void run() {

@@ -87,7 +87,7 @@ public class SubjectShuffler {
 
   @Inject
   @NamedConfigParam("subject_group_number_of_shuffles")
-  private int shuffleCount = GroningenParams.getDefaultInstance().getSubjectGroupNumberOfShuffles();
+  private final int shuffleCount = GroningenParams.getDefaultInstance().getSubjectGroupNumberOfShuffles();
 
   /** The random number generator we are using */
   private final Random rng = new MersenneTwisterRNG();
@@ -124,9 +124,7 @@ public class SubjectShuffler {
             new SubjectGroup(clusterName, groupName, userName, groupConfig, servingAddressBuilder);
         try {
           subjects = subjectGroup.initialize(manipulator, subjects);
-        } catch (final TemporaryFailure e) {
-          throw new RuntimeException("Could not create a list of subjects.", e);
-        } catch (final PermanentFailure e) {
+        } catch (final PermanentFailure | TemporaryFailure  e) {
           throw new RuntimeException("Could not create a list of subjects.", e);
         }
       }

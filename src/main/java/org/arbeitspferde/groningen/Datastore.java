@@ -36,7 +36,7 @@ public interface Datastore {
    * Exception thrown when pipeline in question already exists.
    */
   class PipelineAlreadyExists extends DatastoreException {
-    private PipelineState existingPipeline;
+    private final PipelineState existingPipeline;
     
     public PipelineAlreadyExists(PipelineState existingPipeline) {
       this.existingPipeline = existingPipeline;
@@ -51,7 +51,7 @@ public interface Datastore {
    * Exception thrown when pipeline in question conflicts with already existing pipeline.
    */
   class PipelineConflictsWithRunningPipelines extends DatastoreException {
-    private List<PipelineState> conflictingPipelines;
+    private final List<PipelineState> conflictingPipelines;
     
     public PipelineConflictsWithRunningPipelines(List<PipelineState> conflictingPipelines) {
       this.conflictingPipelines = conflictingPipelines;

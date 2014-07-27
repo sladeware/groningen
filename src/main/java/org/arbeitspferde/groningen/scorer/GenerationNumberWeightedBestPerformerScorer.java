@@ -38,7 +38,8 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
 
   /** Stores the all-time unique and merged evaluated subjects with greatest to least ordering. */
   @VisibleForTesting
-  List<EvaluatedSubject> alltimeEvaluatedSubjects = new ArrayList<EvaluatedSubject>();
+  final
+  List<EvaluatedSubject> alltimeEvaluatedSubjects = new ArrayList<>();
 
   @Inject
   public GenerationNumberWeightedBestPerformerScorer(Clock clock) {
@@ -49,7 +50,7 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
   @Override
   public List<EvaluatedSubject> getBestPerformers() {
     synchronized (alltimeEvaluatedSubjects) {
-      return new ArrayList<EvaluatedSubject>(alltimeEvaluatedSubjects);
+      return new ArrayList<>(alltimeEvaluatedSubjects);
     }
   }
 
@@ -57,7 +58,7 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
   @Override
   public List<EvaluatedSubject> getBestPerformers(int maxEntries) {
     synchronized (alltimeEvaluatedSubjects) {
-      return new ArrayList<EvaluatedSubject>(alltimeEvaluatedSubjects.subList(0, maxEntries));
+      return new ArrayList<>(alltimeEvaluatedSubjects.subList(0, maxEntries));
     }
   }
 
@@ -71,11 +72,11 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
      * the generation.
      */
     Map<String, EvaluatedSubject> cleanedLastIterationList =
-        cleanRecentRun(new ArrayList<EvaluatedSubject>(newGeneration));
+        cleanRecentRun(new ArrayList<>(newGeneration));
 
     // Build the return value - the cleaned generation. Callee will own this copy.
     List<EvaluatedSubject> cleanedGenerationList =
-        new ArrayList<EvaluatedSubject>(cleanedLastIterationList.values());
+        new ArrayList<>(cleanedLastIterationList.values());
     Collections.sort(cleanedGenerationList, Collections.reverseOrder());
 
     /* Merge, detect and remove duplicates in the alltime list */
@@ -102,7 +103,7 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
   Map<String, EvaluatedSubject> cleanRecentRun(List<EvaluatedSubject> targetList) {
     Map<String, List<EvaluatedSubject>> uniqueSubjects = detectDuplicates(targetList);
 
-    Map<String, EvaluatedSubject> cleanedSubjectMap = new HashMap<String, EvaluatedSubject>();
+    Map<String, EvaluatedSubject> cleanedSubjectMap = new HashMap<>();
 
     for (Entry<String, List<EvaluatedSubject>> duplicateEntry : uniqueSubjects.entrySet()) {
       String commandLine = duplicateEntry.getKey();
@@ -141,7 +142,7 @@ public class GenerationNumberWeightedBestPerformerScorer implements HistoricalBe
 
     // Put all subjects in a HashMap
     HashMap<String, List<EvaluatedSubject>> uniqueSubjects =
-      new HashMap<String, List<EvaluatedSubject>>();
+      new HashMap<>();
 
     for (EvaluatedSubject evaluatedSubject : targetList) {
       // TODO(team): Fix Law of Demeter violations here.

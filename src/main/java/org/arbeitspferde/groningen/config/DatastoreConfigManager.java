@@ -13,8 +13,8 @@ import java.util.List;
  * {@link ConfigManager } implementation that gets configuration from {@link Datastore}.
  */
 public class DatastoreConfigManager implements ConfigManager {
-  private Datastore dataStore;
-  private PipelineId pipelineId;
+  private final Datastore dataStore;
+  private final PipelineId pipelineId;
 
   public DatastoreConfigManager(Datastore dataStore, PipelineId pipelineId) {
     this.dataStore = dataStore;

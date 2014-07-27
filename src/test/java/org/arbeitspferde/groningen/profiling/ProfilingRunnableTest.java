@@ -28,7 +28,7 @@ import org.arbeitspferde.groningen.utility.Clock;
  */
 public class ProfilingRunnableTest extends ClockedExperimentDbTestCaseBase {
   /** The test pipeline stage we are profiling */
-  private TestPipelineStage testPipelineState = new TestPipelineStage(clock, monitor);
+  private final TestPipelineStage testPipelineState = new TestPipelineStage(clock, monitor);
 
   public void testProfiledRun() {
     ConfigManager cm = new StubConfigManager();
@@ -36,8 +36,8 @@ public class ProfilingRunnableTest extends ClockedExperimentDbTestCaseBase {
     testPipelineState.profiledRun(config);
 
     for (Profile profile : testPipelineState.getProfiles()) {
-      assertEquals(profile.getStart(), DEFAULT_TIME_MS);
-      assertEquals(profile.getEnd(), DEFAULT_TIME_MS + INCREMENT_MS);
+      assertEquals(profile.getStart().getMillis(), DEFAULT_TIME_MS);
+      assertEquals(profile.getEnd().getMillis(), DEFAULT_TIME_MS + INCREMENT_MS);
     }
   }
 

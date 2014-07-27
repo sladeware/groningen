@@ -27,7 +27,7 @@ import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
  */
 public class GenericSearchSpaceBundle implements SearchSpaceBundle {
 
-  protected GenericSearchSpaceEntry[] entries =
+  protected final GenericSearchSpaceEntry[] entries =
       new GenericSearchSpaceEntry[JvmFlag.values().length];
 
   /**

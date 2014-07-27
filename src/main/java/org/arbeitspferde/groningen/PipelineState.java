@@ -180,7 +180,7 @@ public class PipelineState {
 
     ProgramConfiguration configurationProto = config.getProtoConfig();
 
-    List<ExperimentDbProtos.Subject> subjectProtos = new ArrayList<ExperimentDbProtos.Subject>();
+    List<ExperimentDbProtos.Subject> subjectProtos = new ArrayList<>();
     Experiment lastExperiment = experimentDb.getLastExperiment();
 
     if (lastExperiment != null) {

@@ -256,7 +256,7 @@ public class CommandLine {
    * @throws IllegalArgumentException
    */
   public String toArgumentString() throws IllegalArgumentException {
-    final Builder<String> argumentsBuilder = ImmutableList.<String>builder();
+    final Builder<String> argumentsBuilder = ImmutableList.builder();
 
     // HEAP SIZING PARAMETERS
     // Since collections occur when generations fill up, throughput is inversely proportional to the

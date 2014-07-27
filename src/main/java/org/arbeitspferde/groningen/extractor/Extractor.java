@@ -25,7 +25,6 @@ import org.arbeitspferde.groningen.utility.MetricExporter;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
@@ -152,7 +151,7 @@ public class Extractor implements Runnable {
               double pauseTimeSecs;
 
               try {
-                pauseTimeSecs = Double.valueOf(token.trim()).doubleValue();
+                pauseTimeSecs = Double.valueOf(token.trim());
               } catch (final Exception e) {
                 log.log(Level.WARNING,
                     String.format("Unable to parse pause time '%s'. Defaulting to 0.0", token), e);

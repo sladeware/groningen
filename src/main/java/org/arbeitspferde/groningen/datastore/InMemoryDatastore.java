@@ -34,7 +34,7 @@ public class InMemoryDatastore implements Datastore {
   public synchronized List<PipelineState> getPipelines(List<PipelineId> ids) {
     log.fine(String.format("get pipelines %s", Joiner.on(",").join(ids)));
     
-    List<PipelineState> states = new ArrayList<PipelineState>();
+    List<PipelineState> states = new ArrayList<>();
     for (PipelineId id : ids) {
       states.add(data.get(id));
     }
@@ -64,7 +64,7 @@ public class InMemoryDatastore implements Datastore {
 
   @Override
   public synchronized void writePipelines(List<PipelineState> pipelinesStates) {
-    List<PipelineId> ids = new ArrayList<PipelineId>();
+    List<PipelineId> ids = new ArrayList<>();
     for (PipelineState state : pipelinesStates) {
       ids.add(state.pipelineId());
     }

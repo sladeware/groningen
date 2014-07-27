@@ -27,7 +27,6 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -134,11 +133,11 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
     EvaluatedSubject evaledSubject2Pass2 = new EvaluatedSubject(clock, subject2, 24.0, 2);
     EvaluatedSubject evaledSubjectReturnPass1 = new EvaluatedSubject(clock, subject1, 21.0, 1);
 
-    Capture<List<EvaluatedSubject>> captureGenList1 = new Capture<List<EvaluatedSubject>>();
-    Capture<List<EvaluatedSubject>> captureGenList2 = new Capture<List<EvaluatedSubject>>();
-    List<EvaluatedSubject> addGenReturnListPass1 = new ArrayList<EvaluatedSubject>();
+    Capture<List<EvaluatedSubject>> captureGenList1 = new Capture<>();
+    Capture<List<EvaluatedSubject>> captureGenList2 = new Capture<>();
+    List<EvaluatedSubject> addGenReturnListPass1 = new ArrayList<>();
     addGenReturnListPass1.add(evaledSubjectReturnPass1);
-    List<EvaluatedSubject> addGenReturnListPass2 = new ArrayList<EvaluatedSubject>();
+    List<EvaluatedSubject> addGenReturnListPass2 = new ArrayList<>();
     addGenReturnListPass2.add(evaledSubject2Pass2);
     addGenReturnListPass2.add(evaledSubject1Pass2);
     EasyMock.expect(
@@ -167,8 +166,8 @@ public class DisplayMediatorTest extends ClockedExperimentDbTestCaseBase {
 
   /* Invoke processGeneration without adding individuals */
   public void testEmptyProcessGeneration() {
-    Capture<List<EvaluatedSubject>> captureGenList = new Capture<List<EvaluatedSubject>>();
-    List<EvaluatedSubject> emptySubjectList = new ArrayList<EvaluatedSubject>();
+    Capture<List<EvaluatedSubject>> captureGenList = new Capture<>();
+    List<EvaluatedSubject> emptySubjectList = new ArrayList<>();
     EasyMock.expect(
         mockBestPerformerScorer.addGeneration(EasyMock.capture(captureGenList)))
         .andReturn(emptySubjectList);

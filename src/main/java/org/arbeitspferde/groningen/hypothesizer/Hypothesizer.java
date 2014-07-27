@@ -99,7 +99,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
   private GroningenConfig config;
 
-  private List<JvmFlag> supportedGcModes = Lists.newArrayList();
+  private final List<JvmFlag> supportedGcModes = Lists.newArrayList();
 
   /**
    * population size is fixed once we instantiate the ga engine so it makes
@@ -110,7 +110,7 @@ public class Hypothesizer extends ProfilingRunnable {
   private final AtomicLong populationSize = new AtomicLong();
 
   /** Track the total fitness score for all members of the last generation */
-  private AtomicDouble totalFitnessScore = new AtomicDouble(0.0);
+  private final AtomicDouble totalFitnessScore = new AtomicDouble(0.0);
 
   private IncrementalEvolutionEngine<List<Integer>> gaEngine;
 
@@ -247,7 +247,7 @@ public class Hypothesizer extends ProfilingRunnable {
       new IntegerListMutator(new Probability(config.getParamBlock().getMutationProb())));
 
     // Add the operators to the pipeline.
-    EvolutionaryOperator<List<Integer>> pipeline = new EvolutionPipeline<List<Integer>>(operators);
+    EvolutionaryOperator<List<Integer>> pipeline = new EvolutionPipeline<>(operators);
 
     // Set up the fitness evaluator.
     FitnessEvaluator<List<Integer>> evaluator =
@@ -265,7 +265,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
     // Create an evolution engine with the above parameters.
     gaEngine =
-        new IncrementalEvolutionEngine<List<Integer>>(candidateFactory, pipeline, evaluator,
+        new IncrementalEvolutionEngine<>(candidateFactory, pipeline, evaluator,
             new TournamentSelection(new Probability(0.75)), new MersenneTwisterRNG(),
             (int) populationSize.get(), config.getParamBlock().getEliteCount(), condition);
 
@@ -588,7 +588,7 @@ public class Hypothesizer extends ProfilingRunnable {
     private final NumberGenerator<Probability> probability;
 
     IntegerListMutator(Probability mutationProbability) {
-      probability = new ConstantGenerator<Probability>(mutationProbability);
+      probability = new ConstantGenerator<>(mutationProbability);
     }
 
     @Override

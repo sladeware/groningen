@@ -57,7 +57,7 @@ public class PipelineManagerTest extends TestCase {
     dataStoreMock = EasyMock.createNiceMock(Datastore.class);
     pipelineIdGeneratorMock = EasyMock.createNiceMock(PipelineIdGenerator.class);
     pipelineScope = new SimpleScope();
-    pipelineSyncProviderMap = new HashMap<PipelineSynchMode, Provider<PipelineSynchronizer>>();
+    pipelineSyncProviderMap = new HashMap<>();
     defaultPipelineSynchronizer = new EmptyPipelineSynchronizer();
     bestPerformerScorer = EasyMock.createNiceMock(HistoricalBestPerformerScorer.class);
 

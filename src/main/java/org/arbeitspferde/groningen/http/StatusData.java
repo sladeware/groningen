@@ -21,10 +21,10 @@ package org.arbeitspferde.groningen.http;
 public class StatusData {
 
   // What kind of status it is
-  public String description;
+  public final String description;
 
   // Actual value for the status.
-  public String value;
+  public final String value;
 
   public StatusData(String description, String value) {
     this.description = description;

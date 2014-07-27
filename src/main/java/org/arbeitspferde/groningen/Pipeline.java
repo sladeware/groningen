@@ -63,7 +63,7 @@ public class Pipeline {
 
   @Inject
   @NamedConfigParam("subjects_to_display")
-  private Provider<Integer> subjectsToDisplay = new Provider<Integer>() {
+  private final Provider<Integer> subjectsToDisplay = new Provider<Integer>() {
     @Override
     public Integer get() {
       return GroningenParams.getDefaultInstance().getSubjectsToDisplay();
@@ -101,11 +101,11 @@ public class Pipeline {
   private final PipelineSynchronizer pipelineSynchronizer;
 
   /** Counts the number of pipeline iterations */
-  private AtomicLong pipelineIterationCount = new AtomicLong(1);
+  private final AtomicLong pipelineIterationCount = new AtomicLong(1);
 
   private PipelineIteration currentIteration;
 
-  private AtomicBoolean isKilled;
+  private final AtomicBoolean isKilled;
 
   private GroningenConfig currentIterationConfig = null;
 
@@ -196,7 +196,7 @@ public class Pipeline {
   
   public PipelineHistoryState historyState() {
     List<EvaluatedSubject> evaluatedSubjects =
-        new ArrayList<EvaluatedSubject>();
+        new ArrayList<>();
     for (SubjectStateBridge ssb : experimentDb.getLastExperiment().getSubjects()) {
       evaluatedSubjects.add(new EvaluatedSubject(clock, ssb, FitnessScore.compute(ssb,
           configManager.queryConfig()), experimentDb.getExperimentId()));

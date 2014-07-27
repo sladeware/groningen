@@ -106,7 +106,7 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   private boolean removed = false;
 
   /** Command-line strings for this subject */
-  private List<String> commandLineStrings = Lists.newArrayListWithExpectedSize(10);
+  private final List<String> commandLineStrings = Lists.newArrayListWithExpectedSize(10);
 
   /**
    * Creates an instance of this class with the given subject id

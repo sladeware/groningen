@@ -46,7 +46,7 @@ public class CmdProcessInvoker implements ProcessInvoker {
 
   @Inject
   @NamedConfigParam("additional_exec_paths")
-  private String additionalExecPaths =
+  private final String additionalExecPaths =
       GroningenParams.getDefaultInstance().getAdditionalExecPaths();
   
   @Inject
@@ -69,7 +69,7 @@ public class CmdProcessInvoker implements ProcessInvoker {
   }
 
   private class CmdProcess implements ExternalProcess {
-    private Process process;
+    private final Process process;
     private Integer exitValue = null;
 
     public CmdProcess(Process process) {

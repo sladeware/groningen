@@ -100,7 +100,7 @@ public class SafeProtoLoggerFactory {
         });
 
     final SafeProtoLogger<Event.EventEntry> logger =
-        new SafeProtoLogger<Event.EventEntry>(stream, loggerName);
+        new SafeProtoLogger<>(stream, loggerName);
 
     yieldTimer(flushIntervalSeconds, loggerName, logger);
 

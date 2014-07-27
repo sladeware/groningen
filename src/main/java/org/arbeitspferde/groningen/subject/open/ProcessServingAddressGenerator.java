@@ -34,10 +34,10 @@ public class ProcessServingAddressGenerator implements ServingAddressGenerator {
   private static final Joiner slashJoiner = Joiner.on("/");
 
   public static final class ProcessServingAddressInfo {
-    private String processClusterName;
-    private String processUserName;
-    private String processGroupName;
-    private Integer processId;
+    private final String processClusterName;
+    private final String processUserName;
+    private final String processGroupName;
+    private final Integer processId;
 
     public ProcessServingAddressInfo(String processClusterName, String processUserName,
         String processGroupName, int processId) {

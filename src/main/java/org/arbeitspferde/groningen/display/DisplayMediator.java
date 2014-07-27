@@ -67,7 +67,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   /** Provides back links from monitored objects to their {@link DisplayableObject}
    * wrapper so we can remove an object */
   private final Hashtable<Object, DisplayableObject> objectToDisplayable =
-    new Hashtable<Object, DisplayableObject>();
+    new Hashtable<>();
 
   /** The separator for printing the monitored objects */
   String separator = "";
@@ -93,7 +93,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
    * steps that should be atomic) so the list itself does not need internal locking.
    */
   @VisibleForTesting final List<EvaluatedSubject> currentEvaluatedSubjects =
-      new ArrayList<EvaluatedSubject>();
+      new ArrayList<>();
 
   /** stores a list of warnings for display to the user */
   @VisibleForTesting final List<String> warnings =

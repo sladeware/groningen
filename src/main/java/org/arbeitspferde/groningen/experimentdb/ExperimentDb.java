@@ -59,13 +59,13 @@ public class ExperimentDb {
 
   /** Experiments of this run */
   private Experiment lastExperiment; 
-  private Map<Long, SubjectStateBridge> subjects = new HashMap<Long, SubjectStateBridge>();
+  private Map<Long, SubjectStateBridge> subjects = new HashMap<>();
 
   public void reset(ExperimentDb anotherDb) {
     localSubjectId = anotherDb.localSubjectId;
     currentExperimentId = anotherDb.currentExperimentId;
     lastExperiment = anotherDb.lastExperiment;
-    subjects = new HashMap<Long, SubjectStateBridge>(anotherDb.subjects);
+    subjects = new HashMap<>(anotherDb.subjects);
   }
 
   /** Returns a string serializing and displaying list elements for humans. */

@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Base class for {@link HistoryDatastore} implementations tests.
  */
-public abstract class HistoryDatastoreTestBase extends TestCase {
+public abstract class HistoryDatastoreTestCase extends TestCase {
   HistoryDatastore historyDatastore;
   
   private PipelineHistoryState createValidHistoryPipelineState(PipelineId pipelineId,
@@ -53,7 +53,7 @@ public abstract class HistoryDatastoreTestBase extends TestCase {
         .build());
     ExperimentDb experimentDb = new ExperimentDb();
 
-    List<EvaluatedSubject> evaluatedSubjects = new ArrayList<EvaluatedSubject>();
+    List<EvaluatedSubject> evaluatedSubjects = new ArrayList<>();
     for (int i = 0; i < jvmFlagSets.length; ++i) {
       SubjectStateBridge ssb = experimentDb.makeSubject();
       ssb.storeCommandLine(jvmFlagSets[i]);

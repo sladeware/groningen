@@ -41,6 +41,7 @@ import org.arbeitspferde.groningen.hypothesizer.Hypothesizer;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
@@ -79,13 +80,13 @@ public class Pipeline {
   private final Provider<SubjectShuffler> shuffler;
 
   private final Hypothesizer hypothesizer;
-  
+
   private final ExperimentDb experimentDb;
-  
+
   private final Datastore datastore;
 
   private final HistoryDatastore historyDatastore;
-  
+
   private final Clock clock;
 
   private final ConfigManager configManager;
@@ -95,9 +96,9 @@ public class Pipeline {
   private final Provider<PipelineIteration> pipelineIterationProvider;
 
   private final PipelineStageDisplayer pipelineStageDisplayer;
-  
+
   private final Thread pipelineThread;
-  
+
   private final PipelineSynchronizer pipelineSynchronizer;
 
   /** Counts the number of pipeline iterations */
@@ -110,7 +111,7 @@ public class Pipeline {
   private GroningenConfig currentIterationConfig = null;
 
   private final PipelineStageInfo pipelineStageInfo;
-  
+
   private static class PipelineStageDisplayer {
     private PipelineIteration currentIteration;
     private final String[] stages = {"Hypothesizer", "Generator", "Executor", "Validator"};
@@ -182,18 +183,18 @@ public class Pipeline {
   public void joinPipeline() throws InterruptedException {
     pipelineThread.join();
   }
-  
+
   public void restoreState(PipelineState state) {
     if (!pipelineId.equals(state.pipelineId())) {
       throw new RuntimeException("trying to assign state from another pipeline");
     }
     experimentDb.reset(state.experimentDb());
   }
-  
+
   public PipelineState state() {
     return new PipelineState(pipelineId, configManager.queryConfig(), experimentDb);
   }
-  
+
   public PipelineHistoryState historyState() {
     List<EvaluatedSubject> evaluatedSubjects =
         new ArrayList<>();
@@ -203,7 +204,7 @@ public class Pipeline {
     }
     return new PipelineHistoryState(pipelineId,
         configManager.queryConfig(),
-        Instant.now(), 
+        Instant.now(),
         evaluatedSubjects.toArray(new EvaluatedSubject[] {}),
         experimentDb.getExperimentId());
   }
@@ -247,7 +248,7 @@ public class Pipeline {
 
           pipelineStageDisplayer.setCurrentIteration(iteration);
           monitor.maxIndividuals(subjectsToDisplay.get());
-          
+
           pipelineStageInfo.incrementIterationAndSetState(PipelineStageState.ITERATION_START);
 
           if (firstIteration) {
@@ -268,24 +269,24 @@ public class Pipeline {
           }
 
           notCompleted = iteration.run();
-          
+
           pipelineStageInfo.set(PipelineStageState.ITERATION_FINALIZATION_INPROGRESS);
           try {
             datastore.writePipelines(Lists.newArrayList(state()));
           } catch (DatastoreException e) {
             log.severe("can't write pipeline into datastore: " + e.getMessage());
           }
-          
+
           try {
             historyDatastore.writeState(historyState());
           } catch (HistoryDatastoreException e) {
             log.severe(
                 "can't write pipeline history state into history datastore: " + e.getMessage());
-          }          
+          }
         } finally {
           pipelineIterationScope.exit();
         }
-        
+
         pipelineSynchronizer.finalizeCompleteHook();
 
       } while (notCompleted  && !isKilled.get());

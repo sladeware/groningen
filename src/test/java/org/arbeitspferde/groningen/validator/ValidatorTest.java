@@ -28,6 +28,7 @@ import org.arbeitspferde.groningen.experimentdb.SubjectRestart;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.subject.Subject;
+
 import org.easymock.EasyMock;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     super.setUp();
 
     experimentDb = EasyMock.createMock(ExperimentDb.class);
-    
+
     mockGroningenConfig = EasyMock.createMock(GroningenConfig.class);
 
     validator = new Validator(clock, monitor, experimentDb, mockGroningenConfig, metricExporter);
@@ -74,7 +75,7 @@ public class ValidatorTest extends ClockedExperimentDbTestCaseBase {
     final CommandLine mockSubjectBCommandLine = EasyMock.createMock(CommandLine.class);
     final Subject mockSubjectAAssociatedSubject = EasyMock.createMock(Subject.class);
     final Subject mockSubjectBAssociatedSubject = EasyMock.createMock(Subject.class);
-   
+
     final ProgramConfiguration programConfiguration =
         ProgramConfiguration.newBuilder().buildPartial();
 

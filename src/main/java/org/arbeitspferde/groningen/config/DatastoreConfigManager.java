@@ -37,7 +37,7 @@ public class DatastoreConfigManager implements ConfigManager {
     } catch (DatastoreException e) {
       throw new RuntimeException(e);
     }
-    
+
     if (states.isEmpty()) {
       throw new RuntimeException("No state found.");
     } else {

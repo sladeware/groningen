@@ -23,7 +23,7 @@ public class InMemoryDatastore implements Datastore {
   private static final Logger log = Logger.getLogger(InMemoryDatastore.class.getCanonicalName());
 
   private final Map<PipelineId, PipelineState> data = Maps.newHashMap();
-  
+
   @Override
   public synchronized List<PipelineId> listPipelinesIds() {
     log.fine("list pipeline ids");
@@ -33,7 +33,7 @@ public class InMemoryDatastore implements Datastore {
   @Override
   public synchronized List<PipelineState> getPipelines(List<PipelineId> ids) {
     log.fine(String.format("get pipelines %s", Joiner.on(",").join(ids)));
-    
+
     List<PipelineState> states = new ArrayList<>();
     for (PipelineId id : ids) {
       states.add(data.get(id));
@@ -42,15 +42,15 @@ public class InMemoryDatastore implements Datastore {
   }
 
   @Override
-  public synchronized void createPipeline(PipelineState pipelineState, boolean checkForConflicts) 
+  public synchronized void createPipeline(PipelineState pipelineState, boolean checkForConflicts)
       throws PipelineAlreadyExists, PipelineConflictsWithRunningPipelines {
     log.fine(String.format("createPipeline %s", pipelineState.pipelineId()));
-    
+
     PipelineState existingPipeline = data.get(pipelineState.pipelineId());
     if (existingPipeline != null) {
       throw new PipelineAlreadyExists(existingPipeline);
     }
-    
+
     if (checkForConflicts) {
       List<PipelineState> conflictingPipelines =
             findConflictingPipelines(pipelineState.config());
@@ -58,7 +58,7 @@ public class InMemoryDatastore implements Datastore {
         throw new PipelineConflictsWithRunningPipelines(conflictingPipelines);
       }
     }
-    
+
     writePipelines(Lists.newArrayList(pipelineState));
   }
 
@@ -69,7 +69,7 @@ public class InMemoryDatastore implements Datastore {
       ids.add(state.pipelineId());
     }
     log.fine(String.format("write pipelines %s", Joiner.on(",").join(ids)));
-    
+
     for (PipelineState state : pipelinesStates) {
       data.put(state.pipelineId(), state);
     }
@@ -78,7 +78,7 @@ public class InMemoryDatastore implements Datastore {
   @Override
   public synchronized void deletePipelines(List<PipelineId> ids) {
     log.fine(String.format("delete pipelines %s", Joiner.on(",").join(ids)));
-    
+
     for (PipelineId id : ids) {
       data.remove(id);
     }

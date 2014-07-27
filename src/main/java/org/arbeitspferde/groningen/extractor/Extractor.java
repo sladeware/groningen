@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.extractor;
 
 import com.google.common.base.Optional;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.subject.Subject;
@@ -24,6 +25,7 @@ import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 
 import javax.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;

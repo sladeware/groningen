@@ -19,6 +19,7 @@ package org.arbeitspferde.groningen.experimentdb;
 import org.arbeitspferde.groningen.common.ClockedExperimentDbTestCaseBase;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
+
 import org.easymock.EasyMock;
 
 /**
@@ -48,7 +49,7 @@ public class SubjectRestartTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expect(mockGroningenConfig.getParamBlock()).andReturn(mockParams).anyTimes();
     EasyMock.expect(mockParams.getRestart()).andReturn(TEST_RESTART_THRESHOLD).anyTimes();
     EasyMock.replay(mockGroningenConfig, mockParams);
-    
+
     SubjectRestart t2 = new SubjectRestart();
     t2.anotherRestart();
 

@@ -16,12 +16,14 @@
 package org.arbeitspferde.groningen;
 
 import com.google.common.hash.Hashing;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.utility.Clock;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
 

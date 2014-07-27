@@ -22,6 +22,7 @@ import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.experimentdb.Experiment;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
+
 import org.easymock.EasyMock;
 
 /**

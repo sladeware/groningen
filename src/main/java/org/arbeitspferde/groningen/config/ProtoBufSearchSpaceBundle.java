@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.config;
 
 import com.google.common.collect.Maps;
+
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;

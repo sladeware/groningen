@@ -1,13 +1,13 @@
 package org.arbeitspferde.groningen.scorer;
 
-import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 import org.arbeitspferde.groningen.utility.PinnedClock;
+
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;

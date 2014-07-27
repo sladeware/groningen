@@ -48,7 +48,7 @@ public class CmdProcessInvoker implements ProcessInvoker {
   @NamedConfigParam("additional_exec_paths")
   private final String additionalExecPaths =
       GroningenParams.getDefaultInstance().getAdditionalExecPaths();
-  
+
   @Inject
   public CmdProcessInvoker(final MetricExporter metricExporter,
       final VendorSecurityManager securityManager) {
@@ -112,7 +112,7 @@ public class CmdProcessInvoker implements ProcessInvoker {
           PathPermission.EXECUTE_FILESYSTEM_ENTITY, "/bin/bash", this.getClass());
       for (String p : additionalExecPaths.split(",")) {
         securityManager.applyPermissionToPathForClass(
-            PathPermission.EXECUTE_FILESYSTEM_ENTITY, p, this.getClass());        
+            PathPermission.EXECUTE_FILESYSTEM_ENTITY, p, this.getClass());
       }
       Process process = Runtime.getRuntime().exec(cmdArgs);
       return new CmdProcess(process);

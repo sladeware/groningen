@@ -3,13 +3,13 @@ package org.arbeitspferde.groningen.http;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A simple HTTP Servlet to serve static Groningen resources.

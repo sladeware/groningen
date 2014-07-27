@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 /**
  * A logger that records stats on the performance of a given subject.
- * 
+ *
  * Protocol buffer based logs are written to the supplied {@link EventLoggerService} for deeper
  * analysis and trending.
  */
@@ -54,14 +54,14 @@ public class SubjectEventProtoLogger implements SubjectEventLogger {
 
   /** The groningen server address (added to log events). */
   private final String groningenServingAddress;
-  
+
   /** The beginning time of this experiment iteration. */
   private final long startTime;
-  
+
   private final MetricExporter metricExporter;
-  
+
   @Inject
-  public SubjectEventProtoLogger(Clock clock, 
+  public SubjectEventProtoLogger(Clock clock,
       final EventLoggerService eventLoggerService,
       @Named("servingAddress") final String groningenServingAddress,
       @Named("startTime") final Long startTime, MetricExporter metricExporter) {
@@ -73,8 +73,8 @@ public class SubjectEventProtoLogger implements SubjectEventLogger {
   }
 
   /**
-   * 
-   * @see SubjectEventLogger#logSubjectInExperiment(GroningenConfig, Experiment, 
+   *
+   * @see SubjectEventLogger#logSubjectInExperiment(GroningenConfig, Experiment,
    *    SubjectStateBridge)
    */
   @Override
@@ -82,7 +82,7 @@ public class SubjectEventProtoLogger implements SubjectEventLogger {
       GroningenConfig config, Experiment experiment, SubjectStateBridge subject) {
     final SafeProtoLogger<EventEntry> safeProtoLogger = eventLoggerService.getLogger();
     Preconditions.checkNotNull(safeProtoLogger, "safeProtoLogger == null");
-    
+
     long experimentId = experiment.getIdOfObject();
     final Event.EventEntry event = composeEvent(config, experimentId, subject);
 
@@ -92,12 +92,12 @@ public class SubjectEventProtoLogger implements SubjectEventLogger {
       logger.log(Level.SEVERE, "Could not log event.", e);
     } catch (final IllegalArgumentException e) {
       logger.log(Level.SEVERE, "Error encoding the event emission.", e);
-    }    
+    }
   }
 
   /**
    * Compose an Event to be logged from a given @{SubjectStateBridge}.
-   *  
+   *
    *  @param config the active groningen config for this experiment iteration.
    *  @param experimentId the experiment iteration number.
    *  @param subject the subject for which to create the @{EventEntry}.
@@ -121,7 +121,7 @@ public class SubjectEventProtoLogger implements SubjectEventLogger {
     final String processServingAddress = subject.getAssociatedSubject().getServingAddress();
 
     // TODO(team): This is a gross, over-broad categorization.
-    
+
     final Event.EventEntry.Type result =
         subject.isInvalid() == Boolean.FALSE ? Event.EventEntry.Type.EXPERIMENT_END :
             Event.EventEntry.Type.UNEXPECTED_DEATH;

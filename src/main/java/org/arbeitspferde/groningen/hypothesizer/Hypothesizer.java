@@ -38,6 +38,7 @@ import org.arbeitspferde.groningen.profiling.ProfilingRunnable;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.MersenneTwisterRNG;
@@ -557,7 +558,7 @@ public class Hypothesizer extends ProfilingRunnable {
         throw new IllegalStateException(
             "subject returned marker for not evaluated. Subject: " + cmdlineStr);
       }
-      
+
       // TODO(team): Consider whether/how to handle updates to weights or scorer between
       //    iterations. Should scores for choosing best performers be different from gene
       //    choosing? The main concern here is user expectation on when the (very

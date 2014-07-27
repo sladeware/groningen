@@ -16,9 +16,10 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
+
+import junit.framework.TestCase;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;

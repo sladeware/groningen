@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.generator;
 
 import com.google.inject.Inject;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.ClusterConfig;
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
@@ -28,6 +29,7 @@ import org.arbeitspferde.groningen.subject.SubjectGroup;
 import org.arbeitspferde.groningen.subject.SubjectManipulator;
 import org.arbeitspferde.groningen.utility.PermanentFailure;
 import org.arbeitspferde.groningen.utility.TemporaryFailure;
+
 import org.uncommons.maths.random.MersenneTwisterRNG;
 
 import java.util.Collections;

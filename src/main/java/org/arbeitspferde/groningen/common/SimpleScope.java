@@ -15,6 +15,8 @@
 
 package org.arbeitspferde.groningen.common;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.common.base.Objects;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
@@ -23,10 +25,9 @@ import com.google.inject.OutOfScopeException;
 import com.google.inject.Provider;
 
 import javax.annotation.Nullable;
+
 import java.util.Map;
 import java.util.Map.Entry;
-
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * A simple implementation of {@link BlockScope}.

@@ -16,9 +16,11 @@
 package org.arbeitspferde.groningen.profiling;
 
 import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
 import org.arbeitspferde.groningen.utility.Clock;
+
 import org.joda.time.Instant;
 
 import java.util.List;

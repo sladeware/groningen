@@ -58,7 +58,7 @@ public class ExperimentDb {
   private long currentExperimentId = 0;
 
   /** Experiments of this run */
-  private Experiment lastExperiment; 
+  private Experiment lastExperiment;
   private Map<Long, SubjectStateBridge> subjects = new HashMap<>();
 
   public void reset(ExperimentDb anotherDb) {
@@ -104,17 +104,17 @@ public class ExperimentDb {
   public synchronized long getExperimentId() {
     return currentExperimentId;
   }
-  
+
   public SubjectStateBridge makeSubject() {
     return makeSubject(nextSubjectId());
   }
-  
+
   public SubjectStateBridge makeSubject(final long subjectId) {
     SubjectStateBridge bridge = new SubjectStateBridge(ExperimentDb.this, subjectId);
     subjects.put(subjectId, bridge);
     return bridge;
   }
-  
+
   public SubjectStateBridge lookupSubject(final long subjectId) {
     Preconditions.checkArgument(subjectId >= 0, "subjectId should be > 0");
     return subjects.get(subjectId);

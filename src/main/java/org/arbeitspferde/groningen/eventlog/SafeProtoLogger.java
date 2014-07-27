@@ -17,9 +17,11 @@ package org.arbeitspferde.groningen.eventlog;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.GeneratedMessage;
+
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 
 import javax.annotation.concurrent.ThreadSafe;
+
 import java.io.Flushable;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;

@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen;
 
 import com.google.inject.Provider;
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SimpleScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -25,6 +24,8 @@ import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams.PipelineSynchMode;
 import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 

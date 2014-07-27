@@ -17,9 +17,11 @@ package org.arbeitspferde.groningen.eventlog;
 
 
 import com.google.protobuf.Message;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 /**

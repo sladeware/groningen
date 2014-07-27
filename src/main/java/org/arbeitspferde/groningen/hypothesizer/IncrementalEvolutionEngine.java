@@ -18,8 +18,10 @@ package org.arbeitspferde.groningen.hypothesizer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.SystemClock;
+
 import org.uncommons.watchmaker.framework.CandidateFactory;
 import org.uncommons.watchmaker.framework.EvaluatedCandidate;
 import org.uncommons.watchmaker.framework.EvolutionUtils;

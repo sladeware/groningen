@@ -49,12 +49,12 @@ abstract class InMemoryCache<T extends InMemoryCache.Value<T>> {
   public void reset() {
     cache.invalidateAll();
   }
-  
+
   public void reset(InMemoryCache<T> anotherCache) {
     cache.invalidateAll();
     cache.putAll(anotherCache.cache.asMap());
   }
-  
+
   /**
    * Register an element in the cache (and return it unchanged).
    */

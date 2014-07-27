@@ -22,7 +22,7 @@ import com.google.inject.Key;
 import com.google.inject.OutOfScopeException;
 import com.google.inject.ProvisionException;
 import com.google.inject.name.Names;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;
@@ -30,6 +30,8 @@ import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.open.OpenModule;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
+
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.logging.Level;

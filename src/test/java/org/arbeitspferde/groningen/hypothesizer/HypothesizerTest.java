@@ -22,6 +22,7 @@ import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 

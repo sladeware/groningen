@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.subject.open;
 
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.subject.ServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.SubjectGroup;
 

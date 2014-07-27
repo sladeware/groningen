@@ -17,9 +17,11 @@ package org.arbeitspferde.groningen;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.eventlog.EventLoggerService;
 import org.arbeitspferde.groningen.open.OpenModule;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for {@link ServicesModule}.

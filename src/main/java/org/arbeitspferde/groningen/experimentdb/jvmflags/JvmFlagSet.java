@@ -226,4 +226,23 @@ public class JvmFlagSet {
   public static Builder builder() {
     return new Builder();
   }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final JvmFlagSet that = (JvmFlagSet) o;
+
+    return finalValues.equals(that.finalValues);
+  }
+
+  @Override
+  public int hashCode() {
+    return finalValues.hashCode();
+  }
 }

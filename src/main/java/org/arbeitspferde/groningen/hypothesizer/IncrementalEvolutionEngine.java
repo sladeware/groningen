@@ -237,21 +237,9 @@ public class IncrementalEvolutionEngine<T> extends GenerationalEvolutionEngine<T
    * timely manner to avoid holding up the evolution.
    *
    * @param observer An evolution observer call-back.
-   * @see #removeEvolutionObserver(EvolutionObserver)
    */
   public void addEvolutionObserver(EvolutionObserver<T> observer) {
     observers.add(observer);
-  }
-
-
-  /**
-   * Removes an evolution progress listener.
-   *
-   * @param observer An evolution observer call-back.
-   * @see #addEvolutionObserver(EvolutionObserver)
-   */
-  public void removeEvolutionObserver(EvolutionObserver<T> observer) {
-    observers.remove(observer);
   }
 
   /**

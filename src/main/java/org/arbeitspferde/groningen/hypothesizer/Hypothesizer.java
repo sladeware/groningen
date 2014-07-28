@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,6 +79,8 @@ public class Hypothesizer extends ProfilingRunnable {
 
   // Store non-GC mode arguments in ARGUMENTS
   static {
+    // TODO(team): Reduce level of static initialization.
+
     Set<JvmFlag> gcModes = Sets.newHashSet(JvmFlag.getGcModeArguments());
     ARGUMENTS = Lists.newArrayList();
     for (JvmFlag argument : JvmFlag.values()) {
@@ -214,11 +217,12 @@ public class Hypothesizer extends ProfilingRunnable {
   }
 
   private void initializeSupportedGcModes() {
-    List<JvmFlag> gcModes = JvmFlag.getGcModeArguments();
+    SortedSet<JvmFlag> gcModes = JvmFlag.getGcModeArguments();
 
     SearchSpaceBundle bundle = config.getJvmSearchSpaceRestriction();
     for (JvmFlag gcMode : gcModes) {
       SearchSpaceEntry entry = bundle.getSearchSpace(gcMode);
+      // TODO(team): Refactor this into a formal test and extract this baked state logic assumption.
       if (entry.getCeiling() > 0) {
         supportedGcModes.add(gcMode);
       }
@@ -297,6 +301,8 @@ public class Hypothesizer extends ProfilingRunnable {
    * stored in ExperDB.
    */
   private List<List<Integer>> loadPopulation() {
+    // TODO(team): Evaluate wrapping the List<Integer> with a formal type to model a subject's genes.
+
     Experiment lastExperiment = experimentDb.getLastExperiment();
     logger.log(Level.INFO, String.format("Last experiment ID: %s", lastExperiment.getIdOfObject()));
     logger.log(Level.INFO,
@@ -321,6 +327,7 @@ public class Hypothesizer extends ProfilingRunnable {
     List<Integer> individual = Lists.newArrayList();
 
     // Add the GC mode argument value as the first object.
+    // TODO(team): Swap this to the ordinal position of the flag.
     individual.add(supportedGcModes.indexOf(JvmFlag.getGcModeArgument(commandLine.getGcMode())));
 
     // Add the rest of the non-GC mode argument values.

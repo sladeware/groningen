@@ -64,25 +64,6 @@ public class JvmFlagTest extends TestCase {
     }
   }
 
-  public void test_getGCModeArguments() {
-    final List<JvmFlag> emission = JvmFlag.getGcModeArguments();
-
-    assertNotNull(emission);
-
-    assertTrue(emission.contains(JvmFlag.USE_CONC_MARK_SWEEP_GC));
-    assertTrue(emission.contains(JvmFlag.USE_PARALLEL_GC));
-    assertTrue(emission.contains(JvmFlag.USE_PARALLEL_OLD_GC));
-    assertTrue(emission.contains(JvmFlag.USE_SERIAL_GC));
-  }
-
-  public void test_getGcModeArgument_DisallowsNull() {
-    try {
-      JvmFlag.getGcModeArgument(null);
-      fail("JvmFlag#getGcModeArgument should disallow nulls.");
-    } catch (final NullPointerException expected) {
-    }
-  }
-
   public void test_getGcModeArgument_EmitsExpected() {
     assertEquals(JvmFlag.USE_CONC_MARK_SWEEP_GC, JvmFlag.getGcModeArgument(GcMode.CMS));
     assertEquals(JvmFlag.USE_PARALLEL_GC, JvmFlag.getGcModeArgument(GcMode.PARALLEL));

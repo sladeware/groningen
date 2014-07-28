@@ -5,7 +5,7 @@ import org.arbeitspferde.groningen.Datastore;
 /**
  * Test for {@link InMemoryDatastore}.
  */
-public class InMemoryDatastoreTest extends DatastoreTestBase {
+public class InMemoryDatastoreTest extends DatastoreTestCase {
 
   @Override
   protected Datastore createDatastore() {

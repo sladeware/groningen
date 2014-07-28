@@ -15,12 +15,12 @@
 
 package org.arbeitspferde.groningen.config;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Trivial {@link NamedConfigParam} implementation

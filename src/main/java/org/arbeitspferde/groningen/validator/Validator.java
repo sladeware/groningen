@@ -17,6 +17,7 @@ package org.arbeitspferde.groningen.validator;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.config.PipelineIterationScoped;
 import org.arbeitspferde.groningen.display.MonitorGroningen;
@@ -49,13 +50,13 @@ public class Validator extends ProfilingRunnable {
 
   /** The Experimental Database */
   private final ExperimentDb experimentDb;
-  private GroningenConfig config;
+  private final GroningenConfig config;
   private final MetricExporter metricExporter;
 
-  private AtomicLong invalidDueToRestartThresholdCrossed = new AtomicLong(0);
-  private AtomicLong invalidDueToNeverStarting = new AtomicLong(0);
-  private AtomicLong invalidDueToCommandLineMismatch = new AtomicLong(0);
-  private AtomicLong invalidDueToRemoval = new AtomicLong(0);
+  private final AtomicLong invalidDueToRestartThresholdCrossed = new AtomicLong(0);
+  private final AtomicLong invalidDueToNeverStarting = new AtomicLong(0);
+  private final AtomicLong invalidDueToCommandLineMismatch = new AtomicLong(0);
+  private final AtomicLong invalidDueToRemoval = new AtomicLong(0);
 
   @Inject
   public Validator(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
@@ -145,7 +146,7 @@ public class Validator extends ProfilingRunnable {
     } else {
       final String cls = commandLine.toArgumentString().trim();
       for (final String commandLineString : commandLineStrings) {
-        if ((cls != null) && (commandLineString.indexOf(cls) < 0)) {
+        if ((cls != null) && (!commandLineString.contains(cls))) {
           invalid = true;
           invalidDueToCommandLineMismatch.incrementAndGet();
           logger.warning(String.format(

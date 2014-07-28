@@ -38,6 +38,7 @@ import org.arbeitspferde.groningen.profiling.ProfilingRunnable;
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.Metric;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+
 import org.uncommons.maths.number.ConstantGenerator;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.MersenneTwisterRNG;
@@ -58,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,6 +79,8 @@ public class Hypothesizer extends ProfilingRunnable {
 
   // Store non-GC mode arguments in ARGUMENTS
   static {
+    // TODO(team): Reduce level of static initialization.
+
     Set<JvmFlag> gcModes = Sets.newHashSet(JvmFlag.getGcModeArguments());
     ARGUMENTS = Lists.newArrayList();
     for (JvmFlag argument : JvmFlag.values()) {
@@ -99,7 +103,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
   private GroningenConfig config;
 
-  private List<JvmFlag> supportedGcModes = Lists.newArrayList();
+  private final List<JvmFlag> supportedGcModes = Lists.newArrayList();
 
   /**
    * population size is fixed once we instantiate the ga engine so it makes
@@ -110,7 +114,7 @@ public class Hypothesizer extends ProfilingRunnable {
   private final AtomicLong populationSize = new AtomicLong();
 
   /** Track the total fitness score for all members of the last generation */
-  private AtomicDouble totalFitnessScore = new AtomicDouble(0.0);
+  private final AtomicDouble totalFitnessScore = new AtomicDouble(0.0);
 
   private IncrementalEvolutionEngine<List<Integer>> gaEngine;
 
@@ -213,11 +217,12 @@ public class Hypothesizer extends ProfilingRunnable {
   }
 
   private void initializeSupportedGcModes() {
-    List<JvmFlag> gcModes = JvmFlag.getGcModeArguments();
+    SortedSet<JvmFlag> gcModes = JvmFlag.getGcModeArguments();
 
     SearchSpaceBundle bundle = config.getJvmSearchSpaceRestriction();
     for (JvmFlag gcMode : gcModes) {
       SearchSpaceEntry entry = bundle.getSearchSpace(gcMode);
+      // TODO(team): Refactor this into a formal test and extract this baked state logic assumption.
       if (entry.getCeiling() > 0) {
         supportedGcModes.add(gcMode);
       }
@@ -247,7 +252,7 @@ public class Hypothesizer extends ProfilingRunnable {
       new IntegerListMutator(new Probability(config.getParamBlock().getMutationProb())));
 
     // Add the operators to the pipeline.
-    EvolutionaryOperator<List<Integer>> pipeline = new EvolutionPipeline<List<Integer>>(operators);
+    EvolutionaryOperator<List<Integer>> pipeline = new EvolutionPipeline<>(operators);
 
     // Set up the fitness evaluator.
     FitnessEvaluator<List<Integer>> evaluator =
@@ -265,7 +270,7 @@ public class Hypothesizer extends ProfilingRunnable {
 
     // Create an evolution engine with the above parameters.
     gaEngine =
-        new IncrementalEvolutionEngine<List<Integer>>(candidateFactory, pipeline, evaluator,
+        new IncrementalEvolutionEngine<>(candidateFactory, pipeline, evaluator,
             new TournamentSelection(new Probability(0.75)), new MersenneTwisterRNG(),
             (int) populationSize.get(), config.getParamBlock().getEliteCount(), condition);
 
@@ -296,6 +301,8 @@ public class Hypothesizer extends ProfilingRunnable {
    * stored in ExperDB.
    */
   private List<List<Integer>> loadPopulation() {
+    // TODO(team): Evaluate wrapping the List<Integer> with a formal type to model a subject's genes.
+
     Experiment lastExperiment = experimentDb.getLastExperiment();
     logger.log(Level.INFO, String.format("Last experiment ID: %s", lastExperiment.getIdOfObject()));
     logger.log(Level.INFO,
@@ -320,6 +327,7 @@ public class Hypothesizer extends ProfilingRunnable {
     List<Integer> individual = Lists.newArrayList();
 
     // Add the GC mode argument value as the first object.
+    // TODO(team): Swap this to the ordinal position of the flag.
     individual.add(supportedGcModes.indexOf(JvmFlag.getGcModeArgument(commandLine.getGcMode())));
 
     // Add the rest of the non-GC mode argument values.
@@ -557,7 +565,7 @@ public class Hypothesizer extends ProfilingRunnable {
         throw new IllegalStateException(
             "subject returned marker for not evaluated. Subject: " + cmdlineStr);
       }
-      
+
       // TODO(team): Consider whether/how to handle updates to weights or scorer between
       //    iterations. Should scores for choosing best performers be different from gene
       //    choosing? The main concern here is user expectation on when the (very
@@ -588,7 +596,7 @@ public class Hypothesizer extends ProfilingRunnable {
     private final NumberGenerator<Probability> probability;
 
     IntegerListMutator(Probability mutationProbability) {
-      probability = new ConstantGenerator<Probability>(mutationProbability);
+      probability = new ConstantGenerator<>(mutationProbability);
     }
 
     @Override

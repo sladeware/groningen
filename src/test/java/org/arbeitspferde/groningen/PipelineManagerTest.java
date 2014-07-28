@@ -17,7 +17,6 @@ package org.arbeitspferde.groningen;
 
 import com.google.inject.Provider;
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SimpleScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -25,6 +24,8 @@ import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams.PipelineSynchMode;
 import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
@@ -57,7 +58,7 @@ public class PipelineManagerTest extends TestCase {
     dataStoreMock = EasyMock.createNiceMock(Datastore.class);
     pipelineIdGeneratorMock = EasyMock.createNiceMock(PipelineIdGenerator.class);
     pipelineScope = new SimpleScope();
-    pipelineSyncProviderMap = new HashMap<PipelineSynchMode, Provider<PipelineSynchronizer>>();
+    pipelineSyncProviderMap = new HashMap<>();
     defaultPipelineSynchronizer = new EmptyPipelineSynchronizer();
     bestPerformerScorer = EasyMock.createNiceMock(HistoricalBestPerformerScorer.class);
 

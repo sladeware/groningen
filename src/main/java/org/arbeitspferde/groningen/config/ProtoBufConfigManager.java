@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+
 import org.arbeitspferde.groningen.config.ProtoBufSource.ProtoBufSourceListener;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
@@ -153,14 +154,17 @@ public class ProtoBufConfigManager implements ConfigManager, ProtoBufSourceListe
         sourceStrParts.length == 2, "could not parse prototype:type_params from source string");
 
     ProtoBufSource source = null;
-    if (sourceStrParts[0].equals("binfile")) {
-      source = new ProtoBufBinaryFileSource(sourceStrParts[1], fileFactory,
-          fileEventNotifierFactory, legacyProgramConfigurationMediator);
-    } else if (sourceStrParts[0].equals("txtfile")) {
-      source = new ProtoBufFileSource(sourceStrParts[1], fileFactory, fileEventNotifierFactory,
-          legacyProgramConfigurationMediator);
-    } else {
-      throw new IllegalArgumentException("unknown backend prototype: " + sourceStrParts[0]);
+    switch (sourceStrParts[0]) {
+      case "binfile":
+        source = new ProtoBufBinaryFileSource(sourceStrParts[1], fileFactory,
+            fileEventNotifierFactory, legacyProgramConfigurationMediator);
+        break;
+      case "txtfile":
+        source = new ProtoBufFileSource(sourceStrParts[1], fileFactory, fileEventNotifierFactory,
+            legacyProgramConfigurationMediator);
+        break;
+      default:
+        throw new IllegalArgumentException("unknown backend prototype: " + sourceStrParts[0]);
     }
 
     return source;

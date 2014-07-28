@@ -17,9 +17,11 @@ package org.arbeitspferde.groningen.eventlog;
 
 
 import com.google.protobuf.Message;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 /**
@@ -38,7 +40,7 @@ public class SafeProtoLoggerTest extends TestCase {
     mockOutputLogStream = EasyMock.createMock(OutputLogStream.class);
     loggerName = "foo";
 
-    logger = new SafeProtoLogger<Event.EventEntry>(mockOutputLogStream, loggerName);
+    logger = new SafeProtoLogger<>(mockOutputLogStream, loggerName);
   }
 
   public void testLogProtoEntry() throws Exception {

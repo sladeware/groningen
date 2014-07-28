@@ -15,6 +15,9 @@
 
 package org.arbeitspferde.groningen.experimentdb;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.arbeitspferde.groningen.experimentdb.ExperimentDb.write;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -27,11 +30,9 @@ import org.arbeitspferde.groningen.proto.ExperimentDbProtos;
 import org.arbeitspferde.groningen.subject.Subject;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.arbeitspferde.groningen.experimentdb.ExperimentDb.write;
 
 /**
  * Subject class designed to be the main gateway to maintaining state on a
@@ -82,10 +83,10 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
 
   /** Whether subject was invalidated - use null to mark that this has not been set */
   @Nullable private Boolean invalidated = null;
-  
+
   /** Evaluated version of the subject - null means the subject has not been evaluated */
   @Nullable private EvaluatedSubject evaluatedCopy = null;
-  
+
   /** Pause time metrics for this subject */
   private final PauseTime pauseTime = new PauseTime();
 
@@ -106,7 +107,7 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   private boolean removed = false;
 
   /** Command-line strings for this subject */
-  private List<String> commandLineStrings = Lists.newArrayListWithExpectedSize(10);
+  private final List<String> commandLineStrings = Lists.newArrayListWithExpectedSize(10);
 
   /**
    * Creates an instance of this class with the given subject id
@@ -149,15 +150,15 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   public void markInvalid() {
     invalidated = Boolean.TRUE;
   }
-  
+
   /** Mark the subject as valid within the experiment. */
   public void markValid() {
-    invalidated = Boolean.FALSE;    
+    invalidated = Boolean.FALSE;
   }
-  
+
   /**
    * Whether the subject has been removed from the experiment.
-   * 
+   *
    * @return TRUE if the subject has been marked invalid, FALSE if it has been marked valid, null
    *    if no determination of the subjects validity has yet been made.
    */
@@ -175,15 +176,15 @@ public class SubjectStateBridge extends InMemoryCache.Value<SubjectStateBridge> 
   public CommandLine getCommandLine() {
     return commandLine;
   }
-  
+
   /** Store the evaluated version of this subject */
   public void setEvaluatedCopy(EvaluatedSubject evaluatedCopy) {
     this.evaluatedCopy = evaluatedCopy;
   }
-  
-  /** 
+
+  /**
    * Getter for the stored {@link EvaluatedSubject} associated with this subject.
-   * 
+   *
    * @returns the evaluated subject iff the subject has been scored and null if not.
    */
   public EvaluatedSubject getEvaluatedCopy() {

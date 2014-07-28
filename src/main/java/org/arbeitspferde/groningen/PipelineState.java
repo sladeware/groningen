@@ -32,30 +32,30 @@ public class PipelineState {
     this.config = config;
     this.experimentDb = experimentDb;
   }
-  
+
   public PipelineState(byte[] bytes) {
     org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState stateProto;
     try {
-      stateProto = 
+      stateProto =
           org.arbeitspferde.groningen.proto.ExperimentDbProtos.PipelineState.parseFrom(bytes);
     } catch (InvalidProtocolBufferException e) {
       throw new RuntimeException(e);
     }
-    
+
     pipelineId = new PipelineId(stateProto.getId().getId());
     try {
       config = new ProtoBufConfig(stateProto.getConfiguration());
     } catch (InvalidConfigurationException e) {
       throw new RuntimeException(e);
     }
-    
+
     experimentDb = new ExperimentDb();
-    
+
     final List<Long> subjectIds = Lists.newArrayList();
     for (Subject subjectProto : stateProto.getSubjectsList()) {
       final SubjectStateBridge bridge = experimentDb.makeSubject(subjectProto.getId());
       subjectIds.add(subjectProto.getId());
-      
+
       /* TODO(team): Migrate the stink that this switch statement is into a EnumMap or have
        *             JvmFlagSet translate the mapping itself.
        */
@@ -155,7 +155,7 @@ public class PipelineState {
       final JvmFlagSet jvmFlagSet = builder.build();
       bridge.storeCommandLine(jvmFlagSet);
     }
-    
+
     experimentDb.makeExperiment(subjectIds);
   }
 
@@ -180,7 +180,7 @@ public class PipelineState {
 
     ProgramConfiguration configurationProto = config.getProtoConfig();
 
-    List<ExperimentDbProtos.Subject> subjectProtos = new ArrayList<ExperimentDbProtos.Subject>();
+    List<ExperimentDbProtos.Subject> subjectProtos = new ArrayList<>();
     Experiment lastExperiment = experimentDb.getLastExperiment();
 
     if (lastExperiment != null) {

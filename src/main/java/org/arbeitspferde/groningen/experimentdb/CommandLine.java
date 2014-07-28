@@ -55,7 +55,7 @@ public class CommandLine {
   // * potentially not all:
   // //depot/vendor_src/java/jdk/hotspot/src/share/vm/runtime/globals.hpp
   // boolean flags have the form -XX:[+-]<flag>
-  static final private ImmutableList<String> MANAGED_ARGS_REGEXES = ImmutableList.<String>builder()
+  private static final ImmutableList<String> MANAGED_ARGS_REGEXES = ImmutableList.<String>builder()
       .add(JvmFlag.ADAPTIVE_SIZE_DECREMENT_SCALE_FACTOR.asRegularExpressionString())
       .add(JvmFlag.CMS_EXP_AVG_FACTOR.asRegularExpressionString())
       .add(JvmFlag.CMS_INCREMENTAL_DUTY_CYCLE.asRegularExpressionString())
@@ -92,15 +92,13 @@ public class CommandLine {
    * TODO(team): should these be regexes? Look deeper into the forms of the
    * flags and overlap in stems
    */
-  static public ImmutableList<String> getManagedArgs() {
+  public static ImmutableList<String> getManagedArgs() {
     return MANAGED_ARGS_REGEXES;
   }
 
   /** Creation by package only */
   CommandLine(final JvmFlagSet jvmFlagSet) {
-    Preconditions.checkNotNull(jvmFlagSet);
-
-    this.jvmFlagSet = jvmFlagSet;
+    this.jvmFlagSet = Preconditions.checkNotNull(jvmFlagSet);
   }
 
   /**
@@ -193,31 +191,31 @@ public class CommandLine {
   }
 
   public boolean getCmsIncrementalMode() {
-    return getValue(JvmFlag.CMS_INCREMENTAL_MODE) == 1 ? true : false;
+    return getValue(JvmFlag.CMS_INCREMENTAL_MODE) == 1;
   }
 
   public boolean getCmsIncrementalPacing() {
-    return getValue(JvmFlag.CMS_INCREMENTAL_PACING) == 1 ? true : false;
+    return getValue(JvmFlag.CMS_INCREMENTAL_PACING) == 1;
   }
 
   public boolean getUseCmsInitiatingOccupancyOnly() {
-    return getValue(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY) == 1 ? true : false;
+    return getValue(JvmFlag.USE_CMS_INITIATING_OCCUPANCY_ONLY) == 1;
   }
 
   public boolean getUseConcMarkSweepGC() {
-    return getValue(JvmFlag.USE_CONC_MARK_SWEEP_GC) == 1 ? true : false;
+    return getValue(JvmFlag.USE_CONC_MARK_SWEEP_GC) == 1;
   }
 
   public boolean getUseParallelGC() {
-    return getValue(JvmFlag.USE_PARALLEL_GC) == 1 ? true : false;
+    return getValue(JvmFlag.USE_PARALLEL_GC) == 1;
   }
 
   public boolean getUseParallelOldGC() {
-    return getValue(JvmFlag.USE_PARALLEL_OLD_GC) == 1 ? true : false;
+    return getValue(JvmFlag.USE_PARALLEL_OLD_GC) == 1;
   }
 
   public boolean getUseSerialGC() {
-    return getValue(JvmFlag.USE_SERIAL_GC) == 1 ? true : false;
+    return getValue(JvmFlag.USE_SERIAL_GC) == 1;
   }
 
   /**
@@ -256,7 +254,7 @@ public class CommandLine {
    * @throws IllegalArgumentException
    */
   public String toArgumentString() throws IllegalArgumentException {
-    final Builder<String> argumentsBuilder = ImmutableList.<String>builder();
+    final Builder<String> argumentsBuilder = ImmutableList.builder();
 
     // HEAP SIZING PARAMETERS
     // Since collections occur when generations fill up, throughput is inversely proportional to the
@@ -570,18 +568,21 @@ public class CommandLine {
 
     return emission;
   }
-  
+
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null || !(obj instanceof CommandLine)) {
-      return false;
-    } else {
-      return jvmFlagSet.toString().equals(((CommandLine) obj).jvmFlagSet.toString());
-    }
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CommandLine that = (CommandLine) o;
+
+    if (!jvmFlagSet.equals(that.jvmFlagSet)) return false;
+
+    return true;
   }
 
   @Override
   public int hashCode() {
-    return jvmFlagSet.toString().hashCode();
+    return jvmFlagSet.hashCode();
   }
 }

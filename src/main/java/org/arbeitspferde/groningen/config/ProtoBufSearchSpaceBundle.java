@@ -15,31 +15,16 @@
 
 package org.arbeitspferde.groningen.config;
 
-import com.google.common.collect.Maps;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 
-import java.util.EnumMap;
 import java.util.List;
 
 /**
  * Map a protobuf JvmSearchSpace to a GenericSearchSpaceBundle.
  */
 public class ProtoBufSearchSpaceBundle extends GenericSearchSpaceBundle {
-  static final EnumMap<ProgramConfiguration.JvmSearchSpace.GcMode, JvmFlag> gcModeMap =
-      Maps.newEnumMap(ProgramConfiguration.JvmSearchSpace.GcMode.class);
-
-  // initialize the enum mappings
-  static {
-    gcModeMap.put(ProgramConfiguration.JvmSearchSpace.GcMode.USE_CONC_MARK_SWEEP,
-        JvmFlag.USE_CONC_MARK_SWEEP_GC);
-    gcModeMap.put(ProgramConfiguration.JvmSearchSpace.GcMode.USE_PARALLEL, JvmFlag.USE_PARALLEL_GC);
-    gcModeMap.put(ProgramConfiguration.JvmSearchSpace.GcMode.USE_PARALLEL_OLD,
-        JvmFlag.USE_PARALLEL_OLD_GC);
-    gcModeMap.put(ProgramConfiguration.JvmSearchSpace.GcMode.USE_SERIAL, JvmFlag.USE_SERIAL_GC);
-  }
-
   /**
    * Map each of the command line arguments from the setting in the protobuf to the enum, throwing
    * exceptions if the user requests that all fields must be present (all translates to including at
@@ -179,7 +164,7 @@ public class ProtoBufSearchSpaceBundle extends GenericSearchSpaceBundle {
       List<ProgramConfiguration.JvmSearchSpace.GcMode> gcModes = protoSpace.getGcModeList();
       for (ProgramConfiguration.JvmSearchSpace.GcMode mode :
           ProgramConfiguration.JvmSearchSpace.GcMode.values()) {
-        makeBoolEntry(gcModeMap.get(mode), true, gcModes.contains(mode), false);
+        makeBoolEntry(JvmFlag.getGcModeArgument(mode), true, gcModes.contains(mode), false);
       }
     }
   }

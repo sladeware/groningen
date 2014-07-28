@@ -56,38 +56,38 @@ public class SettingsProvider implements Provider<Settings> {
   @Option(
       name = "--numShards",
       usage = "Total number of shards in this Groningen deployment.")
-  public int numShards = 1;
+  public final int numShards = 1;
 
   @Option(
       name = "--shardIndex",
       usage = "Index of this server instance's shard in this Groningen deployment.")
-  public int shardIndex = 0;
+  public final int shardIndex = 0;
 
   @Option(
       name = "--datastore",
       usage = "Datastore class to use.")
-  public String datastore = "org.arbeitspferde.groningen.datastore.InMemoryDatastore";
+  public final String datastore = "org.arbeitspferde.groningen.datastore.InMemoryDatastore";
 
   @Option(
       name = "--historyDatastore",
       usage = "Datastore class to use for history storage.")
-  public String historyDatastore =
+  public final String historyDatastore =
     "org.arbeitspferde.groningen.historydatastore.MemoryHistoryDatastore";
 
   @Option(
       name = "--port",
       usage = "The port on which to service HTTP requests.")
-  public Integer port = 8080;
+  public final Integer port = 8080;
 
   @Option(
       name = "--startupSubservicesDeadlineSeconds",
       usage = "How long Groningen will wait at most for its subservices to start (seconds).")
-  public Integer startupSubservicesDeadlineSeconds = 60;
+  public final Integer startupSubservicesDeadlineSeconds = 60;
 
   @Option(
       name = "--shutdownSubservicesDeadlineSeconds",
       usage = "How long Groningen will wait at most for its subservices to stop (seconds).")
-  public Integer shutdownSubservicesDeadlineSeconds = 60;
+  public final Integer shutdownSubservicesDeadlineSeconds = 60;
 
   @Option(
       name = "--configFileNames",
@@ -99,17 +99,17 @@ public class SettingsProvider implements Provider<Settings> {
   @Option(
       name = "--eventLogPrefix",
       usage = "The path along with base string prefix for the Groningen event log.")
-  public String eventLogPrefix = "alloc/logs/tmp-groningen_events";
+  public final String eventLogPrefix = "alloc/logs/tmp-groningen_events";
 
   @Option(
       name = "--eventLogRotateBytesSize",
       usage = "The quantity in bytes that the Groningen event log may grow before being rotated.")
-  public Integer eventLogRotateSizeBytes = 524288000;
+  public final Integer eventLogRotateSizeBytes = 524288000;
 
   @Option(
       name = "--eventLogFlushIntervalSeconds",
       usage = "The number of seconds that may transpire between Groningen event log flushing.")
-  public Integer eventLogFlushIntervalSeconds = 60;
+  public final Integer eventLogFlushIntervalSeconds = 60;
 
   @Inject
   public SettingsProvider(final String[] args,
@@ -215,7 +215,7 @@ public class SettingsProvider implements Provider<Settings> {
   }
 
   private Collection<String> makeArgs4jWhitelist(final Collection<Field> fields) {
-    final Collection<String> emission = new HashSet<String>();
+    final Collection<String> emission = new HashSet<>();
 
     for (final Field field : fields) {
       final Option optionAnnotation = field.getAnnotation(Option.class);

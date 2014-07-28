@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.config;
 
 import com.google.common.collect.ImmutableList;
+
 import org.arbeitspferde.groningen.config.StubConfigManager.StubConfig;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;

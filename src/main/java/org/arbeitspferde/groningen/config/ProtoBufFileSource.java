@@ -18,6 +18,7 @@ package org.arbeitspferde.groningen.config;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.protobuf.TextFormat;
+
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.utility.FileEventNotifier;
 import org.arbeitspferde.groningen.utility.FileEventNotifierFactory;

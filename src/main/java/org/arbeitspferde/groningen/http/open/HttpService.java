@@ -11,11 +11,11 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 
+import javax.servlet.DispatcherType;
+
 import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.DispatcherType;
 
 /**
  * Service to manage the lifecycle of HTTP Server.

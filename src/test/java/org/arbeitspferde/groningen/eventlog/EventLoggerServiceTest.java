@@ -16,9 +16,10 @@
 package org.arbeitspferde.groningen.eventlog;
 
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.common.Settings;
 import org.arbeitspferde.groningen.proto.Event;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 /**

@@ -19,6 +19,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+
 import org.arbeitspferde.groningen.config.GroningenConfig.SubjectGroupConfig;
 import org.arbeitspferde.groningen.config.NamedConfigParam;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
@@ -36,7 +37,7 @@ public class SubjectGroup {
 
   @Inject
   @NamedConfigParam("subject_manipulation_deadline_ms")
-  private int populationCensusCollectionDeadline =
+  private final int populationCensusCollectionDeadline =
       GroningenParams.getDefaultInstance().getSubjectManipulationDeadlineMs();
 
   private final String clusterName;

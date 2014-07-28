@@ -1,8 +1,8 @@
 package org.arbeitspferde.groningen.common;
 
-import java.util.logging.Logger;
-
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
+
+import java.util.logging.Logger;
 
 /**
  * Enables groningen to run indefinitely as a service.

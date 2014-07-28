@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
 import org.arbeitspferde.groningen.Datastore.DatastoreException;
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -41,7 +42,7 @@ public class PipelineManager {
   private final Map<PipelineSynchMode, Provider<PipelineSynchronizer>> synchronizerProviderMap;
   private final Provider<HistoricalBestPerformerScorer> bestPerformerScorerProvider;
 
-  private ConcurrentMap<PipelineId, Pipeline> pipelines;
+  private final ConcurrentMap<PipelineId, Pipeline> pipelines;
 
   @Inject
   public PipelineManager(PipelineIdGenerator pipelineIdGenerator,
@@ -55,7 +56,7 @@ public class PipelineManager {
     this.pipelineProvider = pipelineProvider;
     this.datastore = datastore;
     this.synchronizerProviderMap = synchronizerProviderMap;
-    this.pipelines = new ConcurrentHashMap<PipelineId, Pipeline>();
+    this.pipelines = new ConcurrentHashMap<>();
     this.bestPerformerScorerProvider = bestPerformerScorerProvider;
   }
 
@@ -70,7 +71,7 @@ public class PipelineManager {
     // NOTE(mbushkov): using AtomicReference here is somewhat redundant. We use a dedicated lock
     // (pipelineConstructionLock) and do not require atomicity. Still it's very handy to just
     // use a reference class that is already in a standard library
-    final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
+    final AtomicReference<Pipeline> pipelineReference = new AtomicReference<>();
 
     // TODO(etheon): add metric exporter for this
     final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
@@ -160,7 +161,7 @@ public class PipelineManager {
     // NOTE(mbushkov): using AtomicReference here is somewhat redundant. We use a dedicated lock
     // (pipelineConstructionLock) and do not require atomicity. Still it's very handy to just
     // use a reference class that is already in a standard library
-    final AtomicReference<Pipeline> pipelineReference = new AtomicReference<Pipeline>();
+    final AtomicReference<Pipeline> pipelineReference = new AtomicReference<>();
 
     // Create the pipeline stage tracking object and tie it to the synchronizer before the
     // pipeline is actually started.
@@ -253,7 +254,7 @@ public class PipelineManager {
    * @return Map of PipelineId->Pipeline
    */
   public Map<PipelineId, Pipeline> getAllPipelines() {
-    return new HashMap<PipelineId, Pipeline>(pipelines);
+    return new HashMap<>(pipelines);
   }
 
   /**

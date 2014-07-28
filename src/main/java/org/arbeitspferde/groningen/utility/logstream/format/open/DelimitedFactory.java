@@ -1,10 +1,12 @@
 package org.arbeitspferde.groningen.utility.logstream.format.open;
 
 import com.google.protobuf.Message;
+
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 
 import javax.annotation.concurrent.ThreadSafe;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;

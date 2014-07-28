@@ -16,9 +16,10 @@
 package org.arbeitspferde.groningen.config;
 
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.exceptions.InvalidConfigurationException;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 import java.io.IOException;

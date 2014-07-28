@@ -1,13 +1,13 @@
 package org.arbeitspferde.groningen.scorer;
 
-import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.common.EvaluatedSubject;
 import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
 import org.arbeitspferde.groningen.utility.PinnedClock;
+
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class GenerationNumberWeightedBestPerformerScorerTest extends TestCase {
     EvaluatedSubject evaledSubject1 = new EvaluatedSubject(clock, subject2, 21.0, 1);
     EvaluatedSubject evaledSubject2 = new EvaluatedSubject(clock, subject1, 24.0, 1);
     EvaluatedSubject evaledSubject3 = new EvaluatedSubject(clock, subject1, 22.0, 1);
-    List<EvaluatedSubject> individuals = new ArrayList<EvaluatedSubject>(3);
+    List<EvaluatedSubject> individuals = new ArrayList<>(3);
     individuals.add(evaledSubject1);
     individuals.add(evaledSubject2);
     individuals.add(evaledSubject3);
@@ -108,7 +108,7 @@ public class GenerationNumberWeightedBestPerformerScorerTest extends TestCase {
     EvaluatedSubject evaledSubject1 = new EvaluatedSubject(clock, subject2, 21.0, 2);
     EvaluatedSubject evaledSubject2 = new EvaluatedSubject(clock, subject1, 24.0, 2);
     EvaluatedSubject evaledSubject3 = new EvaluatedSubject(clock, subject1, 22.0, 2);
-    List<EvaluatedSubject> individuals = new ArrayList<EvaluatedSubject>(3);
+    List<EvaluatedSubject> individuals = new ArrayList<>(3);
     individuals.add(evaledSubject1);
     individuals.add(evaledSubject2);
     individuals.add(evaledSubject3);
@@ -130,7 +130,7 @@ public class GenerationNumberWeightedBestPerformerScorerTest extends TestCase {
     createIndividuals();
     EvaluatedSubject evaledSubject1 = new EvaluatedSubject(clock, subject2, 21.0, 2);
     EvaluatedSubject evaledSubject2 = new EvaluatedSubject(clock, subject1, 24.0, 2);
-    List<EvaluatedSubject> generation1 = new ArrayList<EvaluatedSubject>(2);
+    List<EvaluatedSubject> generation1 = new ArrayList<>(2);
     generation1.add(evaledSubject1);
     generation1.add(evaledSubject2);
 
@@ -149,7 +149,7 @@ public class GenerationNumberWeightedBestPerformerScorerTest extends TestCase {
     EvaluatedSubject evaledSubjectPass1Num1 = new EvaluatedSubject(clock, subject2, 22.0, 1);
     EvaluatedSubject evaledSubjectPass1Num2 = new EvaluatedSubject(clock, subject1, 21.0, 1);
     EvaluatedSubject evaledSubjectPass1Num3 = new EvaluatedSubject(clock, subject2, 23.0, 1);
-    List<EvaluatedSubject> generation = new ArrayList<EvaluatedSubject>(3);
+    List<EvaluatedSubject> generation = new ArrayList<>(3);
     generation.add(evaledSubjectPass1Num1);
     generation.add(evaledSubjectPass1Num2);
     generation.add(evaledSubjectPass1Num3);
@@ -183,7 +183,7 @@ public class GenerationNumberWeightedBestPerformerScorerTest extends TestCase {
   }
 
   public void testAddGeneration_EmptyGeneration() {
-    List<EvaluatedSubject> generation = new ArrayList<EvaluatedSubject>();
+    List<EvaluatedSubject> generation = new ArrayList<>();
     List<EvaluatedSubject> processedGeneration = scorer.addGeneration(generation);
     assertEquals(0, processedGeneration.size());
   }

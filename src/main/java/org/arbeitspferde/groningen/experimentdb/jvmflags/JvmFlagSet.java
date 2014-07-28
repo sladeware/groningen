@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class JvmFlagSet {
    * Non-instantiatiable; please use {@link Builder}.
    */
   private JvmFlagSet(final Map<JvmFlag, Long> values) {
-    finalValues = new TreeMap<JvmFlag, Long>(Preconditions.checkNotNull(
+    finalValues = new TreeMap<>(Preconditions.checkNotNull(
         values, "values may not be null."));
   }
 
@@ -73,9 +72,9 @@ public class JvmFlagSet {
    *
    */
   public static class Builder {
-    private final Map<JvmFlag, Long> assignedValues = new EnumMap<JvmFlag, Long>(JvmFlag.class);
+    private final Map<JvmFlag, Long> assignedValues = new EnumMap<>(JvmFlag.class);
     private static final Map<JvmFlag, Long> defaultValues =
-        new EnumMap<JvmFlag, Long>(JvmFlag.class);
+        new EnumMap<>(JvmFlag.class);
 
     static {
       // TODO(team): Evaluate whether more sensible defaults should be set.
@@ -134,7 +133,7 @@ public class JvmFlagSet {
      * @return The final {@link JvmFlagSet}.
      */
     public JvmFlagSet build() {
-      final Map<JvmFlag, Long> emission = new EnumMap<JvmFlag, Long>(JvmFlag.class);
+      final Map<JvmFlag, Long> emission = new EnumMap<>(JvmFlag.class);
 
       for (final JvmFlag flag : defaultValues.keySet()) {
         final Long defaultValue = defaultValues.get(flag);
@@ -226,5 +225,24 @@ public class JvmFlagSet {
    */
   public static Builder builder() {
     return new Builder();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final JvmFlagSet that = (JvmFlagSet) o;
+
+    return finalValues.equals(that.finalValues);
+  }
+
+  @Override
+  public int hashCode() {
+    return finalValues.hashCode();
   }
 }

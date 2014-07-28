@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import org.arbeitspferde.groningen.HistoryDatastore;
 import org.arbeitspferde.groningen.PipelineHistoryState;
 import org.arbeitspferde.groningen.PipelineId;
+
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
@@ -20,14 +21,14 @@ import java.util.Map;
  */
 public class MemoryHistoryDatastore implements HistoryDatastore {
 
-  private Map<PipelineId, List<PipelineHistoryState>> data =
-      new HashMap<PipelineId, List<PipelineHistoryState>>();
+  private final Map<PipelineId, List<PipelineHistoryState>> data =
+      new HashMap<>();
 
   @Override
   public void writeState(PipelineHistoryState state) {
     List<PipelineHistoryState> states = data.get(state.pipelineId());
     if (states == null) {
-      states = new ArrayList<PipelineHistoryState>();
+      states = new ArrayList<>();
       data.put(state.pipelineId(), states);
     }
     states.add(state);
@@ -47,7 +48,7 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
   private List<PipelineHistoryState> readStates(PipelineId pipelineId) {
     List<PipelineHistoryState> states = data.get(pipelineId);
     if (states == null) {
-      states = new ArrayList<PipelineHistoryState>();
+      states = new ArrayList<>();
     }
     return states;
   }
@@ -60,7 +61,7 @@ public class MemoryHistoryDatastore implements HistoryDatastore {
   @Override
   public List<PipelineHistoryState> getStatesForPipelineId(
       PipelineId pipelineId, Instant afterTimestamp) {
-    List<PipelineHistoryState> results = new ArrayList<PipelineHistoryState>();
+    List<PipelineHistoryState> results = new ArrayList<>();
     for (PipelineHistoryState state : readStates(pipelineId)) {
       if (state.endTimestamp().isAfter(afterTimestamp)) {
         results.add(state);

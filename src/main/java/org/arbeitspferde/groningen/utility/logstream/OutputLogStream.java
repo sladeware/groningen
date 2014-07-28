@@ -18,6 +18,7 @@ package org.arbeitspferde.groningen.utility.logstream;
 import com.google.protobuf.Message;
 
 import javax.annotation.concurrent.NotThreadSafe;
+
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;

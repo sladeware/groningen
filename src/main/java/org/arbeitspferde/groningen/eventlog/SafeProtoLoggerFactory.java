@@ -20,6 +20,7 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
@@ -100,7 +101,7 @@ public class SafeProtoLoggerFactory {
         });
 
     final SafeProtoLogger<Event.EventEntry> logger =
-        new SafeProtoLogger<Event.EventEntry>(stream, loggerName);
+        new SafeProtoLogger<>(stream, loggerName);
 
     yieldTimer(flushIntervalSeconds, loggerName, logger);
 

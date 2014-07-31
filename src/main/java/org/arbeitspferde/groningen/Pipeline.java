@@ -196,8 +196,7 @@ public class Pipeline {
   }
 
   public PipelineHistoryState historyState() {
-    List<EvaluatedSubject> evaluatedSubjects =
-        new ArrayList<>();
+    List<EvaluatedSubject> evaluatedSubjects = new ArrayList<>();
     for (SubjectStateBridge ssb : experimentDb.getLastExperiment().getSubjects()) {
       evaluatedSubjects.add(new EvaluatedSubject(clock, ssb, FitnessScore.compute(ssb,
           configManager.queryConfig()), experimentDb.getExperimentId()));

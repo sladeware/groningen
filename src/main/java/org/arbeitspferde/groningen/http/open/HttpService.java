@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -46,7 +47,7 @@ public final class HttpService extends AbstractIdleService {
     server.setHandler(contextHandler);
     server.start();
     log.log(Level.INFO, "Started HTTP Server at port {0}",
-        server.getConnectors()[0].getLocalPort());
+        ((ServerConnector) server.getConnectors()[0]).getLocalPort());
   }
 
   @Override

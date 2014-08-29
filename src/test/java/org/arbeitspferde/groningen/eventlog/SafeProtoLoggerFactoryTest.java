@@ -16,13 +16,15 @@
 package org.arbeitspferde.groningen.eventlog;
 
 import com.google.inject.Provider;
-import junit.framework.TestCase;
-import org.apache.commons.io.FileUtils;
+
 import org.arbeitspferde.groningen.Helper;
 import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.logstream.format.open.DelimitedFactory;
+
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMock;
 
 import java.io.File;

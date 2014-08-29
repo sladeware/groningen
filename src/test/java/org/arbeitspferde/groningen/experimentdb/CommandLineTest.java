@@ -16,9 +16,10 @@
 package org.arbeitspferde.groningen.experimentdb;
 
 
-import junit.framework.TestCase;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlag;
 import org.arbeitspferde.groningen.experimentdb.jvmflags.JvmFlagSet;
+
+import junit.framework.TestCase;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -209,7 +210,7 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_ms() {
-    assertMatchesNever("-Xms1");
+    assertMatchesOnce("-Xms1");
 
     assertMatchesOnce("-Xms1k");
     assertMatchesOnce("-Xms1m");
@@ -226,7 +227,7 @@ public class CommandLineTest extends TestCase {
   }
 
   public void testRegularExpressionsMatch_mx() {
-    assertMatchesNever("-Xmx1");
+    assertMatchesOnce("-Xmx1");
 
     assertMatchesOnce("-Xmx1k");
     assertMatchesOnce("-Xmx1m");

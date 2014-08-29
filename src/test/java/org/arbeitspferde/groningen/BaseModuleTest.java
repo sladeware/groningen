@@ -20,7 +20,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
-import junit.framework.TestCase;
+
 import org.arbeitspferde.groningen.common.BlockScope;
 import org.arbeitspferde.groningen.common.SystemAdapter;
 import org.arbeitspferde.groningen.config.ConfigManager;
@@ -41,6 +41,8 @@ import org.arbeitspferde.groningen.proto.Params.GroningenParams;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
 import org.arbeitspferde.groningen.subject.SubjectInterrogator;
 import org.arbeitspferde.groningen.utility.Clock;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 import java.util.Timer;
@@ -303,15 +305,15 @@ public class BaseModuleTest extends TestCase {
 
     assertNotNull(args);
   }
-  
+
   public void testInjector_ProducePipelineStageInfoInScopes() {
     PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
-    
+
     pipelineScope.enter();
     try {
       pipelineScope.seed(PipelineStageInfo.class, pipelineStageInfo);
       final PipelineStageInfo pipelineScopedInfo = injector.getInstance(PipelineStageInfo.class);
-      
+
       pipelineIterationScope.enter();
       try {
         final PipelineStageInfo pipelineIterationScopedInfo =

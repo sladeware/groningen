@@ -16,8 +16,6 @@
 package org.arbeitspferde.groningen.config;
 
 
-import junit.framework.TestCase;
-import org.apache.commons.io.FileUtils;
 import org.arbeitspferde.groningen.Helper;
 import org.arbeitspferde.groningen.LocalFileFactory;
 import org.arbeitspferde.groningen.NullFileEventNotifierFactory;
@@ -27,6 +25,9 @@ import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfigurati
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.ClusterConfig.SubjectGroupConfig;
 import org.arbeitspferde.groningen.utility.FileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.FileFactory;
+
+import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

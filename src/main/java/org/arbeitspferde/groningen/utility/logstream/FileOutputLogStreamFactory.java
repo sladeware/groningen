@@ -18,12 +18,13 @@ package org.arbeitspferde.groningen.utility.logstream;
 import com.google.inject.Singleton;
 import com.google.protobuf.Message;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Logger;
-import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * {@link FileOutputLogStreamFactory} is responsible for provisioning {@link FileOutputLogStream}

@@ -16,10 +16,12 @@
 package org.arbeitspferde.groningen.utility.open;
 
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.utility.AbstractFile;
 import org.arbeitspferde.groningen.utility.FileFactory;
 
 import javax.annotation.concurrent.NotThreadSafe;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

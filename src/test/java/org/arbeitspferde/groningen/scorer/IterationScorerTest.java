@@ -27,6 +27,7 @@ import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.subject.Subject;
 import org.arbeitspferde.groningen.subject.SubjectGroup;
+
 import org.easymock.EasyMock;
 
 import java.util.List;
@@ -49,15 +50,15 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
     super.setUp();
 
     experimentDb = EasyMock.createMock(ExperimentDb.class);
-    
+
     mockExperiment = EasyMock.createMock(Experiment.class);
-    
+
     mockGroningenConfig = EasyMock.createMock(GroningenConfig.class);
 
     mockSubjectScorer = EasyMock.createMock(SubjectScorer.class);
 
     mockDisplayMediator = EasyMock.createMock(DisplayMediator.class);
-    
+
     mockSubjectEventLogger = EasyMock.createMock(SubjectEventLogger.class);
 
     iterationScorer = new IterationScorer(clock, mockDisplayMediator, experimentDb,
@@ -77,43 +78,43 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
     final long experimentId = 3L;
     final double subjectAFitness = 10.0;
     final double subjectBFitness = 0.0;
-    
+
     /* needed for evaluatedSubject constructor */
     final SubjectGroup mockSubjectGroup = EasyMock.createNiceMock(SubjectGroup.class);
     final Subject mockSubjectAAssociatedSubject = EasyMock.createMock(Subject.class);
     final Subject mockSubjectBAssociatedSubject = EasyMock.createMock(Subject.class);
     final int subjectAIndex = 1;
     final int subjectBIndex = 2;
-    
+
     subjects.add(mockSubjectA);
     subjects.add(mockSubjectB);
 
-    /* 
+    /*
      * mockSubjectGroup is used within the call path, but isn't really under test and is
      * completely brittle. Set up to mock out the real stuff but don't bother checking
      */
     EasyMock.expect(mockSubjectGroup.getClusterName()).andReturn("xx").anyTimes();
-    EasyMock.expect(mockSubjectGroup.getSubjectGroupName()).andReturn("testjob").anyTimes();
+    EasyMock.expect(mockSubjectGroup.getName()).andReturn("testjob").anyTimes();
     EasyMock.expect(mockSubjectGroup.getUserName()).andReturn("testuser").anyTimes();
 
-    /* 
+    /*
      * that we pass the same EvaluatedSubject to both be stored in the SubjectBridge and to the
      * monitor is one of the few things we would like to be able to test and its not testable.
      * configure mocks for the construction ahead of time...
      */
     EasyMock.expect(mockSubjectA.getAssociatedSubject()).andReturn(mockSubjectAAssociatedSubject)
         .anyTimes();
-    EasyMock.expect(mockSubjectAAssociatedSubject.getSubjectGroup())
+    EasyMock.expect(mockSubjectAAssociatedSubject.getGroup())
         .andReturn(mockSubjectGroup).anyTimes();
-    EasyMock.expect(mockSubjectAAssociatedSubject.getSubjectIndex())
+    EasyMock.expect(mockSubjectAAssociatedSubject.getIndex())
         .andReturn(subjectAIndex).anyTimes();
     EasyMock.expect(mockSubjectAAssociatedSubject.isDefault())
         .andReturn(false).anyTimes();
     EasyMock.expect(mockSubjectB.getAssociatedSubject()).andReturn(mockSubjectBAssociatedSubject)
         .anyTimes();
-    EasyMock.expect(mockSubjectBAssociatedSubject.getSubjectGroup())
+    EasyMock.expect(mockSubjectBAssociatedSubject.getGroup())
         .andReturn(mockSubjectGroup).anyTimes();
-    EasyMock.expect(mockSubjectBAssociatedSubject.getSubjectIndex())
+    EasyMock.expect(mockSubjectBAssociatedSubject.getIndex())
         .andReturn(subjectBIndex).anyTimes();
     EasyMock.expect(mockSubjectBAssociatedSubject.isDefault())
         .andReturn(false).anyTimes();
@@ -122,7 +123,7 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expect(experimentDb.getLastExperiment()).andReturn(mockExperiment);
     EasyMock.expect(mockExperiment.getSubjects()).andReturn(subjects);
     EasyMock.expect(experimentDb.getExperimentId()).andReturn(experimentId);
-    
+
     EasyMock.expect(mockSubjectScorer.compute(mockSubjectA, mockGroningenConfig))
         .andReturn(subjectAFitness);
     mockSubjectA.setEvaluatedCopy(EasyMock.anyObject(EvaluatedSubject.class));
@@ -145,7 +146,7 @@ public class IterationScorerTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.expectLastCall();
 
     mockDisplayMediator.processGeneration();
-    
+
     EasyMock.replay(experimentDb);
     EasyMock.replay(mockExperiment);
     EasyMock.replay(mockSubjectA);

@@ -15,13 +15,13 @@
 
 package org.arbeitspferde.groningen.experimentdb;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.logging.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Mapping of an ID that uniquely identifies a particular experiment (generation, in GA terminology)

@@ -40,10 +40,10 @@ import org.arbeitspferde.groningen.subject.HealthQuerier;
 import org.arbeitspferde.groningen.subject.ServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.SubjectInterrogator;
 import org.arbeitspferde.groningen.subject.SubjectManipulator;
-import org.arbeitspferde.groningen.subject.open.ProcessHealthQuerier;
-import org.arbeitspferde.groningen.subject.open.ProcessServingAddressGenerator;
 import org.arbeitspferde.groningen.subject.open.NullSubjectInterrogator;
+import org.arbeitspferde.groningen.subject.open.ProcessHealthQuerier;
 import org.arbeitspferde.groningen.subject.open.ProcessManipulator;
+import org.arbeitspferde.groningen.subject.open.ProcessServingAddressGenerator;
 import org.arbeitspferde.groningen.utility.FileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.FileFactory;
 import org.arbeitspferde.groningen.utility.MetricExporter;
@@ -54,6 +54,7 @@ import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 import org.arbeitspferde.groningen.utility.open.LocalFileFactory;
 import org.arbeitspferde.groningen.utility.open.NullFileEventNotifierFactory;
 import org.arbeitspferde.groningen.utility.open.NullMetricExporter;
+
 import org.eclipse.jetty.server.Server;
 
 import java.net.InetAddress;

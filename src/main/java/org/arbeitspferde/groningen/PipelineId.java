@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen;
 
 import com.google.common.base.Preconditions;
+
 import org.arbeitspferde.groningen.config.PipelineScoped;
 
 /**
@@ -28,8 +29,8 @@ public class PipelineId implements Comparable<PipelineId> {
   public PipelineId(String id) {
     Preconditions.checkNotNull(id, "Pipeline id cannot be null.");
     this.id = id;
-  }  
-    
+  }
+
   public String id() {
     return id;
   }

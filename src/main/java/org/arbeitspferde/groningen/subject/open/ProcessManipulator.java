@@ -45,7 +45,7 @@ public class ProcessManipulator implements SubjectManipulator {
     int populationSize = 0;
     // TODO(drk): support named process groups
     try {
-      int processGroupId = Integer.parseInt(group.getSubjectGroupName());
+      int processGroupId = Integer.parseInt(group.getName());
       List<Integer> processIds = Process.getProcessIdsOf(processGroupId);
       populationSize = processIds.size();
     } catch (NumberFormatException e) {

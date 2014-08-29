@@ -16,8 +16,10 @@
 package org.arbeitspferde.groningen.experimentdb.jvmflags;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Range;
+
+import org.arbeitspferde.groningen.proto.GroningenConfigProto;
 
 /**
  * An enumeration of the JVM flags that Groningen can manage.
@@ -154,7 +156,7 @@ public enum JvmFlag {
    */
   private final Range<Long> acceptableValueRange;
 
-  private static final ImmutableList<JvmFlag> GC_MODE_FLAGS = new ImmutableList.Builder<JvmFlag>()
+  private static final ImmutableSortedSet<JvmFlag> GC_MODE_FLAGS = ImmutableSortedSet.<JvmFlag>naturalOrder()
       .add(USE_CONC_MARK_SWEEP_GC)
       .add(USE_PARALLEL_GC)
       .add(USE_PARALLEL_OLD_GC)
@@ -168,19 +170,16 @@ public enum JvmFlag {
    * @param hotSpotFlagType The type of the flag.
    */
   private JvmFlag(final String name, final HotSpotFlagType hotSpotFlagType) {
-    Preconditions.checkNotNull(name, "name may not be null.");
-    Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
+    this.name = Preconditions.checkNotNull(name, "name may not be null.");
+    this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
 
-    this.name = name;
-    this.hotSpotFlagType = hotSpotFlagType;
-
-    this.formatter = Formatters.BOOLEAN_FORMATTER;
-    this.floorValue = 0L;
-    this.ceilingValue = 1L;
-    this.stepSize = 1L;
-    this.dataSize = DataSize.NONE;
-    this.valueSeparator = ValueSeparator.NONE;
-    this.acceptableValueRange = Range.closed(0L, 1L);
+    formatter = Formatters.BOOLEAN_FORMATTER;
+    floorValue = 0L;
+    ceilingValue = 1L;
+    stepSize = 1L;
+    dataSize = DataSize.NONE;
+    valueSeparator = ValueSeparator.NONE;
+    acceptableValueRange = Range.closed(0L, 1L);
   }
 
   /**
@@ -195,26 +194,17 @@ public enum JvmFlag {
   JvmFlag(final String name, final HotSpotFlagType hotSpotFlagType, final Long minimum,
       final Long maximum, final Long stepSize, final DataSize dataSize,
       final ValueSeparator valueSeparator) {
-    Preconditions.checkNotNull(name, "name may not be null.");
-    Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
-    Preconditions.checkNotNull(minimum, "minimum may not be null.");
-    Preconditions.checkNotNull(maximum, "maximum may not be null.");
-    Preconditions.checkNotNull(stepSize, "stepSize may not be null.");
-    Preconditions.checkNotNull(dataSize, "dataSize may not be null.");
-    Preconditions.checkNotNull(valueSeparator, "valueSeparator may not be null.");
+    this.name = Preconditions.checkNotNull(name, "name may not be null.");
+    this.hotSpotFlagType = Preconditions.checkNotNull(hotSpotFlagType, "hotSpotFlagType may not be null.");
+    floorValue = Preconditions.checkNotNull(minimum, "minimum may not be null.");
+    ceilingValue = Preconditions.checkNotNull(maximum, "maximum may not be null.");
+    this.stepSize = Preconditions.checkNotNull(stepSize, "stepSize may not be null.");
+    this.dataSize = Preconditions.checkNotNull(dataSize, "dataSize may not be null.");
+    this.valueSeparator = Preconditions.checkNotNull(valueSeparator, "valueSeparator may not be null.");
 
-    this.name = name;
-    this.hotSpotFlagType = hotSpotFlagType;
-    this.floorValue = minimum;
-    this.ceilingValue = maximum;
-    this.stepSize = stepSize;
-    this.dataSize = dataSize;
-    this.valueSeparator = valueSeparator;
-
-    this.formatter = Formatters.INTEGER_FORMATTER;
-    this.acceptableValueRange = Range.closed(minimum, maximum);
+    formatter = Formatters.INTEGER_FORMATTER;
+    acceptableValueRange = Range.closed(minimum, maximum);
   }
-
 
    String getName() {
     return name;
@@ -295,7 +285,7 @@ public enum JvmFlag {
    *
    * @return List of GC modes.
    */
-  public static ImmutableList<JvmFlag> getGcModeArguments() {
+  public static ImmutableSortedSet<JvmFlag> getGcModeArguments() {
     return GC_MODE_FLAGS;
   }
 
@@ -307,15 +297,32 @@ public enum JvmFlag {
 
     switch (gcMode) {
       case CMS:
-        return JvmFlag.USE_CONC_MARK_SWEEP_GC;
+        return USE_CONC_MARK_SWEEP_GC;
       case PARALLEL:
-        return JvmFlag.USE_PARALLEL_GC;
+        return USE_PARALLEL_GC;
       case PARALLEL_OLD:
-        return JvmFlag.USE_PARALLEL_OLD_GC;
+        return USE_PARALLEL_OLD_GC;
       case SERIAL:
-        return JvmFlag.USE_SERIAL_GC;
+        return USE_SERIAL_GC;
       default:
-        throw new RuntimeException("Invalid GC mode.");
+        throw new IllegalArgumentException("Invalid GC mode: " + gcMode);
+    }
+  }
+
+  public static JvmFlag getGcModeArgument(final GroningenConfigProto.ProgramConfiguration.JvmSearchSpace.GcMode mode) {
+    Preconditions.checkNotNull(mode, "mode should not be null.");
+    // initialize the enum mappings
+    switch (mode) {
+      case USE_CONC_MARK_SWEEP:
+        return USE_CONC_MARK_SWEEP_GC;
+      case USE_PARALLEL:
+        return USE_PARALLEL_GC;
+      case USE_PARALLEL_OLD:
+        return USE_PARALLEL_OLD_GC;
+      case USE_SERIAL:
+        return USE_SERIAL_GC;
+      default:
+        throw new IllegalArgumentException("Invalid GC mode: " + mode);
     }
   }
 }

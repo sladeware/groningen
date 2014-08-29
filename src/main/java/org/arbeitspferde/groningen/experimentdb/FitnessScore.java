@@ -55,7 +55,7 @@ public class FitnessScore {
     double result = checkValue(subjectSignature, "result (a * x + b * y + c * z)",
         a * x + b * y + c * z);
 
-    final String subjectIndex = Integer.toString(bridge.getAssociatedSubject().getSubjectIndex());
+    final String subjectIndex = Integer.toString(bridge.getAssociatedSubject().getIndex());
 
     return result;
   }

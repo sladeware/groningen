@@ -33,7 +33,6 @@ import org.arbeitspferde.groningen.experimentdb.ExperimentDb;
 import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
   /** Provides back links from monitored objects to their {@link DisplayableObject}
    * wrapper so we can remove an object */
   private final Hashtable<Object, DisplayableObject> objectToDisplayable =
-    new Hashtable<Object, DisplayableObject>();
+    new Hashtable<>();
 
   /** The separator for printing the monitored objects */
   String separator = "";
@@ -94,7 +93,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
    * steps that should be atomic) so the list itself does not need internal locking.
    */
   @VisibleForTesting final List<EvaluatedSubject> currentEvaluatedSubjects =
-      new ArrayList<EvaluatedSubject>();
+      new ArrayList<>();
 
   /** stores a list of warnings for display to the user */
   @VisibleForTesting final List<String> warnings =
@@ -233,7 +232,7 @@ public class DisplayMediator implements Displayable, MonitorGroningen {
             continue;
           }
           clusters.add(
-              individual.getBridge().getAssociatedSubject().getSubjectGroup().getClusterName());
+              individual.getBridge().getAssociatedSubject().getGroup().getClusterName());
         }
       }
       toDisplay = commaJoiner.join(clusters);

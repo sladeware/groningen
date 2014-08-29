@@ -30,12 +30,6 @@ import org.arbeitspferde.groningen.experimentdb.PauseTime;
 import org.arbeitspferde.groningen.experimentdb.ResourceMetric;
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
-import org.arbeitspferde.groningen.subject.Subject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,6 +37,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * RESTful Service, serves data for the dashboard.
@@ -86,7 +85,7 @@ public class Pipelines {
 
   @GET
   public String getAllPipelines() {
-    ArrayList<PipelineInfo> pipelineGroup = new ArrayList<PipelineInfo>();
+    ArrayList<PipelineInfo> pipelineGroup = new ArrayList<>();
     Map<PipelineId, Pipeline> pipelineMap = pipelineManager.getAllPipelines();
     for (Pipeline pipeline : pipelineMap.values()) {
       pipelineGroup.add(new PipelineInfo(pipeline.id().toString(), extractJobName(pipeline),
@@ -97,7 +96,7 @@ public class Pipelines {
 
   private static ExperimentInfo[] extractExperimentInfo(
       EvaluatedSubject[] subjects, long cumulativeExperimentIdSum) {
-    ArrayList<ExperimentInfo> experimentScores = new ArrayList<ExperimentInfo>();
+    ArrayList<ExperimentInfo> experimentScores = new ArrayList<>();
     int count = 1;
     for (EvaluatedSubject subject : subjects) {
       experimentScores.add(new ExperimentInfo(
@@ -116,7 +115,7 @@ public class Pipelines {
   @Path("/{pipelineIds}")
   public String getPipeline(@PathParam("pipelineIds") String pipelineIds) {
     String[] pipelineIdList = pipelineIds.split(",");
-    ArrayList<DetailedPipelineInfo> pipelines = new ArrayList<DetailedPipelineInfo>();
+    ArrayList<DetailedPipelineInfo> pipelines = new ArrayList<>();
     for (String pipelineId : pipelineIdList) {
       if (!pipelineId.isEmpty()) {
         Pipeline pipeline = pipelineManager.findPipelineById(new PipelineId(pipelineId));
@@ -127,7 +126,7 @@ public class Pipelines {
         // Warnings
         pipelineInfo.warnings = infoProvider.getWarnings();
         // Status
-        ArrayList<StatusData> status = new ArrayList<StatusData>();
+        ArrayList<StatusData> status = new ArrayList<>();
         for (DisplayableObject statusObj : infoProvider.getMonitoredObjects()) {
           status.add(new StatusData(statusObj.getInfoString(), statusObj.getObject().toString()));
         }
@@ -139,7 +138,7 @@ public class Pipelines {
             alltimeSubjects, cumulativeExperimentIdSum);
         // Experiment History
         EvaluatedSubject[] allSubjects = infoProvider.getAllExperimentSubjects();
-        ArrayList<HistoricalData> historyData = new ArrayList<HistoricalData>();
+        ArrayList<HistoricalData> historyData = new ArrayList<>();
         for (EvaluatedSubject subject : allSubjects) {
           historyData.add(new HistoricalData(
               subject.getExperimentId(), subject.getFitness(),

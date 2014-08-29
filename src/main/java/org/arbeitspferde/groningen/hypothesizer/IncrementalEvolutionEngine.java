@@ -18,8 +18,10 @@ package org.arbeitspferde.groningen.hypothesizer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+
 import org.arbeitspferde.groningen.utility.Clock;
 import org.arbeitspferde.groningen.utility.SystemClock;
+
 import org.uncommons.watchmaker.framework.CandidateFactory;
 import org.uncommons.watchmaker.framework.EvaluatedCandidate;
 import org.uncommons.watchmaker.framework.EvolutionUtils;
@@ -51,7 +53,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class IncrementalEvolutionEngine<T> extends GenerationalEvolutionEngine<T> {
 
   private final Set<EvolutionObserver<T>> observers =
-      new CopyOnWriteArraySet<EvolutionObserver<T>>();
+      new CopyOnWriteArraySet<>();
 
   private final CandidateFactory<T> candidateFactory;
   private final EvolutionaryOperator<T> evolutionScheme;
@@ -235,21 +237,9 @@ public class IncrementalEvolutionEngine<T> extends GenerationalEvolutionEngine<T
    * timely manner to avoid holding up the evolution.
    *
    * @param observer An evolution observer call-back.
-   * @see #removeEvolutionObserver(EvolutionObserver)
    */
   public void addEvolutionObserver(EvolutionObserver<T> observer) {
     observers.add(observer);
-  }
-
-
-  /**
-   * Removes an evolution progress listener.
-   *
-   * @param observer An evolution observer call-back.
-   * @see #addEvolutionObserver(EvolutionObserver)
-   */
-  public void removeEvolutionObserver(EvolutionObserver<T> observer) {
-    observers.remove(observer);
   }
 
   /**

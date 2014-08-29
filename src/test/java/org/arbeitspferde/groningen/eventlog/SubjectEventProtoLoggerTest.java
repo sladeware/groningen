@@ -27,6 +27,7 @@ import org.arbeitspferde.groningen.proto.Event;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration;
 import org.arbeitspferde.groningen.proto.Params.GroningenParamsOrBuilder;
 import org.arbeitspferde.groningen.subject.Subject;
+
 import org.easymock.EasyMock;
 
 /**
@@ -42,7 +43,7 @@ public class SubjectEventProtoLoggerTest extends ClockedExperimentDbTestCaseBase
   private String servingAddress;
   private Experiment mockExperiment;
   private GroningenConfig mockGroningenConfig;
-  
+
 
   @Override
   protected void setUp() throws Exception {
@@ -52,11 +53,11 @@ public class SubjectEventProtoLoggerTest extends ClockedExperimentDbTestCaseBase
     mockEventLogger = EasyMock.createMock(SafeProtoLogger.class);
 
     mockExperiment = EasyMock.createMock(Experiment.class);
-    
+
     mockGroningenConfig = EasyMock.createMock(GroningenConfig.class);
 
     servingAddress = "myservingaddress:31337";
-    
+
     protoLogger = new SubjectEventProtoLogger(clock, mockEventLoggerService,
         servingAddress, START_TIME, metricExporter);
   }

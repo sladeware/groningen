@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.utility.open;
 
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 

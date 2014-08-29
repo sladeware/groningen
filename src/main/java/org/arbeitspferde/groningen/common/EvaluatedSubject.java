@@ -16,8 +16,10 @@
 package org.arbeitspferde.groningen.common;
 
 import com.google.common.base.Preconditions;
+
 import org.arbeitspferde.groningen.experimentdb.SubjectStateBridge;
 import org.arbeitspferde.groningen.utility.Clock;
+
 import org.joda.time.Instant;
 
 /*
@@ -56,44 +58,44 @@ public class EvaluatedSubject implements Comparable<EvaluatedSubject> {
     this.bridge = bridge;
     setFitness(score);
     setTimeStamp(this.clock.now());
-    
+
     if (bridge.getAssociatedSubject() != null) {
-      setClusterName(bridge.getAssociatedSubject().getSubjectGroup().getClusterName());
-      setSubjectGroupName(bridge.getAssociatedSubject().getSubjectGroup().getSubjectGroupName());
-      setUserName(bridge.getAssociatedSubject().getSubjectGroup().getUserName());
-      setSubjectGroupIndex(bridge.getAssociatedSubject().getSubjectIndex());
+      setClusterName(bridge.getAssociatedSubject().getGroup().getClusterName());
+      setSubjectGroupName(bridge.getAssociatedSubject().getGroup().getName());
+      setUserName(bridge.getAssociatedSubject().getGroup().getUserName());
+      setSubjectGroupIndex(bridge.getAssociatedSubject().getIndex());
       setDefault(bridge.getAssociatedSubject().isDefault());
     }
   }
-  
+
   public void setClusterName(String clusterName) {
     this.clusterName = clusterName;
   }
-  
+
   public String getClusterName() {
     return clusterName;
   }
-  
+
   public void setSubjectGroupName(String subjectGroupName) {
     this.subjectGroupName = subjectGroupName;
   }
-  
+
   public String getSubjectGroupName() {
     return subjectGroupName;
   }
-  
+
   public void setUserName(String userName) {
     this.userName = userName;
   }
-  
+
   public String getUserName() {
     return userName;
   }
-  
+
   public void setSubjectGroupIndex(int subjectGroupIndex) {
     this.subjectGroupIndex = subjectGroupIndex;
   }
-  
+
   public int getSubjectGroupIndex() {
     return subjectGroupIndex;
   }

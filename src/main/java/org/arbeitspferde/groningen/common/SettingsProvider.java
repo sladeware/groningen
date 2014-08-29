@@ -215,7 +215,7 @@ public class SettingsProvider implements Provider<Settings> {
   }
 
   private Collection<String> makeArgs4jWhitelist(final Collection<Field> fields) {
-    final Collection<String> emission = new HashSet<String>();
+    final Collection<String> emission = new HashSet<>();
 
     for (final Field field : fields) {
       final Option optionAnnotation = field.getAnnotation(Option.class);

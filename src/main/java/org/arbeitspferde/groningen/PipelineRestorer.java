@@ -13,15 +13,15 @@ import java.util.logging.Logger;
 
 /**
  * PipelineRestorer queries the datastore for the pipelines belonging to the current shard. Then it
- * starts them via {@link PipelineManager}. 
+ * starts them via {@link PipelineManager}.
  */
 public class PipelineRestorer {
   private static final Logger log = Logger.getLogger(PipelineRestorer.class.getCanonicalName());
 
-  private Integer shardIndex;
-  private Datastore dataStore;
-  private PipelineManager pipelineManager;
-  private PipelineIdGenerator pipelineIdGenerator;
+  private final Integer shardIndex;
+  private final Datastore dataStore;
+  private final PipelineManager pipelineManager;
+  private final PipelineIdGenerator pipelineIdGenerator;
 
   @Inject
   public PipelineRestorer(@Named("shardIndex") Integer shardIndex, Datastore dataStore,
@@ -33,7 +33,7 @@ public class PipelineRestorer {
   }
 
   public void restorePipelines() {
-    List<PipelineId> currentShardIds = new ArrayList<PipelineId>();
+    List<PipelineId> currentShardIds = new ArrayList<>();
     List<PipelineId> allPipelinesIds;
     try {
       allPipelinesIds = dataStore.listPipelinesIds();
@@ -41,7 +41,7 @@ public class PipelineRestorer {
       log.log(Level.SEVERE, "can't list pipelines in datastore: " + e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    
+
     for (PipelineId id : allPipelinesIds) {
       if (pipelineIdGenerator.shardIndexForPipelineId(id) == shardIndex) {
         currentShardIds.add(id);
@@ -49,7 +49,7 @@ public class PipelineRestorer {
     }
     log.info(String.format("%d out of %d stored pipelines belong to me (shard %d).",
         currentShardIds.size(), allPipelinesIds.size(), shardIndex));
-    
+
     List<PipelineState> states;
     try {
       states = dataStore.getPipelines(currentShardIds);
@@ -57,13 +57,13 @@ public class PipelineRestorer {
       log.log(Level.SEVERE, "can't get pipelines in datastore: " + e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    
+
     for (PipelineState state : states) {
       pipelineManager.restorePipeline(state,
           new DatastoreConfigManager(dataStore, state.pipelineId()), false);
       log.fine(String.format("Restored pipeline %s.", state.pipelineId()));
     }
-    
+
     log.info("All pipelines belonging to this shard were restored.");
   }
 }

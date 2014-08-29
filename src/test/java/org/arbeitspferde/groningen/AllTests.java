@@ -15,8 +15,6 @@
 
 package org.arbeitspferde.groningen;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.arbeitspferde.groningen.common.CmdProcessTest;
 import org.arbeitspferde.groningen.common.EvaluatedSubjectTest;
 import org.arbeitspferde.groningen.common.StatisticsTest;
@@ -52,6 +50,9 @@ import org.arbeitspferde.groningen.scorer.IterationScorerTest;
 import org.arbeitspferde.groningen.subject.open.ProcessManipulatorTest;
 import org.arbeitspferde.groningen.utility.ProcessTest;
 import org.arbeitspferde.groningen.validator.ValidatorTest;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class AllTests extends TestSuite{
 

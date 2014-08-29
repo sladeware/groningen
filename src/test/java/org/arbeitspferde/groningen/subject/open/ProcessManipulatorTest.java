@@ -15,11 +15,11 @@
 
 package org.arbeitspferde.groningen.subject.open;
 
-import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.config.StubConfigManager;
 import org.arbeitspferde.groningen.subject.SubjectGroup;
 import org.arbeitspferde.groningen.utility.Process;
+
+import junit.framework.TestCase;
 
 /**
  * Test for {@link ProcessManipulator}.

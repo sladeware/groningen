@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.profiling;
 
 import com.google.common.base.Preconditions;
+
 import org.joda.time.Instant;
 
 /**

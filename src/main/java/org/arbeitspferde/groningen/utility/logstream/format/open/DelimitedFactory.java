@@ -1,17 +1,20 @@
 package org.arbeitspferde.groningen.utility.logstream.format.open;
 
 import com.google.protobuf.Message;
+
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStream;
 import org.arbeitspferde.groningen.utility.logstream.OutputLogStreamFactory;
 
 import javax.annotation.concurrent.ThreadSafe;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * {@link DelimitedFactory} furnishes {@link OutputLogStream}s that use use Protocol Buffers'
+ * <p>{@link DelimitedFactory} furnishes {@link OutputLogStream}s that use use Protocol Buffers'
  * underlying delimited encoding per {@link Message#writeDelimitedTo(OutputStream)}.
+ * </p>
  *
  * {@inheritDoc}
  */
@@ -28,6 +31,7 @@ public class DelimitedFactory implements OutputLogStreamFactory {
     final String baseName = String.format("%s.on_port_%s.log",
         specification.getFilenamePrefix(), specification.getServingPort());
     final FileOutputStream outputStream = new FileOutputStream(baseName);
+
     return new Delimited(outputStream);
-    }
+  }
 }

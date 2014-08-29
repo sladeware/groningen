@@ -31,6 +31,7 @@ import org.arbeitspferde.groningen.subject.SubjectManipulator;
 import org.arbeitspferde.groningen.subject.open.NullServingAddressGenerator;
 import org.arbeitspferde.groningen.utility.FileFactory;
 import org.arbeitspferde.groningen.utility.MetricExporter;
+
 import org.easymock.EasyMock;
 
 /**
@@ -80,7 +81,7 @@ public class ExecutorTest extends ClockedExperimentDbTestCaseBase {
     EasyMock.replay(mockCollectionLogAddressor);
 
     final PipelineStageInfo pipelineStageInfo = new PipelineStageInfo();
-    
+
     executor = new Executor(clock, monitor, experimentDb, mockManipulator, mockHealthQuerier,
         mockSubjectInterrogator, mockPipelineSynchronizer, mockSubjectSettingsFileManager,
         mockMetricExporter, mockFileFactory, new NullServingAddressGenerator(),

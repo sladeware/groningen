@@ -180,11 +180,6 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>com.matttproud</groupId>
-            <artifactId>jawzall</artifactId>
-            <version>1</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
@@ -244,8 +239,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>

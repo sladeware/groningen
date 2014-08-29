@@ -16,8 +16,6 @@
 package org.arbeitspferde.groningen.common;
 
 
-import junit.framework.TestCase;
-
 import org.arbeitspferde.groningen.HistoryDatastore;
 import org.arbeitspferde.groningen.PipelineId;
 import org.arbeitspferde.groningen.PipelineManager;
@@ -28,6 +26,8 @@ import org.arbeitspferde.groningen.scorer.HistoricalBestPerformerScorer;
 import org.arbeitspferde.groningen.utility.MetricExporter;
 import org.arbeitspferde.groningen.utility.MetricListener;
 import org.arbeitspferde.groningen.utility.PinnedClock;
+
+import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 /**
@@ -49,7 +49,7 @@ public class ClockedExperimentDbTestCaseBase extends TestCase {
   protected ExperimentDb experimentDb;
 
   protected MetricExporter metricExporter;
-  
+
   protected HistoryDatastore historyDataStoreMock;
   protected PipelineManager pipelineManagerMock;
   protected HistoricalBestPerformerScorer mockBestPerformerScorer;

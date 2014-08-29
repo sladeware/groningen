@@ -43,7 +43,7 @@ public class IterationScorer extends ProfilingRunnable {
   private final SubjectScorer scorer;
   private final SubjectEventLogger subjectEventLogger;
   private final MetricExporter metricExporter;
-  
+
   @Inject
   public IterationScorer(final Clock clock, final MonitorGroningen monitor, final ExperimentDb e,
       final SubjectScorer scorer, SubjectEventLogger subjectEventLogger,
@@ -63,7 +63,7 @@ public class IterationScorer extends ProfilingRunnable {
 
   /**
    * Score the iteration and save off the values
-   *  
+   *
    * @see ProfilingRunnable#profiledRun(GroningenConfig)
    */
   @Override
@@ -78,17 +78,17 @@ public class IterationScorer extends ProfilingRunnable {
 
     for (final SubjectStateBridge subject : thisExperimentIteration.getSubjects()) {
       double score = scorer.compute(subject, config);
-      
+
       // TODO(team): instantiate via a provider or assistedfactory to ease testing dependencies
       final EvaluatedSubject evaledSubject =
           new EvaluatedSubject(clock, subject, score, experimentId);
       subject.setEvaluatedCopy(evaledSubject);
       monitor.addIndividual(evaledSubject);
-      
+
       subjectEventLogger.logSubjectInExperiment(
           config, thisExperimentIteration, subject);
     }
-    
+
     /* With all subjects evaluated, we can close out this generation in the monitor */
     monitor.processGeneration();
   }

@@ -16,6 +16,7 @@
 package org.arbeitspferde.groningen.extractor.open;
 
 import com.google.inject.Singleton;
+
 import org.arbeitspferde.groningen.config.GroningenConfig;
 import org.arbeitspferde.groningen.extractor.CollectionLogAddressor;
 import org.arbeitspferde.groningen.subject.Subject;

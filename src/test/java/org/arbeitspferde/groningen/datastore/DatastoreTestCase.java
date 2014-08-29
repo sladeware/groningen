@@ -19,8 +19,10 @@ import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfigurati
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.ClusterConfig;
 import org.arbeitspferde.groningen.proto.GroningenConfigProto.ProgramConfiguration.ClusterConfig.SubjectGroupConfig;
 import org.arbeitspferde.groningen.proto.Params.GroningenParams;
+import org.arbeitspferde.groningen.subject.Subject;
 
 import junit.framework.TestCase;
+import org.easymock.EasyMock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,8 +61,10 @@ public abstract class DatastoreTestCase extends TestCase {
 
     SubjectStateBridge s1 = experimentDb.makeSubject();
     s1.storeCommandLine(jvmFlagSet);
+    s1.setAssociatedSubject(EasyMock.createNiceMock(Subject.class));
     SubjectStateBridge s2 = experimentDb.makeSubject();
     s2.storeCommandLine(jvmFlagSet);
+    s2.setAssociatedSubject(EasyMock.createNiceMock(Subject.class));
     experimentDb.makeExperiment(ImmutableList.of(s1.getIdOfObject(), s2.getIdOfObject()));
     return new PipelineState(pipelineId, config, experimentDb);
   }
